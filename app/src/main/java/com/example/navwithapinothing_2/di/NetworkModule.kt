@@ -13,6 +13,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -22,17 +23,21 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder().addInterceptor(MoviesApiKeyInterceptor()).build()
+        return OkHttpClient.Builder().connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .addInterceptor(MoviesApiKeyInterceptor()).build()
     }
 
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit {
 
-        val json = Json{
-           /* coerceInputValues = true
-            isLenient = true
-            encodeDefaults = true*/
+        val json = Json {
+            /*  coerceInputValues = true
+              isLenient = true
+              encodeDefaults = true*/
+            //explicitNulls = true
 
             ignoreUnknownKeys = true
         }

@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Budget(
     val currency: String? = null,
-    val value: Int? = null
+    val value: Long? = null
 )

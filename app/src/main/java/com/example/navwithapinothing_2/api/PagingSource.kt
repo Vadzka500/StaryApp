@@ -2,8 +2,8 @@ package com.example.navwithapinothing_2.api
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.moviesapi.models.Response
 import com.example.moviesapi.models.movie.MovieDTO
+import com.example.navwithapinothing_2.data.Result
 
 class MoviePagingSource(
     private val newsApiService: MovieApi,
@@ -21,12 +21,12 @@ class MoviePagingSource(
             val page = params.key ?: 1
             val response = newsApiService.getAllMovies(page = page)
             val prevKey = if (page == 1) null else page.minus(1)
-            val nextKey = if (response.data.isEmpty()) null else page.plus(1)
+            val nextKey = if (response.docs.isEmpty()) null else page.plus(1)
             println("prev key = " + prevKey)
             println("next key = " + nextKey)
-            println("size = " + response.data.size)
+            println("size = " + response.docs.size)
             LoadResult.Page(
-                data = response.data,
+                data = response.docs,
                 prevKey = prevKey,
                 nextKey = nextKey,
             )

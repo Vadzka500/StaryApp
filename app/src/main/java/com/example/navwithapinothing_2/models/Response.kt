@@ -1,6 +1,5 @@
 package com.example.moviesapi.models
 
-import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -10,5 +9,5 @@ data class Response<T>(
     @SerialName("limit") val limit1: Int,
     @SerialName("page") val page: Int,
     @SerialName("pages") val pages: Int,
-    @SerialName("docs") val data: List<T>
+    @SerialName("docs") val docs: List<T>
 )

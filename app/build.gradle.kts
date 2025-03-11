@@ -44,6 +44,10 @@ android {
     }
 }
 
+/*kotlin{
+    task("testClasses")
+}*/
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -85,5 +89,14 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.constraintlayout)
+
+    implementation(libs.androidx.webkit)
+    implementation(libs.core)
+    implementation (libs.custom.ui)
+
+    implementation(libs.icons)
+
+    //implementation("androidx.compose.ui:ui-text-google-fonts:1.7.6")
+
 
 }

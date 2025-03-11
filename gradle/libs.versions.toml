@@ -4,6 +4,7 @@ agp = "8.7.3"
 coilCompose = "2.7.0"
 constraintlayoutCompose = "1.1.0"
 converterGson = "2.11.0"
+core = "12.1.0"
 kotlin = "2.1.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -25,6 +26,9 @@ constraintlayout = "2.1.4"
 hilt = "2.51.1"
 kapt = "2.0.21"
 retrofit2KotlinxSerializationConverter = "1.0.0"
+webkit = "1.12.1"
+youtubeplayerCompose = "2024.02.25"
+icons = "1.7.5"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
@@ -35,8 +39,11 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingRuntimeKtx" }
 androidx-paging-runtime-ktx = { module = "androidx.paging:paging-runtime", version.ref = "pagingRuntimeKtx" }
+androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "webkit" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+core = { module = "com.pierfrancescosoffritti.androidyoutubeplayer:core", version.ref = "core" }
+custom-ui = { module = "com.pierfrancescosoffritti.androidyoutubeplayer:custom-ui", version.ref = "core" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -61,6 +68,9 @@ hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hil
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
 
 viewmodel-compose-navigatiom = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref="hilt-navigation" }
+youtubeplayer-compose = { module = "io.github.ilyapavlovskii:youtubeplayer-compose", version.ref = "youtubeplayerCompose" }
+
+icons = { group = "androidx.compose.material", name = "material-icons-extended", version.ref="icons" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

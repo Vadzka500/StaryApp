@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">NavWithApiNothing_2</string>
+    <string name="empty_result_random">Похоже мы ничего не нашли по вашим запросам, проверьте фильтры</string>
 </resources>

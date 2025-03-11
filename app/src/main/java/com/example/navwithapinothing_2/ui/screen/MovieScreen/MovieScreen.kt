@@ -1,0 +1,910 @@
+package com.example.navwithapinothing_2.ui.screen.MovieScreen
+
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import com.example.moviesapi.models.movie.MovieDTO
+import com.example.moviesapi.models.movie.Person
+
+import com.example.navwithapinothing_2.R
+import com.example.navwithapinothing_2.data.Result
+import com.example.navwithapinothing_2.models.movie.PersonOfMovie
+import com.example.navwithapinothing_2.ui.screen.MoviesListScreen.ListMovies
+import com.example.navwithapinothing_2.ui.screen.MoviesListScreen.MovieViewModel
+import com.example.navwithapinothing_2.ui.theme.ShimmerColorShades
+import com.example.navwithapinothing_2.ui.theme.poppinsFort
+import com.example.navwithapinothing_2.utils.ScoreManager
+import com.example.navwithapinothing_2.utils.TimeManager
+import kotlinx.coroutines.delay
+import java.util.Locale
+
+/**
+ * @Author: Vadim
+ * @Date: 18.12.2024
+ */
+
+fun Modifier.shimmerEffect(): Modifier = composed {
+    val transition = rememberInfiniteTransition(label = "")
+    val offsetX by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 2000f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1200, easing = FastOutSlowInEasing)
+        ), label = ""
+    )
+    background(
+        brush = Brush.horizontalGradient(
+            colors = ShimmerColorShades,
+            startX = 0f,
+            endX = offsetX
+        )
+    )
+}
+
+@Composable
+fun MovieScreen(
+    modifier: Modifier = Modifier,
+    id: Long,
+    movieViewModel: MovieViewModel = hiltViewModel(),
+    onSelectMovie: (Long) -> Unit,
+    onSelectPerson: (Long) -> Unit
+) {
+
+
+    val state = movieViewModel.state_movie.collectAsState()
+
+    movieViewModel.getMovieById(id) //931677 //258687 //522941
+
+    var visible by remember {
+        mutableStateOf(state.value !is Result.Success<*>)
+    }
+
+
+
+    AnimatedVisibility(
+        modifier = Modifier.fillMaxSize(),
+        visible = visible,
+        exit = fadeOut(animationSpec = tween(200))
+    ) {
+        ShimmerScreen()
+    }
+
+
+    //ShimmerScreen()
+    when (val data = state.value) {
+        is Result.Loading -> {
+
+        }
+
+        Result.Error -> {
+
+        }
+
+        is Result.Success<*> -> {
+
+            visible = false
+
+            InitMovie(
+                movie = data.data as MovieDTO,
+                modifier = modifier,
+                onSelectMovie = onSelectMovie,
+                onSelectPerson = onSelectPerson
+            )
+
+        }
+    }
+
+}
+
+@Composable
+fun ShimmerScreen(modifier: Modifier = Modifier) {
+    Column(modifier = Modifier.fillMaxSize()) {
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp), contentAlignment = Alignment.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(160.dp)
+                    .height(240.dp)
+                    .clip(
+                        RoundedCornerShape(8.dp)
+                    )
+                    .shimmerEffect()
+            )
+        }
+
+        Spacer(modifier = Modifier.height(5.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.4f)
+                .height(20.dp)
+                .align(Alignment.CenterHorizontally)
+                .clip(
+                    RoundedCornerShape(6.dp)
+                )
+                .shimmerEffect()
+        )
+
+        Spacer(modifier = Modifier.height(18.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.6f)
+                .height(20.dp)
+                .align(Alignment.CenterHorizontally)
+                .clip(
+                    RoundedCornerShape(6.dp)
+                )
+                .shimmerEffect()
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.5f)
+                .height(20.dp)
+                .align(Alignment.CenterHorizontally)
+                .clip(
+                    RoundedCornerShape(6.dp)
+                )
+                .shimmerEffect()
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.3f)
+                .height(20.dp)
+                .align(Alignment.CenterHorizontally)
+                .clip(
+                    RoundedCornerShape(6.dp)
+                )
+                .shimmerEffect()
+        )
+
+        Spacer(modifier = Modifier.height(15.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(70.dp)
+                .padding(horizontal = 16.dp)
+                .clip(
+                    RoundedCornerShape(6.dp)
+                )
+                .shimmerEffect()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(110.dp)
+                .padding(horizontal = 16.dp)
+                .clip(
+                    RoundedCornerShape(6.dp)
+                )
+                .shimmerEffect()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)
+                .padding(horizontal = 16.dp)
+                .clip(
+                    RoundedCornerShape(6.dp)
+                )
+                .shimmerEffect()
+        )
+        /*
+
+
+         RowButtons(movie = movie)
+
+         if (movie.description != null) {
+             RowDescription(movie = movie)
+         }
+
+         if (movie.persons != null) {
+             Spacer(modifier = Modifier.height(16.dp))
+             Text(
+                 text = "Актеры",
+                 modifier = Modifier.padding(start = 16.dp),
+                 fontWeight = FontWeight.SemiBold,
+                 fontFamily = poppinsFort,
+                 fontSize = 18.sp
+             )
+             Spacer(modifier = Modifier.height(5.dp))
+             RowActors(
+                 modifier = Modifier,
+                 persons = movie.persons.filter { it.profession.equals("актеры") })
+         }
+
+         if (!movie.sequelsAndPrequels.isNullOrEmpty()) {
+             Spacer(modifier = Modifier.height(16.dp))
+             Text(
+                 text = "Связанные фильмы",
+                 modifier = Modifier.padding(start = 16.dp),
+                 fontWeight = FontWeight.SemiBold,
+                 fontFamily = poppinsFort,
+                 fontSize = 18.sp
+             )
+             Spacer(modifier = Modifier.height(5.dp))
+             ListMovies(list = movie.sequelsAndPrequels, onSelectMovie = onSelectMovie)
+         }
+
+         if (!movie.similarMovies.isNullOrEmpty()) {
+             Spacer(modifier = Modifier.height(15.dp))
+             Text(
+                 text = "Похожие фильмы",
+                 modifier = Modifier.padding(start = 16.dp),
+                 fontWeight = FontWeight.SemiBold,
+                 fontFamily = poppinsFort,
+                 fontSize = 18.sp
+             )
+             Spacer(modifier = Modifier.height(5.dp))
+             ListMovies(list = movie.similarMovies, onSelectMovie = onSelectMovie)
+         }*/
+
+    }
+}
+
+/*
+@Composable
+fun InitMovie(modifier: Modifier = Modifier, movie: MovieDTO) {
+    Box(modifier = Modifier.fillMaxSize()){
+        AsyncImage(model = movie.backdrop?.url, contentDescription = "", modifier.fillMaxWidth().height(300.dp), contentScale = ContentScale.Crop, alpha = 0.7f)
+        Column(modifier = Modifier.fillMaxWidth().padding(top = 20.dp)) {
+            AsyncImage(model = movie.poster?.previewUrl, contentDescription = "", modifier = Modifier.padding(start = 16.dp).width(160.dp).height(240.dp).align(Alignment.CenterHorizontally),  contentScale = ContentScale.FillBounds)
+            Text(text = movie.name!!)
+        }
+    }
+}*/
+
+@Composable
+fun InitMovie(
+    modifier: Modifier = Modifier,
+    movie: MovieDTO,
+    onSelectMovie: (Long) -> Unit,
+    onSelectPerson: (Long) -> Unit
+) {
+    var visible by remember {
+        mutableStateOf(false)
+    }
+
+    AnimatedVisibility(
+        modifier = Modifier.fillMaxSize(),
+        visible = visible,
+        enter = fadeIn(animationSpec = tween(200))
+    ) {
+
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp), contentAlignment = Alignment.Center
+            ) {
+                AsyncImage(model = movie.backdrop?.url,
+                    contentDescription = "",
+
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .blur(radiusX = 3.dp, radiusY = 3.dp)
+                        .graphicsLayer { alpha = 0.99f }
+                        .drawWithContent {
+                            val colors = listOf(
+                                Color.Black, Color.Transparent
+                            )
+                            drawContent()
+                            drawRect(
+                                brush = Brush.verticalGradient(colors), blendMode = BlendMode.DstIn
+                            )
+                        },
+                    contentScale = ContentScale.Crop,
+                    alpha = 0.8f
+                )
+                //  Column(modifier = Modifier.fillMaxWidth().padding(top = 20.dp)) {
+                AsyncImage(
+                    model = movie.poster?.previewUrl,
+                    contentDescription = "",
+                    modifier = Modifier
+                        .width(160.dp)
+                        .height(240.dp)
+                        .clip(
+                            RoundedCornerShape(8.dp)
+                        ),
+                    contentScale = ContentScale.FillBounds,
+                )
+                //}
+            }
+
+
+
+
+            Text(
+                text = movie.name?: movie.enName?: "",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.SemiBold,
+                fontFamily = poppinsFort,
+                fontSize = 24.sp
+            )
+
+
+
+            RowPrimaryData(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 8.dp),
+                movie = movie
+            )
+
+            RowGenres(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 5.dp),
+                movie = movie
+            )
+
+            RowScore(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 5.dp),
+                movie = movie
+            )
+
+            Spacer(modifier = Modifier.height(15.dp))
+            val context = LocalContext.current
+            RowButtons(movie = movie, trailerClick = { link ->
+
+                if (link != null) {
+                    Intent(Intent.ACTION_VIEW).also {
+                        it.data = Uri.parse(link)
+                        context.startActivity(it)
+                    }
+                }
+
+            })
+
+            if (movie.description != null) {
+                Spacer(modifier = Modifier.height(16.dp))
+                RowDescription(movie = movie)
+            }
+
+            if (movie.persons != null) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Актеры",
+                    modifier = Modifier.padding(start = 16.dp),
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = poppinsFort,
+                    fontSize = 18.sp
+                )
+                Spacer(modifier = Modifier.height(5.dp))
+
+
+                RowActors(
+                    modifier = Modifier,
+                    persons = movie.persons.filter { (it.profession == "актеры").and(it.name != null) },
+                    onSelectPerson = onSelectPerson
+                )
+            }
+
+            if (!movie.sequelsAndPrequels.isNullOrEmpty()) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Связанные фильмы",
+                    modifier = Modifier.padding(start = 16.dp),
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = poppinsFort,
+                    fontSize = 18.sp
+                )
+                Spacer(modifier = Modifier.height(5.dp))
+                ListMovies(list = movie.sequelsAndPrequels, onSelectMovie = onSelectMovie, modifier = Modifier.padding(top = 10.dp))
+            }
+
+            if (!movie.similarMovies.isNullOrEmpty()) {
+                Spacer(modifier = Modifier.height(15.dp))
+                Text(
+                    text = "Похожие фильмы",
+                    modifier = Modifier.padding(start = 16.dp),
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = poppinsFort,
+                    fontSize = 18.sp
+                )
+                Spacer(modifier = Modifier.height(5.dp))
+                ListMovies(list = movie.similarMovies, onSelectMovie = onSelectMovie, modifier = Modifier.padding(top = 10.dp))
+            }
+        }
+    }
+
+    LaunchedEffect(true) {
+        visible = true
+    }
+
+}
+
+
+@Composable
+fun RowDescription(modifier: Modifier = Modifier, movie: MovieDTO) {
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+
+        Text(
+            text = "Описание", fontWeight = FontWeight.SemiBold,
+            fontFamily = poppinsFort,
+            fontSize = 18.sp
+        )
+        Spacer(modifier = Modifier.height(5.dp))
+        var rowCount by remember {
+            mutableIntStateOf(2)
+        }
+        Column(modifier = Modifier.animateContentSize()) {
+            Text(
+                text = movie.description!!,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = rowCount,
+                fontWeight = FontWeight.Medium,
+                fontFamily = poppinsFort,
+                fontSize = 14.sp,
+            )
+        }
+        Spacer(modifier = Modifier.height(5.dp))
+        Text(
+            text = if (rowCount == 2) "Развернуть" else "Свернуть",
+            fontWeight = FontWeight.SemiBold,
+            fontFamily = poppinsFort,
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.clickable(indication = null, interactionSource = null) {
+                if (rowCount == 2) rowCount = Int.MAX_VALUE else rowCount = 2
+            })
+    }
+}
+
+@Composable
+fun RowButtons(
+    modifier: Modifier = Modifier,
+    movie: MovieDTO,
+    trailerClick: (url: String?) -> Unit
+) {
+
+    var visible by remember {
+        mutableStateOf(false)
+    }
+
+    var bookmark by remember {
+        mutableStateOf(false)
+    }
+
+
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(20.dp),
+        modifier = Modifier.padding(end = 16.dp)
+    ) {
+        //Spacer(modifier = Modifier.width(10.dp))
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(RoundedCornerShape(15.dp))
+                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                    .clickable {
+
+                        trailerClick(movie.videos?.trailers?.get(0)?.url)
+
+                    }
+                    .padding(0.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.cameravideo),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(25.dp)
+                        .align(Alignment.Center),
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            }
+            Text(
+                text = "Трейлер", fontWeight = FontWeight.Normal,
+                fontFamily = poppinsFort,
+                fontSize = 12.sp, textAlign = TextAlign.Center
+            )
+        }
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(RoundedCornerShape(15.dp))
+                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                    .clickable { visible = !visible }
+                    .padding(0.dp)
+            ) {
+                Icon(
+                    painter = if (!visible) painterResource(R.drawable.ic_visibility_outlined) else painterResource(
+                        R.drawable.ic_visibility_fill
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(25.dp)
+                        .align(Alignment.Center),
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            }
+            Text(
+                text = "Просмотрен", fontWeight = FontWeight.Normal,
+                fontFamily = poppinsFort,
+                fontSize = 12.sp, textAlign = TextAlign.Center
+            )
+        }
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(RoundedCornerShape(15.dp))
+                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                    .clickable { bookmark = !bookmark }
+                    .padding(0.dp)
+            ) {
+                Icon(
+                    painter = if (!bookmark) painterResource(R.drawable.ic_bookmark_add_outlined) else painterResource(
+                        R.drawable.ic_bookmark_added_fill
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(25.dp)
+                        .align(Alignment.Center),
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            }
+            Text(
+                text = "В закладки", fontWeight = FontWeight.Normal,
+                fontFamily = poppinsFort,
+                fontSize = 12.sp, textAlign = TextAlign.Center
+            )
+        }
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(RoundedCornerShape(15.dp))
+                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                    .clickable { }
+                    .padding(0.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_folder_add_outlined),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(25.dp)
+                        .align(Alignment.Center),
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            }
+            Text(
+                text = "В коллекции", fontWeight = FontWeight.Normal,
+                fontFamily = poppinsFort,
+                fontSize = 12.sp, textAlign = TextAlign.Center
+            )
+        }
+
+
+    }
+}
+
+@Composable
+fun InitButton(modifier: Modifier = Modifier) {
+
+}
+
+@Composable
+fun RowActors(
+    modifier: Modifier = Modifier,
+    persons: List<PersonOfMovie>,
+    onSelectPerson: (Long) -> Unit
+) {
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(15.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp)
+    ) {
+        items(persons) {
+            CardActor(
+                person = it,
+                modifier = Modifier.width(70.dp),
+                onSelectPerson = onSelectPerson
+            )
+        }
+    }
+}
+
+@Composable
+fun CardActor(
+    modifier: Modifier = Modifier,
+    person: PersonOfMovie,
+    onSelectPerson: (Long) -> Unit
+) {
+
+    Column(modifier = modifier.clickable { onSelectPerson(person.id) }) {
+        AsyncImage(
+            model = person.photo,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(70.dp)
+                .clip(
+                    RoundedCornerShape(14.dp)
+                )
+        )
+
+        Spacer(modifier = Modifier.height(5.dp))
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            lineHeight = 13.sp,
+            text = person.name!!, fontWeight = FontWeight.Normal,
+            fontFamily = poppinsFort,
+            fontSize = 12.sp, textAlign = TextAlign.Center
+        )
+    }
+
+}
+
+@Composable
+fun RowScore(modifier: Modifier = Modifier, movie: MovieDTO) {
+    Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        if (movie.rating?.imdb != null && movie.rating.imdb != 0.0) {
+            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                Image(
+                    painter = painterResource(R.drawable.ic_imdb_2),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(20.dp)
+                        .align(Alignment.CenterVertically)
+                )
+                Text(
+                    text = ScoreManager.getRoundScore(movie.rating.imdb).toString(),
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = poppinsFort,
+                    fontSize = 14.sp
+                )
+            }
+        }
+        if (movie.rating?.kp != null && movie.rating.kp != 0.0) {
+            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                Image(
+                    painter = painterResource(R.drawable.ic_kinopoisk_2),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(14.dp)
+                        .align(Alignment.CenterVertically)
+                )
+                Text(
+                    text = ScoreManager.getRoundScore(movie.rating.kp).toString(),
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = poppinsFort,
+                    fontSize = 14.sp
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun RowGenres(modifier: Modifier = Modifier, movie: MovieDTO) {
+    Row(
+        modifier = modifier, horizontalArrangement = Arrangement.spacedBy(5.dp)
+    ) {
+        movie.countries?.first().let {
+            Text(
+                text = it!!.name,
+                fontWeight = FontWeight.Normal,
+                fontFamily = poppinsFort,
+                fontSize = 14.sp
+            )
+        }
+
+
+        movie.genres?.take(2)?.forEachIndexed { index, item ->
+            Text(text = "•", color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+            Text(
+                text = item.name.replaceFirstChar { it.uppercase() },
+                fontWeight = FontWeight.Normal,
+                fontFamily = poppinsFort,
+                fontSize = 14.sp
+            )
+        }
+
+    }
+}
+
+@Composable
+fun RowPrimaryData(modifier: Modifier = Modifier, movie: MovieDTO) {
+    Row(
+        modifier = modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+
+        if (!movie.isSeries!!) {
+            Text(
+                text = movie.year.toString(),
+                fontWeight = FontWeight.Medium,
+                fontFamily = poppinsFort,
+                fontSize = 14.sp
+            )
+
+            if (movie.movieLength != null) {
+                //Text(text = "•", color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+
+                Text(text = "•", color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+
+                Text(
+                    text = TimeManager.getTimeByMinutes(movie.movieLength),
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = poppinsFort,
+                    fontSize = 14.sp
+                )
+            }
+        } else {
+
+            val seasonCount = movie.seasonsInfo?.let { it ->
+                if(it.isEmpty()){
+                    1
+                }else{
+                    it.count { season -> season.number != 0 }
+                }
+            }
+
+
+
+            if (movie.releaseYears != null) {
+                val releaseStart = movie.releaseYears[0].start
+                val releaseEnd = movie.releaseYears[0].end
+
+                var text = releaseStart.toString()
+
+                if(releaseStart != null && releaseEnd != null && releaseStart != releaseEnd){
+                    text = "$releaseStart - $releaseEnd"
+                }else if(releaseStart != null && releaseEnd == null){
+                    text = if(seasonCount == 1 || movie.status?.equals("completed") == true){
+                        releaseStart.toString()
+                    }else{
+                        "$releaseStart - н.в."
+                    }
+                }
+
+                Text(
+                    text = text,
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = poppinsFort,
+                    fontSize = 14.sp
+                )
+            } else {
+                Text(
+                    text = movie.year.toString(),
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = poppinsFort,
+                    fontSize = 14.sp
+                )
+            }
+
+            if (movie.seasonsInfo != null) {
+
+
+                Text(text = "•", color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+
+                //Text(text = "•", color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+                Text(
+                    text = seasonCount.let { if (it == 1) "$it сезон" else if (it!! < 5) "$it сезона" else "$it сезонов" },
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = poppinsFort,
+                    fontSize = 14.sp
+                )
+            }
+        }
+
+
+
+        if (movie.ageRating != null) {
+            //Text(text = "•", color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+
+            Text(text = "•", color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+
+            Text(
+                text = "${movie.ageRating}+",
+                fontWeight = FontWeight.Medium,
+                fontFamily = poppinsFort,
+                fontSize = 14.sp
+            )
+        }
+    }
+}
