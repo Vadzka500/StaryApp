@@ -1,5 +1,7 @@
 package com.example.navwithapinothing_2.di
 
+import androidx.core.os.BuildCompat
+import com.example.navwithapinothing_2.BuildConfig
 import com.example.navwithapinothing_2.api.MovieApi
 import com.example.navwithapinothing_2.utils.MoviesApiKeyInterceptor
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -42,8 +44,10 @@ object NetworkModule {
             ignoreUnknownKeys = true
         }
 
+
+
         return Retrofit.Builder()
-            .baseUrl("https://api.kinopoisk.dev/v1.4/")
+            .baseUrl(BuildConfig.MOVIES_API_BASE_URL)
             //.addConverterFactory(GsonConverterFactory.create())
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .client(provideOkHttpClient())

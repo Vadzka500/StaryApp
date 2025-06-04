@@ -15,6 +15,7 @@ class MainActivity : ComponentActivity() {
         //enableEdgeToEdge()
 
 
+
         setContent {
             NavWithApiNothing_2Theme {
                 MainScreen()

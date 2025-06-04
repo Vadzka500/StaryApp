@@ -20,13 +20,14 @@ class MoviePagingSource(
         return try {
             val page = params.key ?: 1
             val response = newsApiService.getAllMovies(page = page)
+
             val prevKey = if (page == 1) null else page.minus(1)
-            val nextKey = if (response.docs.isEmpty()) null else page.plus(1)
+            val nextKey = if (response.body()!!.docs.isEmpty()) null else page.plus(1)
             println("prev key = " + prevKey)
             println("next key = " + nextKey)
-            println("size = " + response.docs.size)
+            println("size = " + response.body()!!.docs.size)
             LoadResult.Page(
-                data = response.docs,
+                data = response.body()!!.docs,
                 prevKey = prevKey,
                 nextKey = nextKey,
             )

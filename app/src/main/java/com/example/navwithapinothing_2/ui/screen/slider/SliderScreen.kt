@@ -1,7 +1,6 @@
 package com.example.navwithapinothing_2.ui.screen.slider
 
 import android.annotation.SuppressLint
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.EaseInOutCirc
 import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.Easing
@@ -75,7 +74,7 @@ import com.example.moviesapi.models.movie.MovieDTO
 import com.example.navwithapinothing_2.R
 import com.example.navwithapinothing_2.data.Result
 import com.example.navwithapinothing_2.models.Filter
-import com.example.navwithapinothing_2.ui.screen.MoviesListScreen.MovieViewModel
+import com.example.navwithapinothing_2.ui.screen.MovieViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -142,7 +141,7 @@ fun SliderScreen(
 
     val state = movieViewModel.state_random.collectAsState()
     when (val data = state.value) {
-        is Result.Error -> {
+        is Result.Error<*> -> {
             println("stat err")
             randomStatus.value = RandomStatus.ERROR
         }

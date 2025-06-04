@@ -43,13 +43,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.navwithapinothing_2.R
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.customui.DefaultPlayerUiController
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+
 
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -272,66 +266,7 @@ fun AnimScreen(modifier: Modifier = Modifier) {
 @Composable
 fun YoutubeView(modifier: Modifier = Modifier, id: String, lifecycleOwner: LifecycleOwner) {
 
-    val y: YouTubePlayerCallback
-    val context = LocalContext.current
-    val youTubePlayerView = YouTubePlayerView(context = context).apply {
-        lifecycleOwner.lifecycle.addObserver(this)
 
-        //addYouTubePlayerListener()
-    }
-
-    /*youTubePlayerView.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
-
-        override fun onReady(youTubePlayer: YouTubePlayer) {
-            println("on ready")
-            youTubePlayer.cueVideo(id, 0f)
-            val defaultController = DefaultPlayerUiController(youTubePlayer = youTubePlayer, youTubePlayerView = youTubePlayerView)
-            defaultController.showVideoTitle(false)
-           // defaultController.showUi(false)
-            defaultController.showMenuButton(false)
-            //defaultController.showPlayPauseButton(false)
-            //defaultController.showYouTubeButton(false)
-            youTubePlayerView.setCustomPlayerUi(defaultController.rootView)
-        }
-    })*/
-
-    val listener: YouTubePlayerListener = object : AbstractYouTubePlayerListener() {
-        override fun onReady(youTubePlayer: YouTubePlayer) {
-            println("on ready")
-            youTubePlayer.cueVideo(id, 0f)
-            val defaultController = DefaultPlayerUiController(
-                youTubePlayer = youTubePlayer,
-                youTubePlayerView = youTubePlayerView
-            )
-
-            /* defaultController.showVideoTitle(false)
-             // defaultController.showUi(false)
-             defaultController.showMenuButton(false)
-             //defaultController.showMenuButton(false)
-             defaultController.showUi(false)
-             defaultController.showYouTubeButton(false)*/
-
-
-            //defaultController.showPlayPauseButton(false)
-            //defaultController.showYouTubeButton(false)
-
-            //youTubePlayerView.setCustomPlayerUi(R.layout.empty)
-            //youTubePlayerView.getpla
-        }
-    }
-
-    val options: IFramePlayerOptions =
-        IFramePlayerOptions.Builder().controls(0).ivLoadPolicy(3).ccLoadPolicy(0).build()
-    youTubePlayerView.enableAutomaticInitialization = false
-
-    youTubePlayerView.initialize(listener, options)
-
-
-
-
-    AndroidView(modifier = Modifier.fillMaxWidth(), factory = { context ->
-        youTubePlayerView
-    })
 
 }
 

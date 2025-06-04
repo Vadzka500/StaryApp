@@ -4,8 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,10 +29,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -45,7 +41,7 @@ import com.example.moviesapi.models.movie.Person
 import com.example.navwithapinothing_2.data.Result
 import com.example.navwithapinothing_2.ui.screen.MovieScreen.shimmerEffect
 import com.example.navwithapinothing_2.ui.screen.MoviesListScreen.ListMovies
-import com.example.navwithapinothing_2.ui.screen.MoviesListScreen.MovieViewModel
+import com.example.navwithapinothing_2.ui.screen.MovieViewModel
 import com.example.navwithapinothing_2.ui.theme.poppinsFort
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -110,7 +106,7 @@ fun InitScreen(
 
                 }
 
-                Result.Error -> {
+                is Result.Error<*> -> {
 
                 }
 
@@ -144,7 +140,7 @@ fun InitScreen(
 
                 }
 
-                Result.Error -> {
+                is Result.Error<*> -> {
 
                 }
 

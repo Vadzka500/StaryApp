@@ -3,7 +3,6 @@ package com.example.navwithapinothing_2.ui.screen.MovieScreen
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloat
@@ -12,9 +11,9 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,18 +30,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BookmarkBorder
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -59,33 +54,31 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.moviesapi.models.movie.MovieDTO
-import com.example.moviesapi.models.movie.Person
 
 import com.example.navwithapinothing_2.R
 import com.example.navwithapinothing_2.data.Result
+import com.example.navwithapinothing_2.database.models.MovieDb
 import com.example.navwithapinothing_2.models.movie.PersonOfMovie
 import com.example.navwithapinothing_2.ui.screen.MoviesListScreen.ListMovies
-import com.example.navwithapinothing_2.ui.screen.MoviesListScreen.MovieViewModel
+import com.example.navwithapinothing_2.ui.screen.MovieViewModel
 import com.example.navwithapinothing_2.ui.theme.ShimmerColorShades
 import com.example.navwithapinothing_2.ui.theme.poppinsFort
 import com.example.navwithapinothing_2.utils.ScoreManager
 import com.example.navwithapinothing_2.utils.TimeManager
-import kotlinx.coroutines.delay
-import java.util.Locale
+import kotlin.math.PI
+import kotlin.math.sin
 
 /**
  * @Author: Vadim
@@ -119,15 +112,20 @@ fun MovieScreen(
     onSelectPerson: (Long) -> Unit
 ) {
 
-
     val state = movieViewModel.state_movie.collectAsState()
-
-    movieViewModel.getMovieById(id) //931677 //258687 //522941
-
+    val stateDatabase = movieViewModel.isMovieExists.collectAsState()
     var visible by remember {
-        mutableStateOf(state.value !is Result.Success<*>)
+        mutableStateOf(false)
     }
 
+
+
+    LaunchedEffect(id) {
+        println("status = " + state.value)
+        movieViewModel.getMovieById(id) //931677 //258687 //522941
+        movieViewModel.checkMovieDatabase(id)
+        visible = true
+    }
 
 
     AnimatedVisibility(
@@ -145,10 +143,6 @@ fun MovieScreen(
 
         }
 
-        Result.Error -> {
-
-        }
-
         is Result.Success<*> -> {
 
             visible = false
@@ -157,8 +151,14 @@ fun MovieScreen(
                 movie = data.data as MovieDTO,
                 modifier = modifier,
                 onSelectMovie = onSelectMovie,
-                onSelectPerson = onSelectPerson
+                onSelectPerson = onSelectPerson,
+                movieDbState = stateDatabase,
+                movieViewModel = movieViewModel
             )
+
+        }
+
+        is Result.Error<*> -> {
 
         }
     }
@@ -275,6 +275,7 @@ fun ShimmerScreen(modifier: Modifier = Modifier) {
                     RoundedCornerShape(6.dp)
                 )
                 .shimmerEffect()
+
         )
         /*
 
@@ -346,7 +347,9 @@ fun InitMovie(
     modifier: Modifier = Modifier,
     movie: MovieDTO,
     onSelectMovie: (Long) -> Unit,
-    onSelectPerson: (Long) -> Unit
+    onSelectPerson: (Long) -> Unit,
+    movieDbState: State<MovieDb?>,
+    movieViewModel: MovieViewModel
 ) {
     var visible by remember {
         mutableStateOf(false)
@@ -357,6 +360,8 @@ fun InitMovie(
         visible = visible,
         enter = fadeIn(animationSpec = tween(200))
     ) {
+
+        var scale by remember { mutableStateOf(ContentScale.Crop) }
 
         Column(
             modifier = modifier
@@ -369,7 +374,9 @@ fun InitMovie(
                     .fillMaxWidth()
                     .height(300.dp), contentAlignment = Alignment.Center
             ) {
-                AsyncImage(model = movie.backdrop?.url,
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current).data(movie.backdrop?.url)
+                        .crossfade(true).build(),
                     contentDescription = "",
 
                     modifier = Modifier
@@ -391,15 +398,23 @@ fun InitMovie(
                 )
                 //  Column(modifier = Modifier.fillMaxWidth().padding(top = 20.dp)) {
                 AsyncImage(
-                    model = movie.poster?.previewUrl,
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(movie.poster?.previewUrl)
+                        .listener(
+                            onSuccess = { _, _ ->
+                                scale = ContentScale.FillBounds
+                            }
+                        ).crossfade(true).build(),
                     contentDescription = "",
                     modifier = Modifier
                         .width(160.dp)
                         .height(240.dp)
                         .clip(
                             RoundedCornerShape(8.dp)
-                        ),
-                    contentScale = ContentScale.FillBounds,
+                        )
+                        .shimmerEffect(),
+                    contentScale = scale,
+                    error = painterResource(R.drawable.ic_placeholder_4)
                 )
                 //}
             }
@@ -408,7 +423,7 @@ fun InitMovie(
 
 
             Text(
-                text = movie.name?: movie.enName?: "",
+                text = movie.name ?: movie.enName ?: "",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
@@ -452,7 +467,7 @@ fun InitMovie(
                     }
                 }
 
-            })
+            }, movieDbState = movieDbState, movieViewModel = movieViewModel)
 
             if (movie.description != null) {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -488,7 +503,11 @@ fun InitMovie(
                     fontSize = 18.sp
                 )
                 Spacer(modifier = Modifier.height(5.dp))
-                ListMovies(list = movie.sequelsAndPrequels, onSelectMovie = onSelectMovie, modifier = Modifier.padding(top = 10.dp))
+                ListMovies(
+                    list = movie.sequelsAndPrequels,
+                    onSelectMovie = onSelectMovie,
+                    modifier = Modifier.padding(top = 10.dp)
+                )
             }
 
             if (!movie.similarMovies.isNullOrEmpty()) {
@@ -501,7 +520,11 @@ fun InitMovie(
                     fontSize = 18.sp
                 )
                 Spacer(modifier = Modifier.height(5.dp))
-                ListMovies(list = movie.similarMovies, onSelectMovie = onSelectMovie, modifier = Modifier.padding(top = 10.dp))
+                ListMovies(
+                    list = movie.similarMovies,
+                    onSelectMovie = onSelectMovie,
+                    modifier = Modifier.padding(top = 10.dp)
+                )
             }
         }
     }
@@ -553,18 +576,40 @@ fun RowDescription(modifier: Modifier = Modifier, movie: MovieDTO) {
 fun RowButtons(
     modifier: Modifier = Modifier,
     movie: MovieDTO,
-    trailerClick: (url: String?) -> Unit
+    trailerClick: (url: String?) -> Unit,
+    movieDbState: State<MovieDb?>,
+    movieViewModel: MovieViewModel
 ) {
-
-    var visible by remember {
-        mutableStateOf(false)
-    }
 
     var bookmark by remember {
         mutableStateOf(false)
     }
 
+    var isAminVisible by remember { mutableStateOf(false) }
 
+    val t = remember { Animatable(0f) }
+    val totalCycles = 4
+    val amplitude = 35f
+    val cycleDuration = 300
+
+    val rotation = remember(t.value) {
+        val maxT = totalCycles * 2 * PI
+        val damping = 1f - (t.value / maxT.toFloat()).coerceIn(0f, 1f)
+        amplitude * damping * sin(t.value)
+    }
+
+
+    LaunchedEffect(isAminVisible) {
+
+        if(isAminVisible) {
+            t.snapTo(0f)
+            t.animateTo(
+                targetValue = (totalCycles * 2 * PI).toFloat(),
+                animationSpec = tween(durationMillis = totalCycles * cycleDuration)
+            )
+        }
+
+    }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(20.dp),
@@ -606,17 +651,31 @@ fun RowButtons(
                     .size(50.dp)
                     .clip(RoundedCornerShape(15.dp))
                     .background(MaterialTheme.colorScheme.secondaryContainer)
-                    .clickable { visible = !visible }
+                    .clickable {
+                        if (movieDbState.value?.isViewed == true) {
+                            movieViewModel.removeMovieFromDatabase(id = movie.id!!)
+                            isAminVisible = false
+                        }else{
+                            movieViewModel.addMovieToDatabase(id = movie.id!!, movie.lists)
+                            isAminVisible = true
+                        }
+                    }
                     .padding(0.dp)
             ) {
                 Icon(
-                    painter = if (!visible) painterResource(R.drawable.ic_visibility_outlined) else painterResource(
-                        R.drawable.ic_visibility_fill
+                    painter = if (movieDbState.value?.isViewed == true) painterResource(R.drawable.ic_visibility_fill) else painterResource(
+                        R.drawable.ic_visibility_outlined
+
                     ),
                     contentDescription = null,
                     modifier = Modifier
                         .size(25.dp)
-                        .align(Alignment.Center),
+                        .align(Alignment.Center)
+                        .graphicsLayer {
+                            //if (movieDbState.value?.isViewed == true){
+                                rotationZ = rotation
+                            //}
+                        },
                     tint = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
@@ -660,7 +719,9 @@ fun RowButtons(
                     .size(50.dp)
                     .clip(RoundedCornerShape(15.dp))
                     .background(MaterialTheme.colorScheme.secondaryContainer)
-                    .clickable { }
+                    .clickable {
+
+                    }
                     .padding(0.dp)
             ) {
                 Icon(
@@ -717,7 +778,8 @@ fun CardActor(
 
     Column(modifier = modifier.clickable { onSelectPerson(person.id) }) {
         AsyncImage(
-            model = person.photo,
+            model = ImageRequest.Builder(LocalContext.current).data(person.photo).crossfade(true)
+                .build(),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -837,9 +899,9 @@ fun RowPrimaryData(modifier: Modifier = Modifier, movie: MovieDTO) {
         } else {
 
             val seasonCount = movie.seasonsInfo?.let { it ->
-                if(it.isEmpty()){
+                if (it.isEmpty()) {
                     1
-                }else{
+                } else {
                     it.count { season -> season.number != 0 }
                 }
             }
@@ -852,12 +914,12 @@ fun RowPrimaryData(modifier: Modifier = Modifier, movie: MovieDTO) {
 
                 var text = releaseStart.toString()
 
-                if(releaseStart != null && releaseEnd != null && releaseStart != releaseEnd){
+                if (releaseStart != null && releaseEnd != null && releaseStart != releaseEnd) {
                     text = "$releaseStart - $releaseEnd"
-                }else if(releaseStart != null && releaseEnd == null){
-                    text = if(seasonCount == 1 || movie.status?.equals("completed") == true){
+                } else if (releaseStart != null && releaseEnd == null) {
+                    text = if (seasonCount == 1 || movie.status?.equals("completed") == true) {
                         releaseStart.toString()
-                    }else{
+                    } else {
                         "$releaseStart - н.в."
                     }
                 }

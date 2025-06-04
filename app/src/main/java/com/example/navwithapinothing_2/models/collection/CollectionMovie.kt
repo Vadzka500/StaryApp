@@ -12,5 +12,5 @@ data class CollectionMovie(
     val moviesCount: Int? = null,
     val name: String,
     val slug: String,
-    val updatedAt: String
+    val updatedAt: String,
 )

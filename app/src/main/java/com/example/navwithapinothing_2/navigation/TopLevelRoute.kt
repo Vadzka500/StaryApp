@@ -33,5 +33,8 @@ val listOfScreens = listOf(
     TopLevelRoute("Search", Search, Icons.Default.Search, Icons.Outlined.Search),
     TopLevelRoute("Random", Random, Icons.Default.SdCardAlert, Icons.Outlined.SdCardAlert),
     TopLevelRoute("Account", Account, Icons.Default.Person, Icons.Outlined.Person)
+)
 
+val listOfScreensAll = listOfScreens +  listOf(
+    TopLevelRoute("Error", ErrorM, Icons.Default.Home, Icons.Outlined.Home),
 )

@@ -14,19 +14,20 @@ interface MovieApi {
 
     @GET("movie/search")
     suspend fun getAllMovies(
-        @Query("limit") limit: Int = 30,
-        @Query("page") page: Int
-    ): com.example.moviesapi.models.Response<MovieDTO>
+        @Query("limit") limit: Int = 50,
+        @Query("page") page: Int = 1,
+        @Query("query") search: String = ""
+    ): Response<com.example.moviesapi.models.Response<MovieDTO>>
 
 
     @GET("movie/random")
     suspend fun getRandom(
         //@Query("limit") limit: Int = 100,
         //@Query("page") page: Int
-        @Query("notNullFields") field: List<String> = listOf("poster.url", "name","year"),
+        @Query("notNullFields") field: List<String> = listOf("poster.url", "name", "year"),
         @Query("lists") lists: List<String>? = null,
         @Query("type") listsType: List<String>? = null, //listOf("tv-series"/*"tv-series"*/),
-        @Query("year") listYears : List<String>? = listOf("1874-2024"),
+        @Query("year") listYears: List<String>? = listOf("1874-2024"),
         @Query("genres.name") listGenres: List<String>? = null
     ): Response<MovieDTO>
 
@@ -53,7 +54,7 @@ interface MovieApi {
 
     @GET("movie")
     suspend fun getMovieByPerson(
-        @Query("persons.id") id:Long,
+        @Query("persons.id") id: Long,
         @Query("limit") @IntRange(
             from = 10,
             to = 250
@@ -68,6 +69,6 @@ interface MovieApi {
             to = 250
         ) limit: Int = 30,
         @Query("notNullFields") field: List<String> = listOf("poster.url", "name"),
-        @Query("lists") list:String
+        @Query("lists") list: String
     ): Response<com.example.moviesapi.models.Response<MovieDTO>>
 }

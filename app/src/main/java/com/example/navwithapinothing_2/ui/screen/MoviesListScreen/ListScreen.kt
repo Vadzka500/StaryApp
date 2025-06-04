@@ -14,13 +14,11 @@ import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -32,7 +30,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,39 +48,41 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.fastJoinToString
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.moviesapi.models.Response
 import com.example.moviesapi.models.movie.MovieDTO
 import com.example.navwithapinothing_2.R
 import com.example.navwithapinothing_2.data.Result
 import com.example.navwithapinothing_2.models.collection.CollectionMovie
 import com.example.navwithapinothing_2.ui.screen.MovieScreen.shimmerEffect
+import com.example.navwithapinothing_2.ui.screen.MovieViewModel
 import com.example.navwithapinothing_2.ui.screen.PersonScreen.ShimmerMovies
 import com.example.navwithapinothing_2.ui.screen.slider.listOfPoster
-import com.example.navwithapinothing_2.ui.theme.Collection
+import com.example.navwithapinothing_2.ui.theme.Purple40
+import com.example.navwithapinothing_2.ui.theme.Purple80
 import com.example.navwithapinothing_2.ui.theme.poppinsFort
-import com.example.navwithapinothing_2.utils.Collections
 import kotlin.math.absoluteValue
 
 @Composable
 @Preview
 fun ListScreen(
     modifier: Modifier = Modifier,
-    movieViewModel: MovieViewModel,
+    movieViewModel: MovieViewModel = hiltViewModel(),
     toRandomScreen: () -> Unit,
-    onSelectMovie: (Long) -> Unit
+    onSelectMovie: (Long) -> Unit,
+    onSelectListMovies: (String, String) -> Unit,
+    toErrorScreen: () -> Unit,
+    toCollectionScreen: () -> Unit
 ) {
     val state = movieViewModel.state.collectAsState()
     val articles = movieViewModel.getAllPaging().collectAsLazyPagingItems()
@@ -92,6 +91,7 @@ fun ListScreen(
     val movie_list_ = movieViewModel.state_movie_home.collectAsState()
 
     println("movie = " + movie_.value)
+
 
     //LoadingScreen(modifier = modifier)
 
@@ -102,6 +102,8 @@ fun ListScreen(
     var isVisibleList by remember {
         mutableStateOf(movie_list_.value is Result.Loading)
     }
+    //val nav = rememberNavController()
+    //val navController1 = rememberNavController()
 
     LazyColumn(
         modifier = modifier
@@ -115,9 +117,11 @@ fun ListScreen(
 
             val heightBox = height + 30
 
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .height(heightBox.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(heightBox.dp)
+            ) {
 
                 AnimatedVisibility(
                     modifier = Modifier.fillMaxSize(),
@@ -128,9 +132,7 @@ fun ListScreen(
                 }
 
                 when (val data = movie_.value) {
-                    Result.Error -> {
 
-                    }
 
                     Result.Loading -> {
 
@@ -172,7 +174,8 @@ fun ListScreen(
                                     InitPagerCard(
                                         index = page,
                                         pagerState = pagerState,
-                                        item = (data.data as List<MovieDTO>)[page]
+                                        item = (data.data as List<MovieDTO>)[page],
+                                        onSelectMovie = onSelectMovie
                                     )
                                 }
                             }
@@ -182,7 +185,13 @@ fun ListScreen(
                         isVisibleTop = false
 
                     }
+
+                    is Result.Error<*> -> {
+                        toErrorScreen()
+                    }
                 }
+
+
             }
 
 
@@ -196,38 +205,52 @@ fun ListScreen(
                     ShimmerMovies(visible = false)
                     ShimmerMovies(visible = false)
                     ShimmerMovies(visible = false)
+
                 }
             }
 
 
-            when(val data = movie_list_.value){
-                is Result.Error ->{
+
+
+
+            when (val data = movie_list_.value) {
+                is Result.Error<*> -> {
 
                 }
+
                 is Result.Loading -> {
 
                 }
-                is Result.Success<*> ->{
+
+                is Result.Success<*> -> {
 
                     val d = (data.data as Map<*, *>)
-                    d.forEach{ result ->
+
+                    d.forEach { result ->
 
                         println("d = " + d.toString())
 
-                        when(val collection = result.value as Result){
-                            Result.Error -> {
+                        when (val collection = result.value as Result) {
 
-                            }
                             Result.Loading -> {
 
                             }
+
                             is Result.Success<*> -> {
 
-                                println("colelction = " + collection.toString())
+                                println("collection = " + collection.toString())
 
-                                InitRow(label = (result.key as Pair<*, *>).first.toString(), onClick = {
 
-                                })
+
+
+                                InitRow(
+                                    label = (result.key as Pair<*, *>).first.toString(),
+                                    onClick = {
+                                        onSelectListMovies(
+                                            (result.key as Pair<*, *>).first.toString(),
+                                            (result.key as Pair<*, *>).second.toString()
+                                        )
+                                    })
 
                                 LazyRow(
                                     modifier = Modifier.padding(top = 10.dp),
@@ -247,8 +270,11 @@ fun ListScreen(
                                 }
 
                             }
-                        }
 
+                            is Result.Error<*> -> {
+
+                            }
+                        }
 
 
                     }
@@ -257,9 +283,11 @@ fun ListScreen(
                     isVisibleList = false
                 }
             }
-
-
-
+            InitCollections(
+                state = collection,
+                toCollectionScreen = toCollectionScreen,
+                onSelectCollection = onSelectListMovies
+            )
 
 
         }
@@ -392,19 +420,20 @@ fun ShimmerTop(modifier: Modifier = Modifier) {
         ) { page ->
 
             val pageOffSet = (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
-            Column(modifier = Modifier
-                .padding(end = 15.dp)
-                .fillMaxSize()
-                .graphicsLayer {
-                    lerp(
-                        start = 0.80f.dp,
-                        stop = 1f.dp,
-                        fraction = 1f - pageOffSet.absoluteValue.coerceIn(0f, 1f)
-                    ).also { scale ->
-                        scaleX = scale.value
-                        scaleY = scale.value
-                    }
-                }) {
+            Column(
+                modifier = Modifier
+                    .padding(end = 15.dp)
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        lerp(
+                            start = 0.80f.dp,
+                            stop = 1f.dp,
+                            fraction = 1f - pageOffSet.absoluteValue.coerceIn(0f, 1f)
+                        ).also { scale ->
+                            scaleX = scale.value
+                            scaleY = scale.value
+                        }
+                    }) {
                 ElevatedCard(
                     elevation = CardDefaults.cardElevation(12.dp),
                     shape = RoundedCornerShape(32.dp),
@@ -443,24 +472,35 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 
 @Composable
 @Preview
-fun InitCollections(modifier: Modifier = Modifier, state: State<Result>) {
+fun InitCollections(
+    modifier: Modifier = Modifier,
+    state: State<Result>,
+    toCollectionScreen: () -> Unit,
+    onSelectCollection: (String, String) -> Unit
+) {
     when (val data = state.value) {
-        Result.Error -> {
 
-        }
 
         Result.Loading -> {
 
         }
 
         is Result.Success<*> -> {
-            ShowCollection(list = data.data as List<CollectionMovie>)
+            ShowCollection(
+                list = data.data as List<CollectionMovie>,
+                toCollectionScreen = toCollectionScreen,
+                onSelectCollection = onSelectCollection
+            )
+        }
+
+        is Result.Error<*> -> {
+
         }
     }
 }
 
 @Composable
-fun InitRow(modifier: Modifier = Modifier, label: String, onClick:() -> Unit) {
+fun InitRow(modifier: Modifier = Modifier, label: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -470,12 +510,15 @@ fun InitRow(modifier: Modifier = Modifier, label: String, onClick:() -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            label,
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 16.dp),
+            text = label,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
         )
 
-        Spacer(modifier = Modifier.weight(1f))
+
 
         Text(
             "Все❭",
@@ -489,12 +532,15 @@ fun InitRow(modifier: Modifier = Modifier, label: String, onClick:() -> Unit) {
 }
 
 @Composable
-fun ShowCollection(modifier: Modifier = Modifier, list: List<CollectionMovie>) {
+fun ShowCollection(
+    modifier: Modifier = Modifier,
+    list: List<CollectionMovie>,
+    toCollectionScreen: () -> Unit,
+    onSelectCollection: (String, String) -> Unit
+) {
 
 
-    InitRow(label = "Коллекции", onClick = {
-
-    })
+    InitRow(label = "Коллекции", onClick = toCollectionScreen)
 
 
     LazyRow(
@@ -512,7 +558,7 @@ fun ShowCollection(modifier: Modifier = Modifier, list: List<CollectionMovie>) {
                     .width(200.dp)
                     .clip(RoundedCornerShape(16.dp))
                     .background(color = MaterialTheme.colorScheme.secondaryContainer)
-                    .clickable { },
+                    .clickable { onSelectCollection(it.name, it.slug) },
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
@@ -551,26 +597,31 @@ fun InitPagerCard(
     modifier: Modifier = Modifier,
     index: Int,
     pagerState: PagerState,
-    item: MovieDTO
+    item: MovieDTO,
+    onSelectMovie: (Long) -> Unit
 ) {
     val pageOffSet = (pagerState.currentPage - index) + pagerState.currentPageOffsetFraction
-    Column(modifier = Modifier
-        .padding(end = 15.dp)
-        .fillMaxSize()
-        .graphicsLayer {
-            lerp(
-                start = 0.80f.dp,
-                stop = 1f.dp,
-                fraction = 1f - pageOffSet.absoluteValue.coerceIn(0f, 1f)
-            ).also { scale ->
-                scaleX = scale.value
-                scaleY = scale.value
-            }
-        }) {
+    Column(
+        modifier = Modifier
+            .padding(end = 15.dp)
+            .fillMaxSize()
+            .graphicsLayer {
+                lerp(
+                    start = 0.80f.dp,
+                    stop = 1f.dp,
+                    fraction = 1f - pageOffSet.absoluteValue.coerceIn(0f, 1f)
+                ).also { scale ->
+                    scaleX = scale.value
+                    scaleY = scale.value
+                }
+            }) {
         ElevatedCard(
             modifier = Modifier
                 .fillMaxSize()
-                .weight(1f),
+                .weight(1f)
+                .clickable {
+                    onSelectMovie(item.id!!)
+                },
             elevation = CardDefaults.cardElevation(12.dp),
             shape = RoundedCornerShape(32.dp)
         ) {
@@ -591,11 +642,11 @@ fun InitPagerCard(
                 color = Color.Black
             )
 
-           /* Text(
-                "Боевик, драма, фантастика",
-                fontSize = 14.sp,
-                color = Color.Black.copy(alpha = 0.5f)
-            )*/
+            /* Text(
+                 "Боевик, драма, фантастика",
+                 fontSize = 14.sp,
+                 color = Color.Black.copy(alpha = 0.5f)
+             )*/
         }
     }
 }
@@ -607,7 +658,96 @@ fun MovieCard(
     index: Int,
     onSelectMovie: (Long) -> Unit
 ) {
+
+    var scale by remember { mutableStateOf(ContentScale.Crop) }
+    var isShimmer by remember { mutableStateOf(true) }
     //println("name = " + item.name)
+    Box(
+        modifier = Modifier
+            /*.then(
+            if (index == 0) Modifier.padding(start = 16.dp)
+            else Modifier
+        )*/
+            .fillMaxWidth()
+            .height(255.dp)
+            .width(150.dp)
+            .clickable {
+                onSelectMovie(item.id!!)
+            }) {
+        Column(
+
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            AsyncImage(
+                modifier = Modifier
+                    .width(150.dp)
+                    .height(215.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .then(
+                        if (isShimmer) Modifier.shimmerEffect()
+                        else Modifier
+                    ),
+                model = ImageRequest.Builder(LocalContext.current).data(item.poster?.previewUrl)
+
+                    .listener(onStart = {
+                        scale = ContentScale.Crop
+                    }, onSuccess = { _, _ ->
+                        isShimmer = false
+                        scale = ContentScale.FillBounds
+                    })
+                    .crossfade(true).build(),
+                contentScale = scale,
+                contentDescription = null, error = painterResource(R.drawable.ic_placeholder_4)
+            )
+            Text(
+                modifier = Modifier.padding(top = 5.dp),
+                text = item.name ?: item.alternativeName ?: "null",
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.SemiBold,
+                lineHeight = 16.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 14.sp
+            )
+        }
+
+        item.rating?.kp?.let {
+            if(it == 0.0) return
+
+            Box(modifier
+                .padding(8.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .background(color = Purple40)) {
+                Text(
+                    String.format(java.util.Locale.ENGLISH,"%.1f", item.rating.kp), modifier = Modifier.padding(horizontal = 6.dp),  color = Color.White, fontWeight = FontWeight.SemiBold,
+                    fontFamily = poppinsFort,
+                    fontSize = 12.sp,
+                    lineHeight = 18.sp
+                )
+            }
+        }
+
+    }
+}
+
+@Composable
+fun MovieCardGrid(
+    modifier: Modifier = Modifier,
+    item: MovieDTO,
+    index: Int,
+    onSelectMovie: (Long) -> Unit
+) {
+    //println("name = " + item.name)
+
+    val configuration = LocalConfiguration.current
+    val width = configuration.screenWidthDp / 2 - 22
+    val height = (configuration.screenWidthDp / 2 - 22) * 1.5
+    val boxHeight = height + 30
+
+
+    var scale by remember { mutableStateOf(ContentScale.Crop) }
+    var isShimmer by remember { mutableStateOf(true) }
+
     Column(
         modifier = Modifier
             /*.then(
@@ -615,20 +755,45 @@ fun MovieCard(
                 else Modifier
             )*/
             .fillMaxWidth()
-            .height(255.dp)
-            .width(150.dp)
+            .height(boxHeight.dp)
+            .width(width.dp)
             .clickable { onSelectMovie(item.id!!) },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AsyncImage(
+        Box(
             modifier = Modifier
-                .width(150.dp)
-                .height(215.dp)
-                .clip(RoundedCornerShape(16.dp)),
-            model = ImageRequest.Builder(LocalContext.current).data(item.poster?.previewUrl).crossfade(true).build(),
-            contentDescription = null,
-            contentScale = ContentScale.FillBounds, error = painterResource(R.drawable.error)
-        )
+                .width(width.dp)
+                .height(height.dp), contentAlignment = Alignment.BottomEnd
+        ) {
+            AsyncImage(
+                modifier = Modifier
+                    .width(width.dp)
+                    .height(height.dp) // 255
+                    .clip(RoundedCornerShape(16.dp))
+                    .then(
+                        if (isShimmer) Modifier.shimmerEffect()
+                        else Modifier
+                    ),
+                model = ImageRequest.Builder(LocalContext.current).data(item.poster?.previewUrl)
+                    .listener(onStart = {
+                        scale = ContentScale.Crop
+                    }, onSuccess = { request, result ->
+                        scale = ContentScale.FillBounds
+                        isShimmer = false
+                    })
+                    .crossfade(true).build(),
+                contentDescription = null,
+                contentScale = scale, error = painterResource(R.drawable.ic_placeholder_4)
+            )
+
+            /*Image(
+                painter = painterResource(R.drawable.ic_visibility_fill),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(
+                    Purple40
+                )
+            )*/
+        }
         Text(
             modifier = Modifier.padding(top = 5.dp),
             text = item.name ?: item.alternativeName ?: "null",
@@ -638,6 +803,48 @@ fun MovieCard(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             fontSize = 14.sp
+        )
+    }
+}
+
+@Composable
+fun MovieCardGridShimmer(
+    modifier: Modifier = Modifier
+) {
+    //println("name = " + item.name)
+
+    val configuration = LocalConfiguration.current
+    val width = configuration.screenWidthDp / 2 - 22
+    val height = (configuration.screenWidthDp / 2 - 22) * 1.5
+    val boxHeight = height + 30
+
+    Column(
+        modifier = Modifier
+            /*.then(
+                if (index == 0) Modifier.padding(start = 16.dp)
+                else Modifier
+            )*/
+            .fillMaxWidth()
+            .height(boxHeight.dp)
+            .width(width.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .width(width.dp)
+                .height(height.dp) // 255
+                .clip(RoundedCornerShape(16.dp))
+                .shimmerEffect()
+        )
+        Box(
+            modifier = Modifier
+                .padding(top = 5.dp)
+                .height(14.dp)
+                .width(70.dp)
+                .clip(
+                    RoundedCornerShape(3.dp)
+                )
+                .shimmerEffect(),
         )
     }
 }

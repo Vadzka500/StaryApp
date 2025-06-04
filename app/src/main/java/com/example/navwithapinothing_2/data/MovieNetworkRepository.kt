@@ -3,7 +3,6 @@ package com.example.navwithapinothing_2.data
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.example.moviesapi.models.Response
-import com.example.moviesapi.models.movie.MovieDTO
 import com.example.navwithapinothing_2.api.MovieApi
 import com.example.navwithapinothing_2.api.MoviePagingSource
 import com.example.navwithapinothing_2.models.Filter
@@ -70,9 +69,9 @@ class MovieRepository @Inject constructor(private val movieService: MovieApi) {
                 if (result.body() != null) {
                     println("isSuccess")
                     Result.Success(result.body())
-                } else Result.Error
+                } else Result.Error(result.code())
             } else {
-                Result.Error
+                Result.Error(result.code())
             }
         }
 
@@ -80,26 +79,25 @@ class MovieRepository @Inject constructor(private val movieService: MovieApi) {
         return merge(f2, f)
     }
 
-    private fun <T> retrofit2.Response<T>.toRequestResult(): Result {
+   /* private fun <T> retrofit2.Response<T>.toRequestResult(): Result {
         return if (isSuccessful) {
             if (body() != null)
                 Result.Success(body())
-            else Result.Error
+            else Result.Error(result.code())
         } else {
-            Result.Error
+            Result.Error(result.code())
         }
-    }
+    }*/
 
     fun getMovieById(id: Long): Flow<Result> {
         val flow = flow {
-
             emit(movieService.getMovieById(id))
         }.map { result ->
 
             if (result.isSuccessful) {
                 Result.Success(result.body())
             } else {
-                Result.Error
+                Result.Error(result.code())
             }
 
 
@@ -115,7 +113,20 @@ class MovieRepository @Inject constructor(private val movieService: MovieApi) {
             if (it.isSuccessful) {
                 Result.Success(it.body())
             } else {
-                Result.Error
+                Result.Error(it.code())
+            }
+        }
+        return flow
+    }
+
+    fun getSearchedMovies(search: String): Flow<Result>{
+        val flow = flow{
+            emit(movieService.getAllMovies(search = search))
+        }.map { result ->
+            if(result.isSuccessful){
+                Result.Success(result.body())
+            }else{
+                Result.Error(result.code())
             }
         }
         return flow
@@ -128,7 +139,7 @@ class MovieRepository @Inject constructor(private val movieService: MovieApi) {
             if (it.isSuccessful) {
                 Result.Success(it.body())
             } else {
-                Result.Error
+                Result.Error(it.code())
             }
         }
         return flow
@@ -143,24 +154,26 @@ class MovieRepository @Inject constructor(private val movieService: MovieApi) {
                 println("emit")
                 println("emit = " + result.body().toString())
                 Result.Success((result.body() as Response).docs.sortedBy { it.name.contains("top") }
-                    .filter { it.name.length < 30 })
+                    .filter { it.name.length < 45 })
             } else {
-                Result.Error
+                Result.Error(result.code())
             }
         }
         return f
     }
 
-    fun getListMovieByCollection(slug: String): Flow<Result>{
+
+
+    fun getListMovieByCollection(slug: String, limit: Int = 30): Flow<Result>{
         val f = flow {
-            emit(movieService.getMovieByCollection(list = slug))
+            emit(movieService.getMovieByCollection(list = slug, limit = limit))
         }.map { result ->
             if (result.isSuccessful) {
                 println("emit")
                 println("emit = " + result.body().toString())
                 Result.Success((result.body() as Response).docs)
             } else {
-                Result.Error
+                Result.Error(result.code())
             }
         }
         return f
@@ -171,5 +184,5 @@ class MovieRepository @Inject constructor(private val movieService: MovieApi) {
 sealed class Result {
     data object Loading : Result()
     data class Success<T>(val data: T) : Result()
-    data object Error : Result()
+    data class Error<Int>(val data: Int) : Result()
 }

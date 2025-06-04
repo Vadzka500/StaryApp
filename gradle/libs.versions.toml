@@ -27,8 +27,12 @@ hilt = "2.51.1"
 kapt = "2.0.21"
 retrofit2KotlinxSerializationConverter = "1.0.0"
 webkit = "1.12.1"
-youtubeplayerCompose = "2024.02.25"
+
 icons = "1.7.5"
+splash-screen = "1.0.1"
+roomCommonJvm = "2.7.1"
+roomRuntimeAndroid = "2.7.1"
+google = "20.7.0"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
@@ -42,8 +46,7 @@ androidx-paging-runtime-ktx = { module = "androidx.paging:paging-runtime", versi
 androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "webkit" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
-core = { module = "com.pierfrancescosoffritti.androidyoutubeplayer:core", version.ref = "core" }
-custom-ui = { module = "com.pierfrancescosoffritti.androidyoutubeplayer:custom-ui", version.ref = "core" }
+
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -63,14 +66,20 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 
+
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
 
 viewmodel-compose-navigatiom = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref="hilt-navigation" }
-youtubeplayer-compose = { module = "io.github.ilyapavlovskii:youtubeplayer-compose", version.ref = "youtubeplayerCompose" }
+core-splash-screen = { group = "androidx.core", name = "core-splashscreen", version.ref="splash-screen" }
+
 
 icons = { group = "androidx.compose.material", name = "material-icons-extended", version.ref="icons" }
+androidx-room-common-jvm = { group = "androidx.room", name = "room-common-jvm", version.ref = "roomCommonJvm" }
+androidx-room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "roomRuntimeAndroid" }
+androidx-room-compiler-android = { group = "androidx.room", name = "room-compiler", version.ref = "roomRuntimeAndroid" }
+com-android-google-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "google" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

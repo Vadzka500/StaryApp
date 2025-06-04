@@ -21,6 +21,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "MOVIES_API_KEY","\"FF3PF1A-YQ6MXEK-NFQM9QD-76A6GH0\"")
+        buildConfigField("String", "MOVIES_API_BASE_URL","\"https://api.kinopoisk.dev/v1.4/\"")
     }
 
     buildTypes {
@@ -41,6 +44,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -58,6 +62,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.room.common.jvm)
+    implementation(libs.androidx.room.runtime.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -68,6 +74,9 @@ dependencies {
 
     implementation(libs.compose.navigation)
     implementation(libs.kotlin.serialization)
+
+    implementation(libs.core.splash.screen)
+
 
     implementation(libs.retrofit)
     implementation (libs.converter.gson)
@@ -89,12 +98,14 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.com.android.google.auth)
 
     implementation(libs.androidx.webkit)
-    implementation(libs.core)
-    implementation (libs.custom.ui)
+
 
     implementation(libs.icons)
+
+    kapt(libs.androidx.room.compiler.android)
 
     //implementation("androidx.compose.ui:ui-text-google-fonts:1.7.6")
 

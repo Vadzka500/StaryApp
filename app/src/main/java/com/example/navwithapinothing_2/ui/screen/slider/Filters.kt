@@ -36,7 +36,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.navwithapinothing_2.data.Result
 import com.example.navwithapinothing_2.models.Filter
 import com.example.navwithapinothing_2.models.collection.CollectionMovie
-import com.example.navwithapinothing_2.ui.screen.MoviesListScreen.MovieViewModel
+import com.example.navwithapinothing_2.ui.screen.MovieViewModel
 import java.util.Calendar
 import kotlin.math.roundToInt
 
@@ -108,7 +108,7 @@ fun FiltersPopup(
      }*/
 
     when (val data = state.value) {
-        Result.Error -> {}
+        is Result.Error<*> -> {}
         Result.Loading -> {}
         is Result.Success<*> -> {
             println("data = " + (data.data as List<CollectionMovie>))
