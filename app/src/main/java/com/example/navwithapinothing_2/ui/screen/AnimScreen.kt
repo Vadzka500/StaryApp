@@ -24,6 +24,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -78,10 +81,11 @@ fun AnimScreen(modifier: Modifier = Modifier) {
 
         AnimatedVisibility(
             visible = isVisibleBox,
-            enter = slideInVertically() + fadeIn(), exit = slideOutVertically() + fadeOut()
+            enter = fadeIn(), exit = fadeOut()
         ) {
 
-            Box(
+            ElevatedCard(
+                elevation = CardDefaults.cardElevation(12.dp),
                 modifier = Modifier
                     .width(300.dp)
                     .padding(50.dp)
@@ -92,10 +96,12 @@ fun AnimScreen(modifier: Modifier = Modifier) {
                         shadowElevation = shadow.value.toPx()
                     }
                     //.clip(RoundedCornerShape(30.dp))
-                    .background(Color.Green)
+                    .background(Color.Green),
 
 
-            )
+            ){
+
+            }
 
         }
 
@@ -238,24 +244,7 @@ fun AnimScreen(modifier: Modifier = Modifier) {
 
 
     }
-    val webView = WebView(LocalContext.current).apply {
-        settings.javaScriptEnabled = true
-        settings.loadWithOverviewMode = true
-        settings.useWideViewPort = true
-        webViewClient = WebViewClient()
-    }
 
-    val htmlData = getHTMLData("0IwTYtpRPY0")
-
-    AndroidView(factory = { webView }) { view ->
-        view.loadDataWithBaseURL(
-            "https://www.youtube.com/embed/",
-            htmlData,
-            "text/html",
-            "UTF-8",
-            null
-        )
-    }
 
 
     //YoutubeView(id = "0IwTYtpRPY0", lifecycleOwner = LocalLifecycleOwner.current)

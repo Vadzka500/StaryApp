@@ -4,7 +4,9 @@ package com.example.navwithapinothing_2.ui.screen.AccountScreen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -33,10 +36,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.moviesapi.models.movie.MovieDTO
 import com.example.navwithapinothing_2.R
+import com.example.navwithapinothing_2.data.Result
 import com.example.navwithapinothing_2.data.ResultDb
 import com.example.navwithapinothing_2.database.models.MovieDb
 import com.example.navwithapinothing_2.ui.screen.MovieViewModel
+import com.example.navwithapinothing_2.ui.screen.MoviesListScreen.InitRow
+import com.example.navwithapinothing_2.ui.screen.MoviesListScreen.MovieCard
 import com.example.navwithapinothing_2.ui.theme.poppinsFort
 
 /**
@@ -49,6 +56,8 @@ import com.example.navwithapinothing_2.ui.theme.poppinsFort
 fun AccountScreen(modifier: Modifier = Modifier, onClickUserCollection: () -> Unit, movieViewModel: MovieViewModel = hiltViewModel()) {
 
     val stateVisibleMovies = movieViewModel.state_movie_all_visible.collectAsState()
+    val stateAllMoviesVisible = movieViewModel.state_movie_all_visible_movies.collectAsState()
+
     var movieCount by remember {
         mutableIntStateOf(0)
     }
@@ -58,6 +67,8 @@ fun AccountScreen(modifier: Modifier = Modifier, onClickUserCollection: () -> Un
     LaunchedEffect(Unit) {
         movieViewModel.getVisibleMovies()
     }
+
+
 
     when(val data = stateVisibleMovies.value){
         is ResultDb.Loading -> {
@@ -69,6 +80,10 @@ fun AccountScreen(modifier: Modifier = Modifier, onClickUserCollection: () -> Un
         }
         is ResultDb.Success<*> -> {
             movieCount = (data.data as List<MovieDb>).size
+
+            LaunchedEffect(Unit) {
+                movieViewModel.getVisibleMoviesApi(data.data.map { it.idMovie })
+            }
         }
     }
 
@@ -245,6 +260,47 @@ fun AccountScreen(modifier: Modifier = Modifier, onClickUserCollection: () -> Un
 
 
         }*/
+
+        when(val data = stateAllMoviesVisible.value){
+            is Result.Error<*> -> {
+
+            }
+            Result.Loading -> {
+
+            }
+            is Result.Success<*> -> {
+
+
+                InitRow(
+                    label = "В закладках",
+                    onClick = {
+                        /* onSelectListMovies(
+                             (result.key as Pair<*, *>).first.toString(),
+                             (result.key as Pair<*, *>).second.toString()
+                         )*/
+                    })
+
+                LazyRow(
+                    modifier = Modifier.padding(top = 10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp)
+                ) {
+
+                    items((data.data as List<MovieDTO>).size) { index ->
+
+                        MovieCard(
+                            item = data.data[index]!!,
+                            index = index,
+                            onSelectMovie = {}
+                        )
+
+                    }
+                }
+
+            }
+        }
+
+
 
     }
 

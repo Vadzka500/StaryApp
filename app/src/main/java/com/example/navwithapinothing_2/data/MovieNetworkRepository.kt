@@ -106,6 +106,39 @@ class MovieRepository @Inject constructor(private val movieService: MovieApi) {
         return flow
     }
 
+
+    fun getReviewsById(id: Long): Flow<Result>{
+        val flow = flow {
+            emit(movieService.getReviewsById(id))
+        }.map { result ->
+            if(result.isSuccessful){
+                Result.Success((result.body() as Response).docs)
+            }else{
+                println("Error = " + result.message())
+                Result.Error(result.body())
+            }
+        }
+        return flow
+    }
+
+    fun getMoviesByIds(ids: List<Long>): Flow<Result> {
+        val flow = flow {
+            emit(movieService.getMoviesByIds((ids)))
+        }.map { result ->
+
+            if (result.isSuccessful) {
+                Result.Success((result.body() as Response).docs)
+            } else {
+                Result.Error(result.message())
+            }
+
+
+        }
+
+        return flow
+    }
+
+
     fun getPersonById(id: Long): Flow<Result> {
         val flow = flow {
             emit(movieService.getPersonById(id))
@@ -152,7 +185,7 @@ class MovieRepository @Inject constructor(private val movieService: MovieApi) {
         }.map { result ->
             if (result.isSuccessful) {
                 println("emit")
-                println("emit = " + result.body().toString())
+
                 Result.Success((result.body() as Response).docs.sortedBy { it.name.contains("top") }
                     .filter { it.name.length < 45 })
             } else {
@@ -170,7 +203,7 @@ class MovieRepository @Inject constructor(private val movieService: MovieApi) {
         }.map { result ->
             if (result.isSuccessful) {
                 println("emit")
-                println("emit = " + result.body().toString())
+
                 Result.Success((result.body() as Response).docs)
             } else {
                 Result.Error(result.code())

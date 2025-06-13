@@ -32,6 +32,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
+import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -50,6 +54,7 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -70,9 +75,12 @@ import com.example.moviesapi.models.movie.MovieDTO
 import com.example.navwithapinothing_2.R
 import com.example.navwithapinothing_2.data.Result
 import com.example.navwithapinothing_2.database.models.MovieDb
+import com.example.navwithapinothing_2.models.UserReview
 import com.example.navwithapinothing_2.models.movie.PersonOfMovie
 import com.example.navwithapinothing_2.ui.screen.MoviesListScreen.ListMovies
 import com.example.navwithapinothing_2.ui.screen.MovieViewModel
+import com.example.navwithapinothing_2.ui.theme.Purple40
+import com.example.navwithapinothing_2.ui.theme.Purple80
 import com.example.navwithapinothing_2.ui.theme.ShimmerColorShades
 import com.example.navwithapinothing_2.ui.theme.poppinsFort
 import com.example.navwithapinothing_2.utils.ScoreManager
@@ -109,11 +117,13 @@ fun MovieScreen(
     id: Long,
     movieViewModel: MovieViewModel = hiltViewModel(),
     onSelectMovie: (Long) -> Unit,
-    onSelectPerson: (Long) -> Unit
+    onSelectPerson: (Long) -> Unit,
+    onClickReviews: (Long) -> Unit
 ) {
 
     val state = movieViewModel.state_movie.collectAsState()
     val stateDatabase = movieViewModel.isMovieExists.collectAsState()
+
     var visible by remember {
         mutableStateOf(false)
     }
@@ -124,6 +134,8 @@ fun MovieScreen(
         println("status = " + state.value)
         movieViewModel.getMovieById(id) //931677 //258687 //522941
         movieViewModel.checkMovieDatabase(id)
+        //movieViewModel.getReviewsById(id)
+
         visible = true
     }
 
@@ -153,7 +165,8 @@ fun MovieScreen(
                 onSelectMovie = onSelectMovie,
                 onSelectPerson = onSelectPerson,
                 movieDbState = stateDatabase,
-                movieViewModel = movieViewModel
+                movieViewModel = movieViewModel,
+                onClickReviews = onClickReviews
             )
 
         }
@@ -349,7 +362,8 @@ fun InitMovie(
     onSelectMovie: (Long) -> Unit,
     onSelectPerson: (Long) -> Unit,
     movieDbState: State<MovieDb?>,
-    movieViewModel: MovieViewModel
+    movieViewModel: MovieViewModel,
+    onClickReviews: (Long) -> Unit
 ) {
     var visible by remember {
         mutableStateOf(false)
@@ -491,6 +505,57 @@ fun InitMovie(
                     persons = movie.persons.filter { (it.profession == "актеры").and(it.name != null) },
                     onSelectPerson = onSelectPerson
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Создатели",
+                    modifier = Modifier.padding(start = 16.dp),
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = poppinsFort,
+                    fontSize = 18.sp
+                )
+                Spacer(modifier = Modifier.height(5.dp))
+
+
+                RowCreators(
+                    modifier = Modifier,
+                    persons = movie.persons.filter {
+                        (it.profession != "актеры" && it.profession != "актеры дубляжа").and(
+                            it.name != null
+                        )
+                    }.sortedWith(
+                        compareByDescending<PersonOfMovie> {
+                            it.profession.equals(
+                                "режиссеры",
+                                true
+                            )
+                        }
+                            .thenBy { it.profession }
+                    ),
+                    onSelectPerson = onSelectPerson
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+                    .height(50.dp)
+                    .clickable { onClickReviews(movie.id!!) }
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Рецензии",
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = poppinsFort,
+                    fontSize = 18.sp
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Image(imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = "Show reviews", modifier = Modifier.scale(0.8f) )
             }
 
             if (!movie.sequelsAndPrequels.isNullOrEmpty()) {
@@ -567,7 +632,7 @@ fun RowDescription(modifier: Modifier = Modifier, movie: MovieDTO) {
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.clickable(indication = null, interactionSource = null) {
-                if (rowCount == 2) rowCount = Int.MAX_VALUE else rowCount = 2
+                rowCount = if (rowCount == 2) Int.MAX_VALUE else 2
             })
     }
 }
@@ -601,7 +666,7 @@ fun RowButtons(
 
     LaunchedEffect(isAminVisible) {
 
-        if(isAminVisible) {
+        if (isAminVisible) {
             t.snapTo(0f)
             t.animateTo(
                 targetValue = (totalCycles * 2 * PI).toFloat(),
@@ -645,6 +710,12 @@ fun RowButtons(
             )
         }
 
+        val colorMaterial = MaterialTheme.colorScheme.onSecondaryContainer
+
+        var color by remember {
+            mutableStateOf(colorMaterial)
+        }
+
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
             Box(
                 modifier = Modifier
@@ -655,28 +726,36 @@ fun RowButtons(
                         if (movieDbState.value?.isViewed == true) {
                             movieViewModel.removeMovieFromDatabase(id = movie.id!!)
                             isAminVisible = false
-                        }else{
+                            color = colorMaterial
+                        } else {
                             movieViewModel.addMovieToDatabase(id = movie.id!!, movie.lists)
                             isAminVisible = true
+                            color = Purple40
                         }
                     }
                     .padding(0.dp)
             ) {
                 Icon(
-                    painter = if (movieDbState.value?.isViewed == true) painterResource(R.drawable.ic_visibility_fill) else painterResource(
-                        R.drawable.ic_visibility_outlined
+                    painter = if (movieDbState.value?.isViewed == true) {
+                        color = Purple40
+                        painterResource(R.drawable.ic_visibility_fill)
+                    } else {
+                        color = colorMaterial
+                        painterResource(
+                            R.drawable.ic_visibility_outlined
 
-                    ),
+                        )
+                    },
                     contentDescription = null,
                     modifier = Modifier
                         .size(25.dp)
                         .align(Alignment.Center)
                         .graphicsLayer {
                             //if (movieDbState.value?.isViewed == true){
-                                rotationZ = rotation
+                            rotationZ = rotation
                             //}
                         },
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    tint = color
                 )
             }
             Text(
@@ -794,9 +873,76 @@ fun CardActor(
         Text(
             modifier = Modifier.fillMaxWidth(),
             lineHeight = 13.sp,
-            text = person.name!!, fontWeight = FontWeight.Normal,
+            text = person.name!!.replace(" ", "\n"), fontWeight = FontWeight.Medium,
             fontFamily = poppinsFort,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 2,
             fontSize = 12.sp, textAlign = TextAlign.Center
+        )
+    }
+
+}
+
+@Composable
+fun RowCreators(
+    modifier: Modifier = Modifier,
+    persons: List<PersonOfMovie>,
+    onSelectPerson: (Long) -> Unit
+) {
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(15.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp)
+    ) {
+        items(persons) {
+            CardCreator(
+                person = it,
+                modifier = Modifier.width(70.dp),
+                onSelectPerson = onSelectPerson
+            )
+        }
+    }
+}
+
+@Composable
+fun CardCreator(
+    modifier: Modifier = Modifier,
+    person: PersonOfMovie,
+    onSelectPerson: (Long) -> Unit
+) {
+
+    Column(modifier = modifier.clickable { onSelectPerson(person.id) }) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current).data(person.photo).crossfade(true)
+                .build(),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(70.dp)
+                .clip(
+                    RoundedCornerShape(14.dp)
+                )
+        )
+
+        Spacer(modifier = Modifier.height(5.dp))
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            lineHeight = 13.sp,
+            text = person.name!!.replace(" ", "\n"), fontWeight = FontWeight.Medium,
+            fontFamily = poppinsFort,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 2,
+            fontSize = 12.sp, textAlign = TextAlign.Start
+        )
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            lineHeight = 13.sp,
+            text = person.profession!!.dropLast(1).replaceFirstChar { it.uppercase() },
+            fontWeight = FontWeight.Light,
+            fontFamily = poppinsFort,
+            fontSize = 11.sp,
+            textAlign = TextAlign.Start
         )
     }
 
@@ -815,7 +961,7 @@ fun RowScore(modifier: Modifier = Modifier, movie: MovieDTO) {
                         .align(Alignment.CenterVertically)
                 )
                 Text(
-                    text = ScoreManager.getRoundScore(movie.rating.imdb).toString(),
+                    text = ScoreManager.ratingToFormat(movie.rating.imdb).toString(),
                     fontWeight = FontWeight.Normal,
                     fontFamily = poppinsFort,
                     fontSize = 14.sp
@@ -832,7 +978,7 @@ fun RowScore(modifier: Modifier = Modifier, movie: MovieDTO) {
                         .align(Alignment.CenterVertically)
                 )
                 Text(
-                    text = ScoreManager.getRoundScore(movie.rating.kp).toString(),
+                    text = ScoreManager.ratingToFormat(movie.rating.kp).toString(),
                     fontWeight = FontWeight.Normal,
                     fontFamily = poppinsFort,
                     fontSize = 14.sp

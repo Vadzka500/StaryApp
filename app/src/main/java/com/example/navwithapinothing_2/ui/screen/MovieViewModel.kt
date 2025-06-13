@@ -70,6 +70,12 @@ class MovieViewModel @Inject constructor(
     private val _state_movie_collections_all = MutableStateFlow<Result>(Result.Loading)
     val state_movie_collections_all = _state_movie_collections_all.asStateFlow()
 
+    private val _state_movie_all_visible_movies = MutableStateFlow<Result>(Result.Loading)
+    val state_movie_all_visible_movies = _state_movie_all_visible_movies.asStateFlow()
+
+    private val _state_movie_reviews = MutableStateFlow<Result>(Result.Loading)
+    val state_movie_reviews = _state_movie_reviews.asStateFlow()
+
     private var result = mutableMapOf<Pair<String, String>, Result?>()
 
     private val _state_movie_search = MutableStateFlow<Result>(Result.Loading)
@@ -79,7 +85,8 @@ class MovieViewModel @Inject constructor(
         MutableStateFlow<ResultDb<List<MovieDb>>>(ResultDb.Loading)
     val state_movie_all_visible = _state_movie_all_visible.asStateFlow()
 
-    private val _state_movie_visible_collection = MutableStateFlow<MutableMap<String, Int>>(mutableMapOf())
+    private val _state_movie_visible_collection =
+        MutableStateFlow<MutableMap<String, Int>>(mutableMapOf())
     val state_movie_visible_collection = _state_movie_visible_collection.asStateFlow()
 
     private val _isMovieExists = MutableStateFlow<MovieDb?>(null)
@@ -103,6 +110,45 @@ class MovieViewModel @Inject constructor(
             }
         }
 
+    }
+
+    fun getReviewsById(id: Long){
+        viewModelScope.launch {
+            movieRepository.getReviewsById(id).collect{
+                _state_movie_reviews.value = when(it){
+                    is Result.Error<*> ->{
+                        it
+                    }
+                    Result.Loading -> {
+                        it
+                    }
+                    is Result.Success<*> -> {
+                        it
+                    }
+                }
+            }
+        }
+    }
+
+    fun getVisibleMoviesApi(list: List<Long>) {
+        viewModelScope.launch {
+             movieRepository.getMoviesByIds(list).collect {
+
+                 _state_movie_all_visible_movies.value = when (it) {
+                    is Result.Error<*> -> {
+                        it
+                    }
+
+                    Result.Loading -> {
+                        it
+                    }
+
+                    is Result.Success<*> -> {
+                        it
+                    }
+                }
+            }
+        }
     }
 
     fun getCountMoviesByCollection(collectionName: String) {

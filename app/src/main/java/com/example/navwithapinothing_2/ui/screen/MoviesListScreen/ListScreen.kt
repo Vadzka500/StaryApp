@@ -64,6 +64,7 @@ import com.example.moviesapi.models.movie.MovieDTO
 import com.example.navwithapinothing_2.R
 import com.example.navwithapinothing_2.data.Result
 import com.example.navwithapinothing_2.models.collection.CollectionMovie
+import com.example.navwithapinothing_2.ui.screen.InitRatingView
 import com.example.navwithapinothing_2.ui.screen.MovieScreen.shimmerEffect
 import com.example.navwithapinothing_2.ui.screen.MovieViewModel
 import com.example.navwithapinothing_2.ui.screen.PersonScreen.ShimmerMovies
@@ -140,7 +141,7 @@ fun ListScreen(
 
                     is Result.Success<*> -> {
 
-                        println("visible = " + movie_.value)
+
                         AnimatedVisibility(
                             modifier = Modifier.fillMaxSize(),
                             visible = !isVisibleTop,
@@ -228,7 +229,7 @@ fun ListScreen(
 
                     d.forEach { result ->
 
-                        println("d = " + d.toString())
+
 
                         when (val collection = result.value as Result) {
 
@@ -711,21 +712,7 @@ fun MovieCard(
             )
         }
 
-        item.rating?.kp?.let {
-            if(it == 0.0) return
-
-            Box(modifier
-                .padding(8.dp)
-                .clip(RoundedCornerShape(4.dp))
-                .background(color = Purple40)) {
-                Text(
-                    String.format(java.util.Locale.ENGLISH,"%.1f", item.rating.kp), modifier = Modifier.padding(horizontal = 6.dp),  color = Color.White, fontWeight = FontWeight.SemiBold,
-                    fontFamily = poppinsFort,
-                    fontSize = 12.sp,
-                    lineHeight = 18.sp
-                )
-            }
-        }
+        InitRatingView(item)
 
     }
 }
@@ -748,63 +735,58 @@ fun MovieCardGrid(
     var scale by remember { mutableStateOf(ContentScale.Crop) }
     var isShimmer by remember { mutableStateOf(true) }
 
-    Column(
+    Box(
         modifier = Modifier
-            /*.then(
-                if (index == 0) Modifier.padding(start = 16.dp)
-                else Modifier
-            )*/
-            .fillMaxWidth()
             .height(boxHeight.dp)
             .width(width.dp)
-            .clickable { onSelectMovie(item.id!!) },
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(
-            modifier = Modifier
-                .width(width.dp)
-                .height(height.dp), contentAlignment = Alignment.BottomEnd
+            .clickable { onSelectMovie(item.id!!) }) {
+        Column(
+
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AsyncImage(
+            Box(
                 modifier = Modifier
                     .width(width.dp)
-                    .height(height.dp) // 255
-                    .clip(RoundedCornerShape(16.dp))
-                    .then(
-                        if (isShimmer) Modifier.shimmerEffect()
-                        else Modifier
-                    ),
-                model = ImageRequest.Builder(LocalContext.current).data(item.poster?.previewUrl)
-                    .listener(onStart = {
-                        scale = ContentScale.Crop
-                    }, onSuccess = { request, result ->
-                        scale = ContentScale.FillBounds
-                        isShimmer = false
-                    })
-                    .crossfade(true).build(),
-                contentDescription = null,
-                contentScale = scale, error = painterResource(R.drawable.ic_placeholder_4)
-            )
-
-            /*Image(
-                painter = painterResource(R.drawable.ic_visibility_fill),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(
-                    Purple40
+                    .height(height.dp), contentAlignment = Alignment.BottomEnd
+            ) {
+                AsyncImage(
+                    modifier = Modifier
+                        .width(width.dp)
+                        .height(height.dp) // 255
+                        .clip(RoundedCornerShape(16.dp))
+                        .then(
+                            if (isShimmer) Modifier.shimmerEffect()
+                            else Modifier
+                        ),
+                    model = ImageRequest.Builder(LocalContext.current).data(item.poster?.previewUrl)
+                        .listener(onStart = {
+                            scale = ContentScale.Crop
+                        }, onSuccess = { request, result ->
+                            scale = ContentScale.FillBounds
+                            isShimmer = false
+                        })
+                        .crossfade(true).build(),
+                    contentDescription = null,
+                    contentScale = scale, error = painterResource(R.drawable.ic_placeholder_4)
                 )
-            )*/
+            }
+            Text(
+                modifier = Modifier.padding(top = 5.dp),
+                text = item.name ?: item.alternativeName ?: "null",
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.SemiBold,
+                lineHeight = 16.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 14.sp
+            )
         }
-        Text(
-            modifier = Modifier.padding(top = 5.dp),
-            text = item.name ?: item.alternativeName ?: "null",
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.SemiBold,
-            lineHeight = 16.sp,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            fontSize = 14.sp
-        )
+
+        InitRatingView(item)
+
+
     }
+
 }
 
 @Composable

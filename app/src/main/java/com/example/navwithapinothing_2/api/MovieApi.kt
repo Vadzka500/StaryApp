@@ -3,11 +3,13 @@ package com.example.navwithapinothing_2.api
 import androidx.annotation.IntRange
 import com.example.moviesapi.models.movie.MovieDTO
 import com.example.moviesapi.models.movie.Person
+import com.example.navwithapinothing_2.models.UserReview
 import com.example.navwithapinothing_2.models.collection.CollectionMovie
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
+import kotlin.random.Random
 
 
 interface MovieApi {
@@ -46,6 +48,21 @@ interface MovieApi {
     suspend fun getMovieById(
         @Path("id") id: Long
     ): Response<MovieDTO>
+
+    @GET("movie")
+    suspend fun getMoviesByIds(
+        @Query("id") id: List<Long>
+    ): Response<com.example.moviesapi.models.Response<MovieDTO>>
+
+
+    @GET("review")
+    suspend fun getReviewsById(
+        @Query("movieId") id:Long,
+        @Query("page") page: Int = 1,
+        @Query("sortField") sort: String = "date",
+        @Query("sortType") type: Int = -1,
+        @Query("limit") limit: Int = 250,
+    ): Response<com.example.moviesapi.models.Response<UserReview>>
 
     @GET("person/{id}")
     suspend fun getPersonById(

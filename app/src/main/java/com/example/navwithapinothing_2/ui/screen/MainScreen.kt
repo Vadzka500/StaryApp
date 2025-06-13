@@ -1,6 +1,7 @@
 package com.example.navwithapinothing_2.ui.screen
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
@@ -36,10 +37,12 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import androidx.navigation.toRoute
 import com.example.navwithapinothing_2.R
 import com.example.navwithapinothing_2.navigation.Account
@@ -52,6 +55,7 @@ import com.example.navwithapinothing_2.navigation.Person
 
 import com.example.navwithapinothing_2.navigation.Profile
 import com.example.navwithapinothing_2.navigation.Random
+import com.example.navwithapinothing_2.navigation.Review
 import com.example.navwithapinothing_2.navigation.Search
 import com.example.navwithapinothing_2.navigation.Slider
 import com.example.navwithapinothing_2.navigation.UserCollection
@@ -64,10 +68,12 @@ import com.example.navwithapinothing_2.ui.screen.MovieScreen.MovieScreen
 
 import com.example.navwithapinothing_2.ui.screen.MoviesListScreen.ListScreen
 import com.example.navwithapinothing_2.ui.screen.PersonScreen.PersonScreen
+import com.example.navwithapinothing_2.ui.screen.ReviewScreen.ReviewScreen
 import com.example.navwithapinothing_2.ui.screen.SearchScreen.SearchScreen
 import com.example.navwithapinothing_2.ui.screen.UserCollection.UserCollectionScreen
 import com.example.navwithapinothing_2.ui.screen.slider.SliderScreen
 import com.example.navwithapinothing_2.ui.theme.poppinsFort
+import com.google.gson.Gson
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
@@ -154,6 +160,10 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 })
             }
 
+
+
+
+
             composable<Profile>(/*enterTransition = { EnterTransition.None }*/) { navBackStackEntry ->
                 println("click profile")
                 val profile: Profile = navBackStackEntry.toRoute()
@@ -170,7 +180,16 @@ fun MainScreen(modifier: Modifier = Modifier) {
                         navController.navigate(Person(id)) {
 
                         }
+                    }, onClickReviews = { id ->
+
+                        navController.navigate(Review(id))
                     })
+            }
+
+            composable<Review> {
+                val review: Review = it.toRoute()
+                ReviewScreen(modifier = Modifier.padding(paddingValues = innerPadding), id = review.idMovie)
+                //AnimScreen()
             }
 
             composable<ListMovies>(
@@ -190,7 +209,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
                         navController.navigate(Profile(id)) {
 
                         }
-                    })
+                    },
+                    onBack = { navController.popBackStack()})
             }
 
             composable<Person> { navBackStackEntry ->
@@ -265,7 +285,7 @@ fun InitErrorServerMessage(modifier: Modifier, movieViewModel: MovieViewModel) {
                 text = "У нас технические неполадки, вернитесь позже",
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = poppinsFort,
-                fontSize = 18.sp,
+                fontSize = 20.sp,
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
                     .padding(top = 24.dp),
