@@ -64,7 +64,7 @@ fun SearchScreen(modifier: Modifier = Modifier, movieViewModel: MovieViewModel =
 
                 is Result.Success<*> -> {
                     println("success")
-                    InitList(list = (data.data as Response<*>).docs as List<MovieDTO>, onClick = onSelectMovie)
+                    InitList(list = (data.data as Response<*>).docs as List<MovieDTO>, onClick = onSelectMovie, true)
 
                 }
             }
