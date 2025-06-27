@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 /**
  * @Author: Vadim
- * @Date: 16.05.2025
+ * @Date: 24.06.2025
  */
 @Serializable
-object UserCollection
+data class UserCollection(val id: Long)

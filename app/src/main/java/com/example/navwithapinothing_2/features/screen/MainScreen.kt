@@ -1,0 +1,370 @@
+package com.example.navwithapinothing_2.features.screen
+
+import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import com.example.navwithapinothing_2.R
+import com.example.navwithapinothing_2.navigation.Account
+import com.example.navwithapinothing_2.navigation.Collection
+import com.example.navwithapinothing_2.navigation.ErrorM
+import com.example.navwithapinothing_2.navigation.Home
+import com.example.navwithapinothing_2.navigation.ListMovies
+import com.example.navwithapinothing_2.navigation.Person
+
+import com.example.navwithapinothing_2.navigation.Profile
+import com.example.navwithapinothing_2.navigation.Random
+import com.example.navwithapinothing_2.navigation.Review
+import com.example.navwithapinothing_2.navigation.Search
+import com.example.navwithapinothing_2.navigation.Slider
+import com.example.navwithapinothing_2.navigation.UserCollection
+import com.example.navwithapinothing_2.navigation.UserCollections
+
+
+import com.example.navwithapinothing_2.navigation.listOfScreens
+import com.example.navwithapinothing_2.features.screen.AccountScreen.AccountScreen
+import com.example.navwithapinothing_2.features.screen.CollectionsScreen.CollectionsScreen
+import com.example.navwithapinothing_2.features.screen.MovieScreen.MovieScreen
+
+import com.example.navwithapinothing_2.features.screen.MoviesListScreen.ListScreen
+import com.example.navwithapinothing_2.features.screen.PersonScreen.PersonScreen
+import com.example.navwithapinothing_2.features.screen.ReviewScreen.ReviewScreen
+import com.example.navwithapinothing_2.features.screen.SearchScreen.SearchScreen
+import com.example.navwithapinothing_2.features.screen.FolderScreen.UserCollectionScreen
+import com.example.navwithapinothing_2.features.screen.FoldersScreen.UserCollectionsScreen
+import com.example.navwithapinothing_2.features.screen.slider.SliderScreen
+import com.example.navwithapinothing_2.features.theme.poppinsFort
+
+
+@Composable
+fun MainScreen(modifier: Modifier = Modifier) {
+
+     val navController = rememberNavController()
+
+    val movieViewModel = viewModel<MovieViewModel>()
+
+    LaunchedEffect(Unit) {
+        movieViewModel.initFolders()
+    }
+
+    fun toErrorScreen(){
+        if(navController.currentBackStackEntry?.destination?.route != ErrorM::class.qualifiedName){
+            navController.navigate(ErrorM)
+        }
+    }
+
+    Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = {
+        if (movieViewModel.isNavBarVisible.value) {
+            NavigationBottomBar(navController = navController)
+        }
+    }) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = Home,
+            enterTransition = { scaleIn(initialScale = 0.95f, animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(100)) },
+            popEnterTransition = { scaleIn(initialScale = 1.05f, animationSpec = tween(200)) },
+            popExitTransition = { fadeOut(animationSpec = tween(100)) }
+            /* exitTransition = { slideOutHorizontally { -it } },
+             enterTransition = { slideInHorizontally { it } },
+             popEnterTransition = { slideInHorizontally { -it } },
+             popExitTransition = { slideOutHorizontally { it } }*/) {
+
+
+            /* composable<Home>(popEnterTransition = {
+                 scaleIn(
+                     initialScale = 0.95f,
+                     animationSpec = tween(200)
+                 )
+             }) {
+                 HomeScreen(paddings = innerPadding)
+             }*/
+
+            composable<Home>(
+                popEnterTransition = {
+                    scaleIn(
+                        initialScale = 1.20f,
+                        animationSpec = tween(400)
+                    )
+                },
+            ) {
+                println("click list")
+                ListScreen(
+                    modifier = Modifier.padding(paddingValues = innerPadding),
+                    toErrorScreen = {
+                        toErrorScreen()
+                    },
+                    toRandomScreen = {
+                        navController.navigate(Slider) {
+                            /*  popUpTo(navController.graph.findStartDestination().id) {
+                                  saveState = true
+                              }*/
+
+                            //  launchSingleTop = true
+                            //  restoreState = true
+
+                        }
+                    },
+                    onSelectMovie = { id ->
+                        println("click 1")
+                        navController.navigate(Profile(id)) {
+
+                        }
+                    }, onSelectListMovies = { label, slug ->
+                        navController.navigate(ListMovies(label, slug))
+                    }, toCollectionScreen = {
+                        navController.navigate(Collection)
+                    })
+            }
+
+
+
+            composable<Random>() {
+                println("click slider")
+                SliderScreen(onSelectMovie = { id ->
+                    navController.navigate(Profile(id)) {
+
+                    }
+                })
+            }
+
+
+
+
+
+            composable<Profile>(/*enterTransition = { EnterTransition.None }*/) { navBackStackEntry ->
+                println("click profile")
+                val profile: Profile = navBackStackEntry.toRoute()
+                println("id = " + profile.id)
+                MovieScreen(
+                    id = profile.id,
+                    modifier = Modifier.padding(paddingValues = innerPadding),
+                    onSelectMovie = { id ->
+                        navController.navigate(Profile(id)) {
+
+                        }
+                    },
+                    onSelectPerson = { id ->
+                        navController.navigate(Person(id)) {
+
+                        }
+                    }, onClickReviews = { id ->
+
+                        navController.navigate(Review(id))
+                    })
+            }
+
+            composable<Review> {
+                val review: Review = it.toRoute()
+                ReviewScreen(modifier = Modifier.padding(paddingValues = innerPadding), id = review.idMovie)
+                //AnimScreen()
+            }
+
+            composable<ListMovies>(
+                enterTransition = { scaleIn(initialScale = 0.85f, animationSpec = tween(400)) },
+                exitTransition = { fadeOut(animationSpec = tween(100)) },
+                popEnterTransition = { scaleIn(initialScale = 1.05f, animationSpec = tween(200)) },
+                popExitTransition = { fadeOut(animationSpec = tween(100)) }
+            ) { navBackStackEntry ->
+                println("list")
+                val list: ListMovies = navBackStackEntry.toRoute()
+                println("label = " + list.label)
+                AllMoviesScreen(
+                    label = list.label,
+                    slug = list.slug,
+                    modifier = Modifier.padding(paddingValues = innerPadding),
+                    onSelectMovie = { id ->
+                        navController.navigate(Profile(id)) {
+
+                        }
+                    },
+                    onBack = { navController.popBackStack()})
+            }
+
+            composable<Person> { navBackStackEntry ->
+                val person: Person = navBackStackEntry.toRoute()
+                PersonScreen(
+                    id = person.id,
+                    modifier = Modifier.padding(paddingValues = innerPadding),
+                    onSelectMovie = { id ->
+                        navController.navigate(Profile(id)) {
+
+                        }
+                    })
+            }
+
+
+
+            composable<Account> { navBackStackEntry ->
+                AccountScreen(onClickFolders = {navController.navigate(UserCollections)}, onSelectMovie = { id ->
+                    navController.navigate(Profile(id))
+                }, modifier = Modifier.padding(innerPadding))
+            }
+
+            composable<UserCollections> { navBackStackEntry ->
+                UserCollectionsScreen(modifier = Modifier.padding(paddingValues = innerPadding), onSelectFolder = {id ->
+                    navController.navigate(UserCollection(id))
+                })
+            }
+
+            composable<UserCollection> { navBackStackEntry ->
+                val userCollection: UserCollection = navBackStackEntry.toRoute()
+                UserCollectionScreen(folderId = userCollection.id, modifier = Modifier.padding(innerPadding))
+            }
+
+            composable<Collection> { navBackStackEntry ->
+                CollectionsScreen(modifier = Modifier.padding(paddingValues = innerPadding), onSelectCollection = { label, slug ->
+                    navController.navigate(ListMovies(label, slug))
+                })
+            }
+
+            composable<ErrorM> { navBackStackEntry ->
+                InitErrorServerMessage(modifier = modifier, movieViewModel = movieViewModel)
+            }
+
+            composable<Search> { navBackStackEntry ->
+                SearchScreen(
+                    modifier = Modifier.padding(paddingValues = innerPadding),
+                    onSelectMovie = { id ->
+                        navController.navigate(Profile(id))
+                    })
+            }
+
+        }
+    }
+
+
+}
+
+
+
+@Composable
+fun InitErrorServerMessage(modifier: Modifier, movieViewModel: MovieViewModel) {
+
+    LaunchedEffect(Unit) {
+        movieViewModel.isNavBarVisible.value = false
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            movieViewModel.isNavBarVisible.value = true
+        }
+    }
+
+    BackHandler {
+
+    }
+
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Image(
+                painter = painterResource(R.drawable.error_ic),
+                contentDescription = "Error",
+                modifier = Modifier.padding(start = 15.dp)
+            )
+            Text(
+                text = "У нас технические неполадки, вернитесь позже",
+                fontWeight = FontWeight.SemiBold,
+                fontFamily = poppinsFort,
+                fontSize = 20.sp,
+                modifier = Modifier
+                    .padding(horizontal = 24.dp)
+                    .padding(top = 24.dp),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+
+}
+
+@SuppressLint("RestrictedApi")
+@Composable
+fun NavigationBottomBar(modifier: Modifier = Modifier, navController: NavController) {
+
+    var indexelected by remember {
+        mutableStateOf(0)
+    }
+
+
+
+    NavigationBar(modifier = Modifier.height(60.dp)) {
+
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentDestination = navBackStackEntry?.destination
+
+        navController.addOnDestinationChangedListener({ _, navDestination, _ ->
+            indexelected =
+                listOfScreens.indexOfFirst { it.route::class.qualifiedName == navDestination.route }
+                    .let { if (it == -1) indexelected else it }
+        })
+
+        listOfScreens.forEachIndexed { index, item ->
+            NavigationBarItem(
+                //label = { Text(text = item.name) },
+                onClick = {
+
+                    if (indexelected == index) {
+                        navController.popBackStack(item.route, inclusive = false, saveState = false)
+                    } else {
+                        navController.navigate(item.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+
+                                saveState = true
+                            }
+
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+
+                    indexelected = index
+                },
+                selected = (currentDestination?.hierarchy?.any { it.hasRoute(item.route::class) } == true || indexelected == index),
+                icon = {
+                    Icon(
+                        imageVector = if (index == indexelected) item.iconSelected else item.iconUnselected,
+                        contentDescription = null
+                    )
+                })
+        }
+    }
+}
+
+

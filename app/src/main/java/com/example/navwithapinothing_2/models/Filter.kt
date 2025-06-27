@@ -1,6 +1,6 @@
 package com.example.navwithapinothing_2.models
 
-import com.example.navwithapinothing_2.ui.screen.slider.listOfYears
+import com.example.navwithapinothing_2.features.screen.slider.listOfYears
 
 class Filter {
     var listOfCollection: List<String>? = null

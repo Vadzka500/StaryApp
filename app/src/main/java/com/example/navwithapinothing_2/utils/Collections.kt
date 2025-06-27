@@ -9,13 +9,13 @@ class Collections {
     companion object {
         val listOfFavoriteCollections = listOf(
             Pair("Лауреаты оскара", "oscar-best-film"),
-            Pair("100 великих сериалов 21 века", "100_greatest_TVseries"),
-            Pair("Блокбастеры", "hd-blockbusters"),
+            Pair("100 великих сериалов 21 века", "100_greatest_TVseries"), //
+            Pair("Блокбастеры", "hd-blockbusters"), //
             Pair("Фильмы и сериалы про программистов", "about_programmers"),
-            Pair("100 великих фильмов 21 века", "100_greatest_movies_XXI"),
-            Pair("250 лучших фильмов", "top250"),
+            Pair("100 великих фильмов 21 века", "100_greatest_movies_XXI"), //
+            Pair("250 лучших фильмов", "top250"), //
             Pair("Шедевры HBO", "hbo_best"),
-            Pair("250 лучших сериалов", "series-top250"),
+            Pair("250 лучших сериалов", "series-top250"), //
             Pair("Фильмы, которые стоит посмотреть", "hd-must-see"),
             Pair("Семейные комедии", "family_comedies"),
             Pair("Лучшие фильмы про апокалипсис", "theme_worlds_end"),
@@ -30,6 +30,24 @@ class Collections {
             //Pair("Лауреаты «Оскара» за лучшую музыку", "oscar-music-original-score"),
             Pair("Лауреаты «Оскара» за лучшую режиссуру", "oscar-directing"),
             Pair("Фильмы про зомби", "theme_zombie"),
+
+            //
+            Pair("100 величайших научно-фантастических фильмов", "top_100_scifi_by_total_scifi_online"),
+            Pair("100 лучших американских комедий", "top_100_comedy_by_afi"),
+            Pair("60 лучших сиквелов", "top_60_sequel"),
+
+            Pair("Комедийные боевики", "theme_action_comdey"),
+            Pair("Лучшие визуальные эффекты", "oscar-visual-effects"),
+            Pair("Лучшие сериалы мини-формата", "best_mini_serial"),
+            Pair("Лучшие вестерны", "best_spaghetti_western"),
+
+            Pair("Лучшие экранизации", "hd-adaptation"),
+            Pair("Номинанты «Оскара» за лучший фильм", "oscar-best-film-nominees"),
+            //Pair("Оборонные фильмы", "defense"),
+            Pair("Лучшие фильмы о Великой Отечественной войне", "theme_ww2"),
+
+            Pair("Фильмы по реальным событиям", "hd-real-story"),
+
 
         )
     }

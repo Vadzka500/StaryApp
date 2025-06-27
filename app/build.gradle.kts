@@ -33,6 +33,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+        }
+
+        debug {
+
         }
     }
     compileOptions {
@@ -45,8 +50,10 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+
     }
 }
+
 
 /*kotlin{
     task("testClasses")
@@ -106,8 +113,9 @@ dependencies {
     implementation(libs.icons)
 
     kapt(libs.androidx.room.compiler.android)
+    implementation(libs.androidx.browser)
 
     //implementation("androidx.compose.ui:ui-text-google-fonts:1.7.6")
-
+    implementation(libs.androidx.profileinstaller) // последнюю
     implementation(libs.cloudy)
 }

@@ -6,7 +6,7 @@ import com.example.moviesapi.models.Response
 import com.example.navwithapinothing_2.api.MovieApi
 import com.example.navwithapinothing_2.api.MoviePagingSource
 import com.example.navwithapinothing_2.models.Filter
-import com.example.navwithapinothing_2.ui.screen.slider.listOfYears
+import com.example.navwithapinothing_2.features.screen.slider.listOfYears
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -64,7 +64,7 @@ class MovieRepository @Inject constructor(private val movieService: MovieApi) {
             )
         }.map { result ->
             println("isSuccess = " + result.isSuccessful)
-            println("isSuccess1 = ${result.message()}")
+
             if (result.isSuccessful) {
                 if (result.body() != null) {
                     println("isSuccess")
@@ -131,7 +131,6 @@ class MovieRepository @Inject constructor(private val movieService: MovieApi) {
             } else {
                 Result.Error(result.message())
             }
-
 
         }
 
@@ -201,11 +200,13 @@ class MovieRepository @Inject constructor(private val movieService: MovieApi) {
         val f = flow {
             emit(movieService.getMovieByCollection(list = slug, limit = limit))
         }.map { result ->
+            println("emit 0 = $slug")
             if (result.isSuccessful) {
-                println("emit")
+                println("emit 1")
 
                 Result.Success((result.body() as Response).docs)
             } else {
+                println("errors = " + result.code())
                 Result.Error(result.code())
             }
         }
@@ -217,5 +218,5 @@ class MovieRepository @Inject constructor(private val movieService: MovieApi) {
 sealed class Result {
     data object Loading : Result()
     data class Success<T>(val data: T) : Result()
-    data class Error<Int>(val data: Int) : Result()
+    data class Error<String>(val data: String) : Result()
 }

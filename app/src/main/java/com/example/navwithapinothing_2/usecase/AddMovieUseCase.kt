@@ -12,5 +12,12 @@ import javax.inject.Inject
  */
 class AddMovieUseCase @Inject constructor(private val repository: MovieDatabaseRepository) {
 
-    suspend operator fun invoke(movie: MovieDb, list: List<CollectionMovieDb>): ResultDb<Unit> = repository.addMovie(movie = movie, list = list)
+    suspend operator fun invoke(movie: MovieDb, list: List<CollectionMovieDb>): ResultDb<Unit> {
+        if (!repository.getMovieById(movie.movieId)) {
+            repository.addMovie(movie = movie, list = list)
+
+            return ResultDb.Success(Unit)
+        } else return ResultDb.Error
+    }
+
 }

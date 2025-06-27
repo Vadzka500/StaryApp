@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.navwithapinothing_2.database.MovieDao
 import com.example.navwithapinothing_2.database.MovieDatabase
-import com.example.navwithapinothing_2.database.MovieDbConverter
+
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,7 +26,7 @@ object DatabaseModel {
         return Room.databaseBuilder(
             context,
             MovieDatabase::class.java,
-            name ="db_movie_1"
+            name ="db_movie_16"
         )
             .fallbackToDestructiveMigration()
             .build()

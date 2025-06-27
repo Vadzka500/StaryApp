@@ -51,7 +51,9 @@ interface MovieApi {
 
     @GET("movie")
     suspend fun getMoviesByIds(
-        @Query("id") id: List<Long>
+        @Query("id") id: List<Long>,
+        @Query("page") page: Int = 1,
+        @Query("limit") limit: Int = 250,
     ): Response<com.example.moviesapi.models.Response<MovieDTO>>
 
 
