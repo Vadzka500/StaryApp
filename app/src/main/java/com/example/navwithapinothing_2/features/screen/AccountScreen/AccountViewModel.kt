@@ -30,7 +30,6 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class AccountViewModel @Inject constructor(
-    private val movieRepository: MovieRepository,
     private val getViewedMoviesUseCase: GetViewedMoviesUseCase,
     private val getBookmarkMoviesUseCase: GetBookmarkMoviesUseCase,
     private val getMovieByIdsUseCase: GetMovieByIdsUseCase
@@ -72,6 +71,7 @@ class AccountViewModel @Inject constructor(
                 }
 
                 if (bookmark is ResultDb.Success) {
+                    println("update bookmark")
                     _state.update { it.copy(countBookmark = bookmark.data.size) }
 
                     if (!bookmark.data.isEmpty()) {
@@ -107,6 +107,15 @@ class AccountViewModel @Inject constructor(
             AccountIntent.ToFoldersScreen -> toCollectionScreen()
             is AccountIntent.ToMovieScreen -> {
                 toMovieScreen(data.id)
+            }
+
+            AccountIntent.ToBookmarkScreen -> toBookmarkScreen()
+            AccountIntent.ToViewedScreen -> toViewedScreen()
+            is AccountIntent.SaveScrollBookmark -> {
+                _state.update { it.copy(scrollBookmark = ScrollState(data.scrollIndex, data.scrollOffSet) ) }
+            }
+            is AccountIntent.SaveScrollViewed -> {
+                _state.update { it.copy(scrollViewed = ScrollState(data.scrollIndex, data.scrollOffSet) ) }
             }
         }
     }
@@ -160,6 +169,18 @@ class AccountViewModel @Inject constructor(
     private fun toMovieScreen(id: Long) {
         viewModelScope.launch {
             _effect.emit(AccountEffect.ToMovieScreen(id))
+        }
+    }
+
+    private fun toViewedScreen() {
+        viewModelScope.launch {
+            _effect.emit(AccountEffect.ToViewedScreen)
+        }
+    }
+
+    private fun toBookmarkScreen() {
+        viewModelScope.launch {
+            _effect.emit(AccountEffect.ToBookmarkScreen)
         }
     }
 

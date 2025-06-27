@@ -95,6 +95,7 @@ import kotlin.math.sin
 import androidx.core.net.toUri
 import com.example.navwithapinothing_2.data.ResultDb
 import com.example.navwithapinothing_2.database.models.FolderWithMovies
+import com.example.navwithapinothing_2.features.screen.FoldersScreen.FoldersViewModel
 import com.example.navwithapinothing_2.features.screen.FoldersScreen.ShowCollectionList
 
 /**
@@ -965,19 +966,21 @@ fun CollectionBottomSheet(
     modifier: Modifier = Modifier,
     movie: MovieDTO,
     isShowSheet: MutableState<Boolean>,
-    movieViewModel: MovieViewModel = hiltViewModel()
+    movieViewModel: MovieViewModel = hiltViewModel(),
+    foldersViewModel: FoldersViewModel = hiltViewModel()
 ) {
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false,
     )
 
-    val state = movieViewModel.getAllFoldersState.collectAsState()
+    val state = foldersViewModel.state.collectAsState()
+
     val stateAddMovieToFolder = movieViewModel.addMovieToFolderState.collectAsState()
     val stateRemoveMovieFromFolder = movieViewModel.removeMovieFromFolderState.collectAsState()
 
-    LaunchedEffect(Unit) {
+   /* LaunchedEffect(Unit) {
         movieViewModel.getFolders()
-    }
+    }*/
 
     ModalBottomSheet(
         sheetState = sheetState,
@@ -986,7 +989,7 @@ fun CollectionBottomSheet(
         }) {
         Box(modifier = Modifier.fillMaxWidth().heightIn(max = LocalConfiguration.current.screenHeightDp.dp / 2)){
 
-            ShowCollectionList(state = state, onSelectFolder = { idFolder ->
+            ShowCollectionList(state = state/*, onSelectFolder = { idFolder ->
                 if(state.value is ResultDb.Success){
                     println("init 1")
                     if((state.value as ResultDb.Success<List<FolderWithMovies>>).data.first {it.folder.folderId == idFolder}.movies.any { it.movieId == movie.id }){
@@ -1005,7 +1008,7 @@ fun CollectionBottomSheet(
                         }
                     }
                 }
-            }, movieId = movie.id!!)
+            }*/, movieId = movie.id!!)
 
         }
 

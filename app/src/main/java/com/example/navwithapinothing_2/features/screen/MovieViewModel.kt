@@ -183,25 +183,7 @@ class MovieViewModel @Inject constructor(
         getMoviesByCollection()
     }
 
-    fun getFolders() {
-        viewModelScope.launch {
-            getAllFoldersUseCase().collect {
-                _getAllFoldersState.value = when (it) {
-                    ResultDb.Error -> {
-                        it
-                    }
 
-                    ResultDb.Loading -> {
-                        it
-                    }
-
-                    is ResultDb.Success<*> -> {
-                        it
-                    }
-                }
-            }
-        }
-    }
 
     fun getReviewsById(id: Long) {
         viewModelScope.launch {

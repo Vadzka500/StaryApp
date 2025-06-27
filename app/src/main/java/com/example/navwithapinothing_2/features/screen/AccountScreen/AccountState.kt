@@ -12,7 +12,15 @@ data class AccountState (
     var resultAccountBookmark : ResultAccountData = ResultAccountData.None,
     var countViewed: Int = 0,
     var countBookmark: Int = 0,
-    var isShowEmptyHint: Boolean = false
+    var isShowEmptyHint: Boolean = false,
+    var bookmarkScrollOffSet:Int = 0,
+    var scrollViewed: ScrollState = ScrollState(),
+    var scrollBookmark: ScrollState = ScrollState()
+)
+
+data class ScrollState(
+    val scrollIndex: Int = 0,
+    val scrollOffSet: Int = 0
 )
 
 sealed class ResultAccountData(){

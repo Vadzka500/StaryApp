@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.CardDefaults
@@ -28,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -64,7 +66,9 @@ fun AccountScreen(
     modifier: Modifier = Modifier,
     onClickFolders: () -> Unit,
     onSelectMovie: (id: Long) -> Unit,
-    accountViewModel: AccountViewModel = hiltViewModel()
+    accountViewModel: AccountViewModel = hiltViewModel(),
+    toViewedScreen: () -> Unit,
+    toBookmarkScreen: () -> Unit
 ) {
 
     val state = accountViewModel.state.collectAsStateWithLifecycle()
@@ -77,8 +81,8 @@ fun AccountScreen(
                     onSelectMovie(data.id)
                 }
 
-                AccountEffect.ToBookmarkScreen -> TODO()
-                AccountEffect.ToViewedScreen -> TODO()
+                AccountEffect.ToBookmarkScreen -> toBookmarkScreen()
+                AccountEffect.ToViewedScreen -> toViewedScreen()
             }
         }
     }
@@ -105,9 +109,9 @@ fun AccountScreen(
 
 
 
-            AnimatedContent(targetState = state.value.resultAccountBookmark) { state ->
+            AnimatedContent(targetState = state.value.resultAccountBookmark) { states ->
 
-                when (val data = state) {
+                when (val data = states) {
 
 
                     is ResultAccountData.Error -> {
@@ -124,15 +128,15 @@ fun AccountScreen(
 
                     is ResultAccountData.Success -> {
                         if (!(data.data as List<*>).isEmpty())
-                            LatestBookmarkBlock(list = data.data)
+                            LatestBookmarkBlock(list = data.data, state = state)
                     }
                 }
 
             }
 
-            AnimatedContent(targetState = state.value.resultAccountViewed) { state ->
+            AnimatedContent(targetState = state.value.resultAccountViewed) { states ->
 
-                when (val data = state) {
+                when (val data = states) {
 
 
                     is ResultAccountData.Error -> {
@@ -149,7 +153,7 @@ fun AccountScreen(
 
                     is ResultAccountData.Success -> {
                         if (!(data.data as List<*>).isEmpty())
-                            LatestViewedBlock(list = data.data)
+                            LatestViewedBlock(list = data.data, state = state)
                     }
                 }
 
@@ -303,8 +307,11 @@ fun ListOfCollectionBlock(
 fun LatestViewedBlock(
     modifier: Modifier = Modifier,
     list: List<MovieDTO>,
-    accountViewModel: AccountViewModel = hiltViewModel()
+    accountViewModel: AccountViewModel = hiltViewModel(),
+    state: State<AccountState>
 ) {
+    val listState = rememberLazyListState()
+
     Column {
         Row(
             modifier = Modifier
@@ -326,12 +333,13 @@ fun LatestViewedBlock(
         }
 
         LazyRow(
+            state = listState,
             modifier = Modifier.padding(top = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
 
-            itemsIndexed(list) { index, item ->
+            itemsIndexed(list, key = { _, it -> it.id!! }) { index, item ->
 
                 MovieCard(
                     item = item,
@@ -342,14 +350,30 @@ fun LatestViewedBlock(
             }
         }
     }
+
+    LaunchedEffect(Unit) {
+        listState.scrollToItem(
+            state.value.scrollViewed.scrollIndex,
+            state.value.scrollViewed.scrollOffSet
+        )
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            accountViewModel.onIntent(AccountIntent.SaveScrollViewed(scrollIndex =  listState.firstVisibleItemIndex, scrollOffSet = listState.firstVisibleItemScrollOffset))
+        }
+    }
 }
 
 @Composable
 fun LatestBookmarkBlock(
     modifier: Modifier = Modifier,
     list: List<MovieDTO>,
-    accountViewModel: AccountViewModel = hiltViewModel()
+    accountViewModel: AccountViewModel = hiltViewModel(),
+    state: State<AccountState>
 ) {
+    val listState = rememberLazyListState()
+
     Column {
         Row(
             modifier = Modifier
@@ -371,12 +395,13 @@ fun LatestBookmarkBlock(
         }
 
         LazyRow(
+            state = listState,
             modifier = Modifier.padding(top = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
 
-            itemsIndexed(list) { index, item ->
+            itemsIndexed(list, key = { _, it -> it.id!! }) { index, item ->
 
                 MovieCard(
                     item = item,
@@ -384,6 +409,19 @@ fun LatestBookmarkBlock(
                     onSelectMovie = { accountViewModel.onIntent(AccountIntent.ToMovieScreen(item.id!!)) }
                 )
 
+            }
+        }
+
+        LaunchedEffect(Unit) {
+            listState.scrollToItem(
+                state.value.scrollViewed.scrollIndex,
+                state.value.scrollViewed.scrollOffSet
+            )
+        }
+
+        DisposableEffect(Unit) {
+            onDispose {
+                accountViewModel.onIntent(AccountIntent.SaveScrollViewed(scrollIndex =  listState.firstVisibleItemIndex, scrollOffSet = listState.firstVisibleItemScrollOffset))
             }
         }
     }

@@ -3,6 +3,7 @@ package com.example.navwithapinothing_2.features.screen.FoldersScreen
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -48,6 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -61,8 +64,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.navwithapinothing_2.R
 import com.example.navwithapinothing_2.data.ResultDb
 import com.example.navwithapinothing_2.database.models.FolderWithMovies
+import com.example.navwithapinothing_2.features.screen.AccountScreen.AccountEffect
 import com.example.navwithapinothing_2.features.screen.MovieViewModel
 import com.example.navwithapinothing_2.features.theme.poppinsFort
+import kotlinx.coroutines.flow.collectLatest
 
 /**
  * @Author: Vadim
@@ -71,35 +76,35 @@ import com.example.navwithapinothing_2.features.theme.poppinsFort
 
 
 @Composable
-@Preview(showBackground = true)
 fun UserCollectionsScreen(
     modifier: Modifier = Modifier,
-    movieViewModel: MovieViewModel = hiltViewModel(),
-    onSelectFolder: (id: Long) -> Unit
+    foldersViewModel: FoldersViewModel = hiltViewModel(),
+    onSelectFolder: (id: Long) -> Unit,
+    onBack:() -> Unit
 ) {
 
-    val state = movieViewModel.getAllFoldersState.collectAsState()
-
-    var countFolders by remember {
-        mutableIntStateOf(0)
-    }
-
-    val isShowCreateSheet = remember {
-        mutableStateOf(false)
-    }
+    val state = foldersViewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        movieViewModel.getFolders()
-    }
-    
-
-    LaunchedEffect(state.value) {
-        if (state.value is ResultDb.Success<List<FolderWithMovies>>) {
-            countFolders = (state.value as ResultDb.Success<List<FolderWithMovies>>).data.size
+        foldersViewModel.effect.collectLatest { effect ->
+            when (val data = effect) {
+                FoldersEffect.OnBack -> {
+                    onBack()
+                }
+                is FoldersEffect.ToFolderScreen -> {
+                    onSelectFolder(data.id)
+                }
+            }
         }
     }
 
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
+    val count = when (val result = state.value.filters) {
+        is ResultFilterData.Success -> result.data.size
+        else -> 0
+    }
+
+
+    Box(modifier = modifier.fillMaxSize().background(color = MaterialTheme.colorScheme.background), contentAlignment = Alignment.BottomEnd) {
 
 
         Column(modifier = Modifier.fillMaxSize()) {
@@ -108,7 +113,19 @@ fun UserCollectionsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Image(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "Назад")
+                Icon(
+                    imageVector = Icons.Default.ArrowBackIosNew,
+                    contentDescription = "",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(
+                            CircleShape
+                        )
+                        .clickable {
+                            foldersViewModel.onIntent(FoldersIntent.OnBack)
+                        }
+                        .padding(8.dp))
+
 
                 Text(
                     "Мои коллекции",
@@ -119,7 +136,7 @@ fun UserCollectionsScreen(
                 )
 
                 Text(
-                    countFolders.toString(),
+                    count.toString(),
                     modifier = Modifier.padding(start = 8.dp),
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = poppinsFort,
@@ -127,27 +144,27 @@ fun UserCollectionsScreen(
                 )
             }
 
-            ShowCollectionList(state = state, onSelectFolder = onSelectFolder)
+            ShowCollectionList(state = state)
         }
 
         FloatingActionButton(
             modifier = Modifier.padding(24.dp),
             onClick = {
-                isShowCreateSheet.value = true
+                foldersViewModel.onIntent(FoldersIntent.ClickCreateFolder)
             },
         ) {
             Icon(Icons.Filled.Add, "Add collection")
         }
     }
-    if (isShowCreateSheet.value) {
-        ShowCreateFolderBottomSheet(isVisible = isShowCreateSheet)
+    if (state.value.isShowBottomSheet) {
+        ShowCreateFolderBottomSheet()
     }
 
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShowCreateFolderBottomSheet(modifier: Modifier = Modifier, isVisible: MutableState<Boolean>) {
+fun ShowCreateFolderBottomSheet(modifier: Modifier = Modifier, foldersViewModel: FoldersViewModel = hiltViewModel()) {
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
     )
@@ -155,7 +172,7 @@ fun ShowCreateFolderBottomSheet(modifier: Modifier = Modifier, isVisible: Mutabl
     ModalBottomSheet(
         sheetState = sheetState,
         onDismissRequest = {
-            isVisible.value = false
+            foldersViewModel.onIntent(FoldersIntent.HideBottomSheet)
         }) {
         CreateSheetData()
 
@@ -231,7 +248,7 @@ fun CreateSheetData(modifier: Modifier = Modifier) {
             modifier = Modifier,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            itemsIndexed(listOfColors) { index, item ->
+            itemsIndexed(items = listOfColors) { index, item ->
                 Card(
                     modifier = Modifier.size(48.dp),
                     border = BorderStroke(
@@ -265,7 +282,7 @@ fun CreateSheetData(modifier: Modifier = Modifier) {
 
             itemsIndexed(listOfImage) { index, item ->
                 Card(
-                    modifier = Modifier.size(128.dp),
+                    modifier = Modifier.size(96.dp),
                     onClick = { selectImageIndex = index },
                     border = BorderStroke(
                         if (selectImageIndex == index) 3.dp else 0.dp,
@@ -367,23 +384,19 @@ fun CreateSheetData(modifier: Modifier = Modifier) {
 @Composable
 fun ShowCollectionList(
     modifier: Modifier = Modifier,
-    state: State<ResultDb<List<FolderWithMovies>>>,
-    onSelectFolder: (Long) -> Unit,
+    state: State<FoldersState>,
     movieId: Long = -1,
-    movieViewModel: MovieViewModel = hiltViewModel()
 ) {
 
 
-    when (val data = state.value) {
-        ResultDb.Error -> {
+    when (val data = state.value.filters) {
+        is ResultFilterData.Error -> {
 
         }
-
-        ResultDb.Loading -> {
+        ResultFilterData.Loading -> {
 
         }
-
-        is ResultDb.Success<*> -> {
+        is ResultFilterData.Success -> {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 itemsIndexed(
                     (data.data as List<FolderWithMovies>),
@@ -391,7 +404,6 @@ fun ShowCollectionList(
                     InitFolderItem(
                         folder = folder,
                         index = index,
-                        onSelectFolder = onSelectFolder,
                         onShowAddImage = folder.movies.any { it.movieId == movieId })
                 }
             }
@@ -406,8 +418,8 @@ fun InitFolderItem(
     modifier: Modifier = Modifier,
     folder: FolderWithMovies,
     index: Int,
-    onSelectFolder: (Long) -> Unit,
-    onShowAddImage: Boolean = false
+    onShowAddImage: Boolean = false,
+    foldersViewModel: FoldersViewModel = hiltViewModel()
 ) {
     ElevatedCard(
         modifier = Modifier
@@ -426,7 +438,7 @@ fun InitFolderItem(
         elevation = CardDefaults.cardElevation(18.dp),
         shape = RoundedCornerShape(32.dp),
         onClick = {
-            onSelectFolder(folder.folder.folderId)
+            foldersViewModel.onIntent(FoldersIntent.ToFolderScreen(folder.folder.folderId))
         }
     ) {
 

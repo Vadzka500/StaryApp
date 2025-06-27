@@ -71,12 +71,14 @@ import com.example.navwithapinothing_2.features.screen.FolderScreen.UserCollecti
 import com.example.navwithapinothing_2.features.screen.FoldersScreen.UserCollectionsScreen
 import com.example.navwithapinothing_2.features.screen.slider.SliderScreen
 import com.example.navwithapinothing_2.features.theme.poppinsFort
+import com.example.navwithapinothing_2.navigation.Bookmark
+import com.example.navwithapinothing_2.navigation.Viewed
 
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
 
-     val navController = rememberNavController()
+    val navController = rememberNavController()
 
     val movieViewModel = viewModel<MovieViewModel>()
 
@@ -84,8 +86,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
         movieViewModel.initFolders()
     }
 
-    fun toErrorScreen(){
-        if(navController.currentBackStackEntry?.destination?.route != ErrorM::class.qualifiedName){
+    fun toErrorScreen() {
+        if (navController.currentBackStackEntry?.destination?.route != ErrorM::class.qualifiedName) {
             navController.navigate(ErrorM)
         }
     }
@@ -193,7 +195,10 @@ fun MainScreen(modifier: Modifier = Modifier) {
 
             composable<Review> {
                 val review: Review = it.toRoute()
-                ReviewScreen(modifier = Modifier.padding(paddingValues = innerPadding), id = review.idMovie)
+                ReviewScreen(
+                    modifier = Modifier.padding(paddingValues = innerPadding),
+                    id = review.idMovie
+                )
                 //AnimScreen()
             }
 
@@ -215,7 +220,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
 
                         }
                     },
-                    onBack = { navController.popBackStack()})
+                    onBack = { navController.popBackStack() })
             }
 
             composable<Person> { navBackStackEntry ->
@@ -233,26 +238,52 @@ fun MainScreen(modifier: Modifier = Modifier) {
 
 
             composable<Account> { navBackStackEntry ->
-                AccountScreen(onClickFolders = {navController.navigate(UserCollections)}, onSelectMovie = { id ->
-                    navController.navigate(Profile(id))
-                }, modifier = Modifier.padding(innerPadding))
+                AccountScreen(
+                    onClickFolders = { navController.navigate(UserCollections) },
+                    onSelectMovie = { id ->
+                        navController.navigate(Profile(id))
+                    },
+                    modifier = Modifier.padding(innerPadding),
+                    toViewedScreen = {
+                        navController.navigate(Viewed)
+                    },
+                    toBookmarkScreen = {
+                        navController.navigate(Bookmark)
+                    })
+            }
+
+            composable<Viewed> { navBackStackEntry ->
+
+            }
+
+            composable<Bookmark> { navBackStackEntry ->
+
             }
 
             composable<UserCollections> { navBackStackEntry ->
-                UserCollectionsScreen(modifier = Modifier.padding(paddingValues = innerPadding), onSelectFolder = {id ->
-                    navController.navigate(UserCollection(id))
-                })
+                UserCollectionsScreen(
+                    modifier = Modifier.padding(paddingValues = innerPadding),
+                    onSelectFolder = { id ->
+                        navController.navigate(UserCollection(id))
+                    }, onBack = {
+                        navController.popBackStack()
+                    })
             }
 
             composable<UserCollection> { navBackStackEntry ->
                 val userCollection: UserCollection = navBackStackEntry.toRoute()
-                UserCollectionScreen(folderId = userCollection.id, modifier = Modifier.padding(innerPadding))
+                UserCollectionScreen(
+                    folderId = userCollection.id,
+                    modifier = Modifier.padding(innerPadding)
+                )
             }
 
             composable<Collection> { navBackStackEntry ->
-                CollectionsScreen(modifier = Modifier.padding(paddingValues = innerPadding), onSelectCollection = { label, slug ->
-                    navController.navigate(ListMovies(label, slug))
-                })
+                CollectionsScreen(
+                    modifier = Modifier.padding(paddingValues = innerPadding),
+                    onSelectCollection = { label, slug ->
+                        navController.navigate(ListMovies(label, slug))
+                    })
             }
 
             composable<ErrorM> { navBackStackEntry ->
@@ -272,7 +303,6 @@ fun MainScreen(modifier: Modifier = Modifier) {
 
 
 }
-
 
 
 @Composable
