@@ -123,29 +123,9 @@ class MovieViewModel @Inject constructor(
 
     }
 
-    private suspend fun addMovie(idMovie: Long, collections: List<String>?){
 
-        val list = mutableListOf<CollectionMovieDb>()
-        if (collections != null) {
-            for (slug in collections) {
-                list.add(CollectionMovieDb(movieId = idMovie, collectionSlug = slug))
-            }
-        }
-        addMovieUseCase.invoke(MovieDb(idMovie), list = list)
-    }
 
-    fun addMovieToFolder(idMovie: Long, idFolder: Long, collections: List<String>?) {
-        viewModelScope.launch {
-            addMovie(idMovie, collections)
-            _addMovieToFolderState.value = addMovieToFolderUseCase(idMovie, idFolder)
-        }
-    }
 
-    fun removeMovieFromFolder(idMovie: Long, idFolder: Long) {
-        viewModelScope.launch {
-            _removeMovieFromFolderState.value = removeMovieFromFolderUseCase(idMovie, idFolder)
-        }
-    }
 
     fun initFolders() {
         viewModelScope.launch {
@@ -153,23 +133,8 @@ class MovieViewModel @Inject constructor(
         }
     }
 
-    fun getFolder(id: Long) {
-        viewModelScope.launch {
-            _getFolderState.value = when (val data = getFolderUseCase(id)) {
-                ResultDb.Error -> {
-                    data
-                }
 
-                ResultDb.Loading -> {
-                    data
-                }
 
-                is ResultDb.Success<*> -> {
-                    data
-                }
-            }
-        }
-    }
 
 
     fun getHomeData() {
@@ -185,54 +150,11 @@ class MovieViewModel @Inject constructor(
 
 
 
-    fun getReviewsById(id: Long) {
-        viewModelScope.launch {
-            movieRepository.getReviewsById(id).collect {
-                _state_movie_reviews.value = when (it) {
-                    is Result.Error<*> -> {
-                        it
-                    }
-
-                    Result.Loading -> {
-                        it
-                    }
-
-                    is Result.Success<*> -> {
-                        it
-                    }
-                }
-            }
-        }
-    }
 
 
 
-    fun getCountMoviesByCollection(collectionName: String) {
-        viewModelScope.launch {
-            _state_movie_visible_collection.value[collectionName] = 0
-            getMoviesByCollection.invoke(collectionName).collect {
-
-                when (val data = it) {
-                    ResultDb.Error -> {
-
-                    }
-
-                    ResultDb.Loading -> {
-
-                    }
-
-                    is ResultDb.Success<*> -> {
-                        val updatedMap = _state_movie_visible_collection.value.toMutableMap()
-                        updatedMap[collectionName] = (data.data as List<*>).size
-                        _state_movie_visible_collection.value = updatedMap
-
-                    }
-                }
 
 
-            }
-        }
-    }
 
 
     fun getRandom(filter: Filter? = null) {
@@ -332,19 +254,7 @@ class MovieViewModel @Inject constructor(
 
 
 
-    fun setViewedToMovie(id:Long, collections: List<String>?, isViewed: Boolean ){
-        viewModelScope.launch {
-            addMovie(id, collections)
-            updateMovieViewedUseCase(id, isViewed)
-        }
-    }
 
-    fun setBookmarkToMovie(id:Long, collections: List<String>?, isBookmark: Boolean ){
-        viewModelScope.launch {
-            addMovie(id, collections)
-            updateMovieBookmarkUseCase(id, isBookmark)
-        }
-    }
 
     /*fun addMovieToViewedDatabase(
         id: Long,
@@ -365,29 +275,7 @@ class MovieViewModel @Inject constructor(
 
 
 
-    fun getMovieById(id: Long) {
-        println("get by id")
-        //_state_movie.value = Result.Loading
-        viewModelScope.launch {
 
-
-            movieRepository.getMovieById(id).collect {
-                _state_movie.value = when (it) {
-                    is Result.Loading -> {
-                        it
-                    }
-
-                    is Result.Error<*> -> {
-                        it
-                    }
-
-                    is Result.Success<*> -> {
-                        it
-                    }
-                }
-            }
-        }
-    }
 
     fun getCollections() {
         viewModelScope.launch {

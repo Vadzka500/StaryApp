@@ -15,11 +15,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,9 +42,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.navwithapinothing_2.data.Result
 import com.example.navwithapinothing_2.models.collection.CollectionMovie
-import com.example.navwithapinothing_2.features.screen.MovieScreen.shimmerEffect
+
 import com.example.navwithapinothing_2.features.screen.MovieViewModel
+import com.example.navwithapinothing_2.features.screen.ReviewScreen.ReviewIntent
+import com.example.navwithapinothing_2.features.screen.shimmerEffect
 import com.example.navwithapinothing_2.features.theme.poppinsFort
+import kotlinx.coroutines.flow.collectLatest
 
 /**
  * @Author: Vadim
@@ -51,19 +57,30 @@ import com.example.navwithapinothing_2.features.theme.poppinsFort
 @Composable
 fun CollectionsScreen(
     modifier: Modifier = Modifier,
-    movieViewModel: MovieViewModel = hiltViewModel(),
-    onSelectCollection: (String, String) -> Unit
+    onSelectCollection: (String, String) -> Unit,
+    onBack: () -> Unit,
+    collectionsViewModel: CollectionsViewModel = hiltViewModel()
 ) {
 
-    val collection_state = movieViewModel.state_collection.collectAsState()
+    val state = collectionsViewModel.state.collectAsState()
+
 
     LaunchedEffect(Unit) {
-        movieViewModel.getCollections()
+        collectionsViewModel.effect.collectLatest { effect ->
+
+            when (effect) {
+                is CollectionsEffect.OnSelectCollection -> {
+                    onSelectCollection(effect.name, effect.slug)
+                }
+
+                CollectionsEffect.OnBack -> {
+                    onBack()
+                }
+            }
+
+        }
     }
 
-    var countOfCollection by remember {
-        mutableIntStateOf(0)
-    }
 
     Column {
         Row(
@@ -71,7 +88,19 @@ fun CollectionsScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            Image(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "Назад")
+            Icon(
+                imageVector = Icons.Default.ArrowBackIosNew,
+                contentDescription = "",
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(
+                        CircleShape
+                    )
+                    .clickable {
+                        collectionsViewModel.onIntent(CollectionsIntent.OnBack)
+                    }
+                    .padding(8.dp))
+
 
             Text(
                 "Коллекции",
@@ -82,7 +111,7 @@ fun CollectionsScreen(
             )
 
             Text(
-                countOfCollection.toString(),
+                state.value.countCollection.toString(),
                 modifier = Modifier.padding(start = 8.dp),
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = poppinsFort,
@@ -91,22 +120,22 @@ fun CollectionsScreen(
         }
 
         AnimatedContent(
-            targetState = collection_state.value,
+            targetState = state.value.collectionResult,
             transitionSpec = { fadeIn() togetherWith fadeOut() }) { state ->
+
             when (val data = state) {
-                is Result.Error<*> -> {
+
+                is CollectionsResult.Error -> {
 
                 }
 
-                Result.Loading -> {
+                CollectionsResult.Loading -> {
                     ShimmerCollection()
                 }
 
-                is Result.Success<*> -> {
-                    countOfCollection = (data.data as List<CollectionMovie>).size
+                is CollectionsResult.Success -> {
                     ShowCollections(
-                        list = data.data as List<CollectionMovie>,
-                        onSelectCollection = onSelectCollection,
+                        list = data.list as List<CollectionMovie>,
                         modifier = modifier
                     )
                 }
@@ -146,15 +175,14 @@ private fun InitItemShimmer() {
 @Composable
 private fun ShowCollections(
     list: List<CollectionMovie>,
-    modifier: Modifier,
-    onSelectCollection: (String, String) -> Unit
+    modifier: Modifier
 ) {
     LazyColumn(
         modifier = modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         itemsIndexed(list) { index, item ->
-            InitItem(item = item, onSelectCollection = onSelectCollection)
+            InitItem(item = item)
         }
     }
 }
@@ -163,25 +191,8 @@ private fun ShowCollections(
 private fun InitItem(
     item: CollectionMovie,
     modifier: Modifier = Modifier,
-    onSelectCollection: (String, String) -> Unit,
-    movieViewModel: MovieViewModel = hiltViewModel()
+    collectionsViewModel: CollectionsViewModel = hiltViewModel()
 ) {
-
-
-    val state = movieViewModel.state_movie_visible_collection.collectAsState()
-    var count by remember { mutableIntStateOf(0) }
-
-    LaunchedEffect(Unit) {
-        movieViewModel.getCountMoviesByCollection(item.slug)
-        println("data = " + state.value)
-
-    }
-
-    LaunchedEffect(state.value) {
-        count = state.value[item.slug]!!
-        println("data3 = " + state.value)
-    }
-
 
     Column(
         modifier = Modifier
@@ -190,7 +201,14 @@ private fun InitItem(
 
             .clip(RoundedCornerShape(16.dp))
             .background(color = MaterialTheme.colorScheme.secondaryContainer)
-            .clickable { onSelectCollection(item.name, item.slug) }
+            .clickable {
+                collectionsViewModel.onIntent(
+                    CollectionsIntent.OnSelectCollection(
+                        item.name,
+                        item.slug
+                    )
+                )
+            }
             .padding(horizontal = 32.dp),
         verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -202,19 +220,19 @@ private fun InitItem(
             textAlign = TextAlign.Center,
             lineHeight = 18.sp
         )
-        Spacer(modifier = Modifier.padding(top = 8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
 
 
-            Text(
-                modifier = Modifier.padding(start = 4.dp),
-                text = count.toString() + "/" + item.moviesCount!!.toString(),
-                fontFamily = poppinsFort,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center,
-                lineHeight = 18.sp
-            )
+        Text(
+            modifier = Modifier.padding(start = 4.dp),
+            text = item.viewedCount.toString() + "/" + item.moviesCount!!.toString(),
+            fontFamily = poppinsFort,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center,
+            lineHeight = 18.sp
+        )
 
     }
 }

@@ -13,4 +13,5 @@ data class CollectionMovie(
     val name: String,
     val slug: String,
     val updatedAt: String,
+    var viewedCount: Int = 0
 )

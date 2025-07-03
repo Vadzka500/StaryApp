@@ -3,7 +3,10 @@ package com.example.navwithapinothing_2.features.screen.MovieScreen
 import android.content.Context
 import android.content.Intent
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloat
@@ -13,6 +16,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -96,93 +100,78 @@ import androidx.core.net.toUri
 import com.example.navwithapinothing_2.data.ResultDb
 import com.example.navwithapinothing_2.database.models.FolderWithMovies
 import com.example.navwithapinothing_2.features.screen.FoldersScreen.FoldersViewModel
+import com.example.navwithapinothing_2.features.screen.FoldersScreen.ResultFilterData
 import com.example.navwithapinothing_2.features.screen.FoldersScreen.ShowCollectionList
+import com.example.navwithapinothing_2.features.screen.shimmerEffect
+import kotlinx.coroutines.flow.collectLatest
 
 /**
  * @Author: Vadim
  * @Date: 18.12.2024
  */
 
-fun Modifier.shimmerEffect(): Modifier = composed {
-    val transition = rememberInfiniteTransition(label = "")
-    val offsetX by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 2000f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1200, easing = FastOutSlowInEasing)
-        ), label = ""
-    )
-    background(
-        brush = Brush.horizontalGradient(
-            colors = ShimmerColorShades,
-            startX = 0f,
-            endX = offsetX
-        )
-    )
-}
 
 @Composable
 fun MovieScreen(
     modifier: Modifier = Modifier,
     id: Long,
-    movieViewModel: MovieViewModel = hiltViewModel(),
+    movieProfileViewModel: MovieProfileViewModel = hiltViewModel(),
     onSelectMovie: (Long) -> Unit,
     onSelectPerson: (Long) -> Unit,
     onClickReviews: (Long) -> Unit
 ) {
 
-    val state = movieViewModel.state_movie.collectAsState()
-    val stateDatabase = movieViewModel.isMovieExists.collectAsState()
-
-    var visible by remember {
-        mutableStateOf(false)
-    }
-
-
-
+    val state = movieProfileViewModel.state.collectAsState()
+    val context = LocalContext.current
     LaunchedEffect(id) {
-        println("status = " + state.value)
-        movieViewModel.getMovieById(id) //931677 //258687 //522941
-        movieViewModel.checkMovieDatabase(id)
-        //movieViewModel.getReviewsById(id)
 
-        visible = true
+        movieProfileViewModel.onIntent(MovieIntent.LoadMovie(id))
+
+        movieProfileViewModel.effect.collectLatest { effect ->
+            when (val data = effect) {
+                is MovieEffect.ToMovieScreen -> {
+                    onSelectMovie(data.id)
+                }
+
+                is MovieEffect.ToPersonScreen -> {
+                    onSelectPerson(data.id)
+                }
+
+                is MovieEffect.ToReviewScreen -> {
+                    onClickReviews(data.id)
+                }
+
+                is MovieEffect.PlayTrailer -> {
+                    Intent(Intent.ACTION_VIEW).also {
+                        it.data = data.url.toUri()
+                        context.startActivity(it)
+                    }
+                }
+            }
+        }
+
     }
 
 
-    AnimatedVisibility(
-        modifier = Modifier.fillMaxSize(),
-        visible = visible,
-        exit = fadeOut(animationSpec = tween(200))
-    ) {
-        ShimmerScreen()
-    }
+    AnimatedContent(
+        targetState = state.value.movie,
+        transitionSpec = { fadeIn() togetherWith fadeOut() }) { result ->
 
+        when (result) {
+            is ResultMovie.Error -> {
 
-    //ShimmerScreen()
-    when (val data = state.value) {
-        is Result.Loading -> {
+            }
 
-        }
+            ResultMovie.Loading -> {
+                ShimmerScreen()
+            }
 
-        is Result.Success<*> -> {
-
-            visible = false
-
-            InitMovie(
-                movie = data.data as MovieDTO,
-                modifier = modifier,
-                onSelectMovie = onSelectMovie,
-                onSelectPerson = onSelectPerson,
-                movieDbState = stateDatabase,
-                movieViewModel = movieViewModel,
-                onClickReviews = onClickReviews
-            )
-
-        }
-
-        is Result.Error<*> -> {
-
+            is ResultMovie.Success -> {
+                InitMovie(
+                    state = state,
+                    modifier = modifier,
+                )
+            }
         }
     }
 
@@ -353,264 +342,224 @@ fun ShimmerScreen(modifier: Modifier = Modifier) {
     }
 }
 
-/*
-@Composable
-fun InitMovie(modifier: Modifier = Modifier, movie: MovieDTO) {
-    Box(modifier = Modifier.fillMaxSize()){
-        AsyncImage(model = movie.backdrop?.url, contentDescription = "", modifier.fillMaxWidth().height(300.dp), contentScale = ContentScale.Crop, alpha = 0.7f)
-        Column(modifier = Modifier.fillMaxWidth().padding(top = 20.dp)) {
-            AsyncImage(model = movie.poster?.previewUrl, contentDescription = "", modifier = Modifier.padding(start = 16.dp).width(160.dp).height(240.dp).align(Alignment.CenterHorizontally),  contentScale = ContentScale.FillBounds)
-            Text(text = movie.name!!)
-        }
-    }
-}*/
-
 @Composable
 fun InitMovie(
+    state: State<MovieState>,
     modifier: Modifier = Modifier,
-    movie: MovieDTO,
-    onSelectMovie: (Long) -> Unit,
-    onSelectPerson: (Long) -> Unit,
-    movieDbState: State<MovieDb?>,
-    movieViewModel: MovieViewModel,
-    onClickReviews: (Long) -> Unit
+    movieProfileViewModel: MovieProfileViewModel = hiltViewModel()
 ) {
-    var visible by remember {
-        mutableStateOf(false)
-    }
 
-    AnimatedVisibility(
-        modifier = Modifier.fillMaxSize(),
-        visible = visible,
-        enter = fadeIn(animationSpec = tween(200))
+    var scale by remember { mutableStateOf(ContentScale.Crop) }
+    val movie = (state.value.movie as ResultMovie.Success).movie
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
 
-        var scale by remember { mutableStateOf(ContentScale.Crop) }
-
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp), contentAlignment = Alignment.Center
         ) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current).data(movie.backdrop?.url)
+                    .crossfade(true).build(),
+                contentDescription = "",
 
-            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp), contentAlignment = Alignment.Center
-            ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current).data(movie.backdrop?.url)
-                        .crossfade(true).build(),
-                    contentDescription = "",
-
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
-                        .blur(radiusX = 3.dp, radiusY = 3.dp)
-                        .graphicsLayer { alpha = 0.99f }
-                        .drawWithContent {
-                            val colors = listOf(
-                                Color.Black, Color.Transparent
-                            )
-                            drawContent()
-                            drawRect(
-                                brush = Brush.verticalGradient(colors), blendMode = BlendMode.DstIn
-                            )
-                        },
-                    contentScale = ContentScale.Crop,
-                    alpha = 0.8f
-                )
-                //  Column(modifier = Modifier.fillMaxWidth().padding(top = 20.dp)) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(movie.poster?.previewUrl)
-                        .listener(
-                            onSuccess = { _, _ ->
-                                scale = ContentScale.FillBounds
-                            }
-                        ).crossfade(true).build(),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .width(160.dp)
-                        .height(240.dp)
-                        .clip(
-                            RoundedCornerShape(8.dp)
+                    .height(300.dp)
+                    .blur(radiusX = 3.dp, radiusY = 3.dp)
+                    .graphicsLayer { alpha = 0.99f }
+                    .drawWithContent {
+                        val colors = listOf(
+                            Color.Black, Color.Transparent
                         )
-                        .shimmerEffect(),
-                    contentScale = scale,
-                    error = painterResource(R.drawable.ic_placeholder_4)
-                )
-                //}
-            }
-
-
-
-
-            Text(
-                text = movie.name ?: movie.enName ?: "",
+                        drawContent()
+                        drawRect(
+                            brush = Brush.verticalGradient(colors), blendMode = BlendMode.DstIn
+                        )
+                    },
+                contentScale = ContentScale.Crop,
+                alpha = 0.8f
+            )
+            //  Column(modifier = Modifier.fillMaxWidth().padding(top = 20.dp)) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(movie.poster?.previewUrl)
+                    .listener(
+                        onSuccess = { _, _ ->
+                            scale = ContentScale.FillBounds
+                        }
+                    ).crossfade(true).build(),
+                contentDescription = "",
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                textAlign = TextAlign.Center,
+                    .width(160.dp)
+                    .height(240.dp)
+                    .clip(
+                        RoundedCornerShape(8.dp)
+                    )
+                    .shimmerEffect(),
+                contentScale = scale,
+                error = painterResource(R.drawable.ic_placeholder_4)
+            )
+        }
+
+
+
+
+        Text(
+            text = movie.name ?: movie.enName ?: "",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.SemiBold,
+            fontFamily = poppinsFort,
+            fontSize = 24.sp
+        )
+
+
+
+        RowPrimaryData(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(top = 8.dp),
+            movie = movie
+        )
+
+        RowGenres(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(top = 5.dp),
+            movie = movie
+        )
+
+        RowScore(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(top = 5.dp),
+            movie = movie
+        )
+
+        Spacer(modifier = Modifier.height(15.dp))
+
+        RowButtons(movie = movie, state = state)
+
+        if (movie.description != null) {
+            Spacer(modifier = Modifier.height(16.dp))
+            RowDescription(movie = movie)
+        }
+
+        if (movie.persons != null) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Актеры",
+                modifier = Modifier.padding(start = 16.dp),
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = poppinsFort,
-                fontSize = 24.sp
+                fontSize = 18.sp
+            )
+            Spacer(modifier = Modifier.height(5.dp))
+
+
+            RowActors(
+                modifier = Modifier,
+                persons = movie.persons.filter { (it.profession == "актеры").and(it.name != null) }
             )
 
+            Spacer(modifier = Modifier.height(16.dp))
 
-
-            RowPrimaryData(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = 8.dp),
-                movie = movie
+            Text(
+                text = "Создатели",
+                modifier = Modifier.padding(start = 16.dp),
+                fontWeight = FontWeight.SemiBold,
+                fontFamily = poppinsFort,
+                fontSize = 18.sp
             )
-
-            RowGenres(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = 5.dp),
-                movie = movie
-            )
-
-            RowScore(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = 5.dp),
-                movie = movie
-            )
-
-            Spacer(modifier = Modifier.height(15.dp))
-            val context = LocalContext.current
-            RowButtons(movie = movie, trailerClick = { link ->
-
-                if (link != null) {
-                    Intent(Intent.ACTION_VIEW).also {
-                        it.data = link.toUri()
-                        context.startActivity(it)
-                    }
-                }
-
-            }, movieDbState = movieDbState, movieViewModel = movieViewModel)
-
-            if (movie.description != null) {
-                Spacer(modifier = Modifier.height(16.dp))
-                RowDescription(movie = movie)
-            }
-
-            if (movie.persons != null) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Актеры",
-                    modifier = Modifier.padding(start = 16.dp),
-                    fontWeight = FontWeight.SemiBold,
-                    fontFamily = poppinsFort,
-                    fontSize = 18.sp
-                )
-                Spacer(modifier = Modifier.height(5.dp))
+            Spacer(modifier = Modifier.height(5.dp))
 
 
-                RowActors(
-                    modifier = Modifier,
-                    persons = movie.persons.filter { (it.profession == "актеры").and(it.name != null) },
-                    onSelectPerson = onSelectPerson
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = "Создатели",
-                    modifier = Modifier.padding(start = 16.dp),
-                    fontWeight = FontWeight.SemiBold,
-                    fontFamily = poppinsFort,
-                    fontSize = 18.sp
-                )
-                Spacer(modifier = Modifier.height(5.dp))
-
-
-                RowCreators(
-                    modifier = Modifier,
-                    persons = movie.persons.filter {
-                        (it.profession != "актеры" && it.profession != "актеры дубляжа").and(
-                            it.name != null
+            RowCreators(
+                modifier = Modifier,
+                persons = movie.persons.filter {
+                    (it.profession != "актеры" && it.profession != "актеры дубляжа").and(
+                        it.name != null
+                    )
+                }.sortedWith(
+                    compareByDescending<PersonOfMovie> {
+                        it.profession.equals(
+                            "режиссеры",
+                            true
                         )
-                    }.sortedWith(
-                        compareByDescending<PersonOfMovie> {
-                            it.profession.equals(
-                                "режиссеры",
-                                true
-                            )
-                        }
-                            .thenBy { it.profession }
-                    ),
-                    onSelectPerson = onSelectPerson
+                    }
+                        .thenBy { it.profession }
                 )
-            }
+            )
+        }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp)
-                    .height(50.dp)
-                    .clickable { onClickReviews(movie.id!!) }
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Рецензии",
-                    fontWeight = FontWeight.SemiBold,
-                    fontFamily = poppinsFort,
-                    fontSize = 18.sp
-                )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+                .height(50.dp)
+                .clickable { movieProfileViewModel.onIntent(MovieIntent.ToReviewScreen(movie.id!!)) }
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Рецензии",
+                fontWeight = FontWeight.SemiBold,
+                fontFamily = poppinsFort,
+                fontSize = 18.sp
+            )
 
-                Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
 
-                Image(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                    contentDescription = "Show reviews",
-                    modifier = Modifier.scale(0.8f)
-                )
-            }
+            Image(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                contentDescription = "Show reviews",
+                modifier = Modifier.scale(0.8f)
+            )
+        }
 
-            if (!movie.sequelsAndPrequels.isNullOrEmpty()) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Связанные фильмы",
-                    modifier = Modifier.padding(start = 16.dp),
-                    fontWeight = FontWeight.SemiBold,
-                    fontFamily = poppinsFort,
-                    fontSize = 18.sp
-                )
-                Spacer(modifier = Modifier.height(5.dp))
-                ListMovies(
-                    list = movie.sequelsAndPrequels,
-                    onSelectMovie = onSelectMovie,
-                    modifier = Modifier.padding(top = 10.dp)
-                )
-            }
+        if (!movie.sequelsAndPrequels.isNullOrEmpty()) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Связанные фильмы",
+                modifier = Modifier.padding(start = 16.dp),
+                fontWeight = FontWeight.SemiBold,
+                fontFamily = poppinsFort,
+                fontSize = 18.sp
+            )
+            Spacer(modifier = Modifier.height(5.dp))
+            ListMovies(
+                list = movie.sequelsAndPrequels,
+                onSelectMovie = { id -> movieProfileViewModel.onIntent(MovieIntent.ToMovieScreen(id)) },
+                modifier = Modifier.padding(top = 10.dp)
+            )
+        }
 
-            if (!movie.similarMovies.isNullOrEmpty()) {
-                Spacer(modifier = Modifier.height(15.dp))
-                Text(
-                    text = "Похожие фильмы",
-                    modifier = Modifier.padding(start = 16.dp),
-                    fontWeight = FontWeight.SemiBold,
-                    fontFamily = poppinsFort,
-                    fontSize = 18.sp
-                )
-                Spacer(modifier = Modifier.height(5.dp))
-                ListMovies(
-                    list = movie.similarMovies,
-                    onSelectMovie = onSelectMovie,
-                    modifier = Modifier.padding(top = 10.dp)
-                )
-            }
+        if (!movie.similarMovies.isNullOrEmpty()) {
+            Spacer(modifier = Modifier.height(15.dp))
+            Text(
+                text = "Похожие фильмы",
+                modifier = Modifier.padding(start = 16.dp),
+                fontWeight = FontWeight.SemiBold,
+                fontFamily = poppinsFort,
+                fontSize = 18.sp
+            )
+            Spacer(modifier = Modifier.height(5.dp))
+            ListMovies(
+                list = movie.similarMovies,
+                onSelectMovie = { id -> movieProfileViewModel.onIntent(MovieIntent.ToMovieScreen(id)) },
+                modifier = Modifier.padding(top = 10.dp)
+            )
         }
     }
 
-    LaunchedEffect(true) {
-        visible = true
-    }
 
 }
 
@@ -657,19 +606,17 @@ fun RowDescription(modifier: Modifier = Modifier, movie: MovieDTO) {
 fun TrailersBottomSheet(
     modifier: Modifier = Modifier,
     listOfTrailers: List<Trailer>,
-    isShowSheet: MutableState<Boolean>
+    movieProfileViewModel: MovieProfileViewModel = hiltViewModel()
 ) {
 
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false,
     )
 
-
-
     ModalBottomSheet(
         sheetState = sheetState,
         onDismissRequest = {
-            isShowSheet.value = false
+           movieProfileViewModel.onIntent(MovieIntent.HideTrailerSheet)
         }) {
         TrailersList(listOfTrailers = listOfTrailers)
 
@@ -729,22 +676,10 @@ fun TrailerItem(modifier: Modifier = Modifier, trailer: Trailer) {
 fun RowButtons(
     modifier: Modifier = Modifier,
     movie: MovieDTO,
-    trailerClick: (url: String?) -> Unit,
-    movieDbState: State<MovieDb?>,
-    movieViewModel: MovieViewModel
+    state: State<MovieState>,
+    movieProfileViewModel: MovieProfileViewModel = hiltViewModel()
 ) {
 
-    val isShowTrailersSheet = remember {
-        mutableStateOf(false)
-    }
-
-    val isShowCollectionSheet = remember {
-        mutableStateOf(false)
-    }
-
-    var bookmark by remember {
-        mutableStateOf(false)
-    }
 
     var isAminVisible by remember { mutableStateOf(false) }
 
@@ -789,10 +724,12 @@ fun RowButtons(
                         .background(MaterialTheme.colorScheme.secondaryContainer)
                         .clickable {
 
-                            if (movie.videos.trailers.size == 1)
-                                trailerClick(movie.videos.trailers[0].url)
-                            else
-                                isShowTrailersSheet.value = true
+                            if (movie.videos.trailers.size == 1) {
+                                movieProfileViewModel.onIntent(MovieIntent.PlayTrailer(movie.videos.trailers[0].url!!))
+
+                            } else
+                                movieProfileViewModel.onIntent(MovieIntent.ShowTrailerSheet)
+
 
                         }
                         .padding(0.dp)
@@ -831,12 +768,25 @@ fun RowButtons(
                     .clip(RoundedCornerShape(15.dp))
                     .background(MaterialTheme.colorScheme.secondaryContainer)
                     .clickable {
-                        if (movieDbState.value?.isViewed == true) {
-                            movieViewModel.setViewedToMovie(id = movie.id!!, collections = movie.lists, isViewed =  false)
+                        if (state.value.isExistMovieDb?.isViewed == true) {
+                            movieProfileViewModel.onIntent(
+                                MovieIntent.ViewedToMovie(
+                                    id = movie.id!!,
+                                    collections = movie.lists,
+                                    isViewed = false
+                                )
+                            )
+
                             isAminVisible = false
                             color = colorMaterial
                         } else {
-                            movieViewModel.setViewedToMovie(id = movie.id!!, collections = movie.lists, isViewed =  true)
+                            movieProfileViewModel.onIntent(
+                                MovieIntent.ViewedToMovie(
+                                    id = movie.id!!,
+                                    collections = movie.lists,
+                                    isViewed = true
+                                )
+                            )
                             isAminVisible = true
                             color = Purple40
                         }
@@ -844,7 +794,7 @@ fun RowButtons(
                     .padding(0.dp)
             ) {
                 Icon(
-                    painter = if (movieDbState.value?.isViewed == true) {
+                    painter = if (state.value.isExistMovieDb?.isViewed == true) {
                         color = Purple40
                         painterResource(R.drawable.ic_visibility_fill)
                     } else {
@@ -881,18 +831,31 @@ fun RowButtons(
                     .background(MaterialTheme.colorScheme.secondaryContainer)
                     .clickable { //bookmark = !bookmark
 
-                        if (movieDbState.value?.isBookmark == true) {
-                            movieViewModel.setBookmarkToMovie(id = movie.id!!, collections = movie.lists, isBookmark =  false)
+                        if (state.value.isExistMovieDb?.isBookmark == true) {
+
+                            movieProfileViewModel.onIntent(
+                                MovieIntent.BookmarkToMovie(
+                                    id = movie.id!!,
+                                    collections = movie.lists,
+                                    isBookmark = false
+                                )
+                            )
                             colorBookmark = colorMaterial
                         } else {
-                            movieViewModel.setBookmarkToMovie(id = movie.id!!, collections = movie.lists, isBookmark =  true)
+                            movieProfileViewModel.onIntent(
+                                MovieIntent.BookmarkToMovie(
+                                    id = movie.id!!,
+                                    collections = movie.lists,
+                                    isBookmark = true
+                                )
+                            )
                             colorBookmark = Purple40
                         }
                     }
                     .padding(0.dp)
             ) {
                 Icon(
-                    painter = if (movieDbState.value?.isBookmark == true) {
+                    painter = if (state.value.isExistMovieDb?.isBookmark == true) {
                         colorBookmark = Purple40
                         painterResource(
                             R.drawable.ic_bookmark_added_fill
@@ -922,7 +885,7 @@ fun RowButtons(
                     .clip(RoundedCornerShape(15.dp))
                     .background(MaterialTheme.colorScheme.secondaryContainer)
                     .clickable {
-                        isShowCollectionSheet.value = true
+                        movieProfileViewModel.onIntent(MovieIntent.ShowFoldersSheet)
                     }
                     .padding(0.dp)
             ) {
@@ -945,17 +908,15 @@ fun RowButtons(
 
     }
 
-    if (isShowTrailersSheet.value) {
+    if (state.value.isShowTrailerSheet) {
         TrailersBottomSheet(
-            listOfTrailers = movie.videos!!.trailers!!,
-            isShowSheet = isShowTrailersSheet
+            listOfTrailers = movie.videos!!.trailers!!
         )
     }
 
-    if (isShowCollectionSheet.value) {
+    if (state.value.isShowSheetFolders) {
         CollectionBottomSheet(
-            movie = movie,
-            isShowSheet = isShowCollectionSheet
+            movie = movie
         )
     }
 }
@@ -965,50 +926,31 @@ fun RowButtons(
 fun CollectionBottomSheet(
     modifier: Modifier = Modifier,
     movie: MovieDTO,
-    isShowSheet: MutableState<Boolean>,
-    movieViewModel: MovieViewModel = hiltViewModel(),
-    foldersViewModel: FoldersViewModel = hiltViewModel()
+    movieProfileViewModel: MovieProfileViewModel = hiltViewModel()
 ) {
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false,
     )
 
-    val state = foldersViewModel.state.collectAsState()
+    val state = movieProfileViewModel.state.collectAsState()
 
-    val stateAddMovieToFolder = movieViewModel.addMovieToFolderState.collectAsState()
-    val stateRemoveMovieFromFolder = movieViewModel.removeMovieFromFolderState.collectAsState()
-
-   /* LaunchedEffect(Unit) {
-        movieViewModel.getFolders()
-    }*/
 
     ModalBottomSheet(
         sheetState = sheetState,
         onDismissRequest = {
-            isShowSheet.value = false
+            movieProfileViewModel.onIntent(MovieIntent.HideFoldersSheet)
         }) {
-        Box(modifier = Modifier.fillMaxWidth().heightIn(max = LocalConfiguration.current.screenHeightDp.dp / 2)){
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = LocalConfiguration.current.screenHeightDp.dp / 2)
+        ) {
 
-            ShowCollectionList(state = state/*, onSelectFolder = { idFolder ->
-                if(state.value is ResultDb.Success){
-                    println("init 1")
-                    if((state.value as ResultDb.Success<List<FolderWithMovies>>).data.first {it.folder.folderId == idFolder}.movies.any { it.movieId == movie.id }){
-
-                        movieViewModel.removeMovieFromFolder(movie.id, idFolder)
-                        if(stateRemoveMovieFromFolder.value is ResultDb.Error){
-
-                        }
-                        println("init 3")
-                    }else{
-                        println("init 2")
-                        //movieViewModel.addMovieToDatabase()
-                        movieViewModel.addMovieToFolder(movie.id, idFolder, movie.lists)
-                        if(stateAddMovieToFolder.value is ResultDb.Error){
-
-                        }
-                    }
-                }
-            }*/, movieId = movie.id!!)
+            ShowCollectionList(
+                list = state.value.filters, onSelectFolder = { idFolder ->
+                   movieProfileViewModel.onIntent(MovieIntent.OnSelectFolder(idFolder, movie))
+                }, movieId = movie.id!!
+            )
 
         }
 
@@ -1020,8 +962,7 @@ fun CollectionBottomSheet(
 @Composable
 fun RowActors(
     modifier: Modifier = Modifier,
-    persons: List<PersonOfMovie>,
-    onSelectPerson: (Long) -> Unit
+    persons: List<PersonOfMovie>
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(15.dp),
@@ -1030,8 +971,7 @@ fun RowActors(
         items(persons) {
             CardActor(
                 person = it,
-                modifier = Modifier.width(70.dp),
-                onSelectPerson = onSelectPerson
+                modifier = Modifier.width(70.dp)
             )
         }
     }
@@ -1041,10 +981,16 @@ fun RowActors(
 fun CardActor(
     modifier: Modifier = Modifier,
     person: PersonOfMovie,
-    onSelectPerson: (Long) -> Unit
+    movieProfileViewModel: MovieProfileViewModel = hiltViewModel()
 ) {
 
-    Column(modifier = modifier.clickable { onSelectPerson(person.id) }) {
+    Column(modifier = modifier.clickable {
+        movieProfileViewModel.onIntent(
+            MovieIntent.ToPersonScreen(
+                person.id
+            )
+        )
+    }) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current).data(person.photo).crossfade(true)
                 .build(),
@@ -1075,8 +1021,7 @@ fun CardActor(
 @Composable
 fun RowCreators(
     modifier: Modifier = Modifier,
-    persons: List<PersonOfMovie>,
-    onSelectPerson: (Long) -> Unit
+    persons: List<PersonOfMovie>
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(15.dp),
@@ -1085,8 +1030,7 @@ fun RowCreators(
         items(persons) {
             CardCreator(
                 person = it,
-                modifier = Modifier.width(70.dp),
-                onSelectPerson = onSelectPerson
+                modifier = Modifier.width(70.dp)
             )
         }
     }
@@ -1096,10 +1040,16 @@ fun RowCreators(
 fun CardCreator(
     modifier: Modifier = Modifier,
     person: PersonOfMovie,
-    onSelectPerson: (Long) -> Unit
+    movieProfileViewModel: MovieProfileViewModel = hiltViewModel()
 ) {
 
-    Column(modifier = modifier.clickable { onSelectPerson(person.id) }) {
+    Column(modifier = modifier.clickable {
+        movieProfileViewModel.onIntent(
+            MovieIntent.ToPersonScreen(
+                person.id
+            )
+        )
+    }) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current).data(person.photo).crossfade(true)
                 .build(),
@@ -1279,7 +1229,6 @@ fun RowPrimaryData(modifier: Modifier = Modifier, movie: MovieDTO) {
 
                 Text(text = "•", color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
 
-                //Text(text = "•", color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
                 Text(
                     text = seasonCount.let { if (it == 1) "$it сезон" else if (it!! < 5) "$it сезона" else "$it сезонов" },
                     fontWeight = FontWeight.Medium,
@@ -1292,7 +1241,6 @@ fun RowPrimaryData(modifier: Modifier = Modifier, movie: MovieDTO) {
 
 
         if (movie.ageRating != null) {
-            //Text(text = "•", color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
 
             Text(text = "•", color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
 

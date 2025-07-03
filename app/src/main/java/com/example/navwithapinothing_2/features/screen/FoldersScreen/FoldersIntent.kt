@@ -9,4 +9,7 @@ sealed interface FoldersIntent {
     object ClickCreateFolder: FoldersIntent
     object HideBottomSheet: FoldersIntent
     object OnBack: FoldersIntent
+    data class UpdateNameFolder(val name:String): FoldersIntent
+    data class UpdateColor(val colorIndex: Int): FoldersIntent
+    data class UpdateImage(val imageIndex: Int): FoldersIntent
 }

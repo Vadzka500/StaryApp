@@ -68,9 +68,10 @@ import com.example.navwithapinothing_2.R
 import com.example.navwithapinothing_2.data.Result
 import com.example.navwithapinothing_2.models.collection.CollectionMovie
 import com.example.navwithapinothing_2.features.screen.InitRatingView
-import com.example.navwithapinothing_2.features.screen.MovieScreen.shimmerEffect
+
 import com.example.navwithapinothing_2.features.screen.MovieViewModel
 import com.example.navwithapinothing_2.features.screen.PersonScreen.ShimmerMovies
+import com.example.navwithapinothing_2.features.screen.shimmerEffect
 import com.example.navwithapinothing_2.features.theme.Purple40
 import com.example.navwithapinothing_2.features.theme.poppinsFort
 import kotlin.math.absoluteValue

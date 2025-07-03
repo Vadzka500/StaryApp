@@ -1,7 +1,6 @@
 package com.example.navwithapinothing_2.features.screen.FolderScreen
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,7 +27,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.navwithapinothing_2.data.ResultDb
 import com.example.navwithapinothing_2.database.models.Folder
 import com.example.navwithapinothing_2.features.screen.MovieViewModel
-import com.example.navwithapinothing_2.features.screen.MoviesListScreen.ListMovies
 import com.example.navwithapinothing_2.features.theme.poppinsFort
 
 /**
@@ -41,18 +38,17 @@ import com.example.navwithapinothing_2.features.theme.poppinsFort
 fun UserCollectionScreen(
     modifier: Modifier = Modifier,
     folderId: Long,
-    movieViewModel: MovieViewModel = hiltViewModel()
+    folderViewModel: FolderViewModel = hiltViewModel()
 ) {
-    val state = movieViewModel.getFolderState.collectAsState()
+    val state = folderViewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        movieViewModel.getFolder(folderId)
+        folderViewModel.onIntent(FolderIntent.LoadFolder(folderId))
     }
 
     Column(modifier = modifier) {
 
-
-        if (state.value is ResultDb.Success<Folder>) {
+        if (state.value.folder != null) {
 
             Row(
                 modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
@@ -62,7 +58,7 @@ fun UserCollectionScreen(
                 Image(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "Назад")
 
                 Text(
-                    (state.value as ResultDb.Success<Folder>).data.folderName,
+                    state.value.folder!!.folderName,
                     modifier = Modifier.padding(start = 16.dp),
                     fontWeight = FontWeight.Bold,
                     fontFamily = poppinsFort,
@@ -85,7 +81,7 @@ fun UserCollectionScreen(
                 Image(
                     painter = painterResource(
                         LocalContext.current.resources.getIdentifier(
-                            (state.value as ResultDb.Success<Folder>).data.imageResName,
+                            state.value.folder!!.imageResName,
                             "drawable",
                             LocalContext.current.packageName
                         )

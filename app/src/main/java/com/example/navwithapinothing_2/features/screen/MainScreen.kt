@@ -197,7 +197,10 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 val review: Review = it.toRoute()
                 ReviewScreen(
                     modifier = Modifier.padding(paddingValues = innerPadding),
-                    id = review.idMovie
+                    id = review.idMovie,
+                    onBack = {
+                        navController.popBackStack()
+                    }
                 )
                 //AnimScreen()
             }
@@ -283,6 +286,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
                     modifier = Modifier.padding(paddingValues = innerPadding),
                     onSelectCollection = { label, slug ->
                         navController.navigate(ListMovies(label, slug))
+                    }, onBack = {
+                        navController.popBackStack()
                     })
             }
 

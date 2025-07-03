@@ -39,9 +39,10 @@ import com.example.moviesapi.models.Response
 import com.example.moviesapi.models.movie.MovieDTO
 import com.example.moviesapi.models.movie.Person
 import com.example.navwithapinothing_2.data.Result
-import com.example.navwithapinothing_2.features.screen.MovieScreen.shimmerEffect
+
 import com.example.navwithapinothing_2.features.screen.MoviesListScreen.ListMovies
 import com.example.navwithapinothing_2.features.screen.MovieViewModel
+import com.example.navwithapinothing_2.features.screen.shimmerEffect
 import com.example.navwithapinothing_2.features.theme.poppinsFort
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter

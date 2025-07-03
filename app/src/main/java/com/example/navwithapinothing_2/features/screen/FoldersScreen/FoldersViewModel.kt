@@ -53,6 +53,17 @@ class FoldersViewModel @Inject constructor(
             FoldersIntent.HideBottomSheet -> {
                 _state.update { it.copy(isShowBottomSheet = false) }
             }
+
+            is FoldersIntent.UpdateNameFolder -> {
+                _state.update { it.copy(textFieldFolderValue = data.name) }
+            }
+
+            is FoldersIntent.UpdateColor -> {
+                _state.update { it.copy(selectColor = data.colorIndex) }
+            }
+            is FoldersIntent.UpdateImage -> {
+                _state.update { it.copy(selectImage = data.imageIndex) }
+            }
         }
     }
 

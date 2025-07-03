@@ -43,7 +43,7 @@ interface MovieDao {
 
     @Query("Select Movie.* from Movie " +
             "inner join CollectionsMovie on CollectionsMovie.movieId = Movie.movieId " +
-            "where collectionSlug = :slug")
+            "where collectionSlug = :slug and isViewed = true")
     fun getMovieByCollectionCount(slug: String): Flow<List<MovieDb>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

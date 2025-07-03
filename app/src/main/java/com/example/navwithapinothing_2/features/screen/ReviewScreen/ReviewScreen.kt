@@ -38,6 +38,7 @@ import androidx.compose.material.icons.filled.ThumbDown
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -69,10 +70,14 @@ import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.navwithapinothing_2.R
 import com.example.navwithapinothing_2.data.Result
+import com.example.navwithapinothing_2.features.screen.FoldersScreen.FoldersIntent
 import com.example.navwithapinothing_2.models.UserReview
-import com.example.navwithapinothing_2.features.screen.MovieScreen.shimmerEffect
+
 import com.example.navwithapinothing_2.features.screen.MovieViewModel
+import com.example.navwithapinothing_2.features.screen.shimmerEffect
+import com.example.navwithapinothing_2.features.screen.toAnnotatedString
 import com.example.navwithapinothing_2.features.theme.poppinsFort
+import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -83,70 +88,25 @@ import java.util.Locale
  * @Date: 11.06.2025
  */
 
-fun Spanned.toAnnotatedString(): AnnotatedString {
-    return buildAnnotatedString {
-        val text = this@toAnnotatedString.toString()
-        append(text)
-
-        getSpans(0, length, CharacterStyle::class.java).forEach { span ->
-            val start = getSpanStart(span)
-            val end = getSpanEnd(span)
-
-            when (span) {
-                is StyleSpan -> when (span.style) {
-                    Typeface.BOLD -> addStyle(SpanStyle(fontWeight = FontWeight.Bold), start, end)
-                    Typeface.ITALIC -> addStyle(SpanStyle(fontStyle = FontStyle.Italic), start, end)
-                }
-
-                is ForegroundColorSpan -> {
-                    addStyle(
-                        SpanStyle(color = Color(span.foregroundColor)),
-                        start,
-                        end
-                    )
-                }
-
-                is UnderlineSpan -> {
-                    addStyle(
-                        SpanStyle(textDecoration = TextDecoration.Underline),
-                        start,
-                        end
-                    )
-                }
-
-                is URLSpan -> {
-                    addStringAnnotation(
-                        tag = "URL",
-                        annotation = span.url,
-                        start = start,
-                        end = end
-                    )
-                    addStyle(
-                        SpanStyle(
-                            color = Color.Blue,
-                            textDecoration = TextDecoration.Underline
-                        ),
-                        start,
-                        end
-                    )
-                }
-            }
-        }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun ReviewScreen(
     modifier: Modifier = Modifier,
     id: Long,
-    movieViewModel: MovieViewModel = hiltViewModel()
+    reviewViewModel: ReviewViewModel = hiltViewModel(),
+    onBack:() -> Unit
 ) {
 
-    val stateReview = movieViewModel.state_movie_reviews.collectAsState()
+    val stateReview = reviewViewModel.state.collectAsState()
 
-    var countReviews by remember {
-        mutableStateOf("")
+    LaunchedEffect(Unit) {
+        reviewViewModel.effect.collectLatest { effect ->
+            when(effect){
+                ReviewEffect.OnBack -> {
+                    onBack()
+                }
+            }
+        }
     }
 
     var isLoad by remember {
@@ -156,15 +116,27 @@ fun ReviewScreen(
 
 
     LaunchedEffect(Unit) {
-        movieViewModel.getReviewsById(id)
+        reviewViewModel.onIntent(ReviewIntent.LoadReviews(id))
     }
+
     Column() {
         Row(
             modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            Image(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "Назад")
+            Icon(
+                imageVector = Icons.Default.ArrowBackIosNew,
+                contentDescription = "",
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(
+                        CircleShape
+                    )
+                    .clickable {
+                        reviewViewModel.onIntent(ReviewIntent.OnBack)
+                    }
+                    .padding(8.dp))
 
             Text(
                 "Рецензии",
@@ -175,7 +147,7 @@ fun ReviewScreen(
             )
 
             Text(
-                countReviews,
+                stateReview.value.countReviews.toString(),
                 modifier = Modifier.padding(start = 8.dp),
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = poppinsFort,
@@ -183,24 +155,24 @@ fun ReviewScreen(
             )
         }
 
-        AnimatedContent(targetState = stateReview.value, transitionSpec = {
+        AnimatedContent(targetState = stateReview.value.reviews, transitionSpec = {
             fadeIn() togetherWith fadeOut()
-        }, label = "") { data ->
+        }, label = "") { state ->
 
-            when (data) {
-                is Result.Error<*> -> {
+            when (val data = state) {
+
+                is ReviewResult.Error -> {
                     EmptyList()
                 }
 
-                Result.Loading -> {
+                ReviewResult.Loading -> {
                     InitShimmer()
                 }
 
-                is Result.Success<*> -> {
+                is ReviewResult.Success -> {
                     isLoad = false
-                    if ((data.data as List<UserReview>).isNotEmpty()) {
-                        InitList(list = data.data, modifier = modifier)
-                        countReviews = data.data.size.toString()
+                    if ((data.list as List<UserReview>).isNotEmpty()) {
+                        InitList(list = data.list, modifier = modifier)
                     } else {
                         EmptyList()
                     }
@@ -208,42 +180,6 @@ fun ReviewScreen(
             }
 
         }
-
-       /* AnimatedVisibility(isLoad) {
-            InitShimmer()
-        }
-
-        Crossfade(targetState = isLoad) { isLoad ->
-            if(isLoad){
-
-            }else{
-
-            }
-        }*/
-
-
-
-        /*when (data) {
-            is Result.Error<*> -> {
-                isLoad = false
-                EmptyList()
-            }
-
-            Result.Loading -> {
-
-            }
-
-            is Result.Success<*> -> {
-                isLoad = false
-                if ((data.data as List<UserReview>).isNotEmpty()) {
-                    InitList(list = data.data, modifier = modifier)
-                    countReviews = data.data.size.toString()
-                } else {
-                    EmptyList()
-                }
-            }
-        }*/
-
 
 
     }
@@ -279,18 +215,20 @@ fun InitShimmer(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
     ) {
-        repeat(4){
-            InitShimmerBox(modifier = Modifier.then(
-                if (it == 0) {
-                    Modifier
-                        .padding(top = 16.dp)
-                        .padding(bottom = 16.dp)
-                } else {
-                    Modifier
-                        .padding(top = 2.dp)
-                        .padding(bottom = 16.dp)
-                }
-            ))
+        repeat(4) {
+            InitShimmerBox(
+                modifier = Modifier.then(
+                    if (it == 0) {
+                        Modifier
+                            .padding(top = 16.dp)
+                            .padding(bottom = 16.dp)
+                    } else {
+                        Modifier
+                            .padding(top = 2.dp)
+                            .padding(bottom = 16.dp)
+                    }
+                )
+            )
 
         }
     }
@@ -325,23 +263,25 @@ fun InitList(modifier: Modifier = Modifier, list: List<UserReview>) {
                 .fillMaxSize(),
             state = listState,
 
-        ) {
+            ) {
             itemsIndexed(list, key = { _, item -> item.id }) { index, item ->
 
                 val isExpanded = expandedState[item.id] ?: false
 
                 InitReview(
-                    modifier = Modifier.animateItem().then(
-                        if (index == 0) {
-                            Modifier
-                                .padding(top = 16.dp)
-                                .padding(bottom = 16.dp)
-                        } else {
-                            Modifier
-                                .padding(top = 2.dp)
-                                .padding(bottom = 16.dp)
-                        }
-                    ), item = item, isExpanded, onToggleExpanded = {
+                    modifier = Modifier
+                        .animateItem()
+                        .then(
+                            if (index == 0) {
+                                Modifier
+                                    .padding(top = 16.dp)
+                                    .padding(bottom = 16.dp)
+                            } else {
+                                Modifier
+                                    .padding(top = 2.dp)
+                                    .padding(bottom = 16.dp)
+                            }
+                        ), item = item, isExpanded, onToggleExpanded = {
                         expandedState[item.id] = !isExpanded
                     }
                 )

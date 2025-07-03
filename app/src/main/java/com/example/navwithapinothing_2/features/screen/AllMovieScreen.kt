@@ -80,7 +80,6 @@ import coil.request.ImageRequest
 import com.example.moviesapi.models.movie.MovieDTO
 import com.example.navwithapinothing_2.R
 import com.example.navwithapinothing_2.data.Result
-import com.example.navwithapinothing_2.features.screen.MovieScreen.shimmerEffect
 import com.example.navwithapinothing_2.features.screen.MoviesListScreen.MovieCardGrid
 import com.example.navwithapinothing_2.features.screen.MoviesListScreen.MovieCardGridShimmer
 import com.example.navwithapinothing_2.features.theme.Purple40
