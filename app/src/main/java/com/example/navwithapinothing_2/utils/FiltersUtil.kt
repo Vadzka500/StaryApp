@@ -17,7 +17,6 @@ class FiltersUtil {
             Color(0xFFF48FB1),
             Color(0xFFE6EE9C),
             Color(0xFF80DEEA),
-
             Color(0xFFA1887F),
             Color(0xFF9575CD),
             Color(0xFFEA80FC),
@@ -27,10 +26,19 @@ class FiltersUtil {
         )
 
         val listOfImage = listOf(
+            null,
+            R.drawable.planet,
+            R.drawable.venus,
+            R.drawable.visual,
+            R.drawable.img_planet_1,
+            R.drawable.img_planet_2,
+            R.drawable.img_planet_3,
+            R.drawable.img_love,
+            R.drawable.img_moon,
+            R.drawable.img_ok,
+            R.drawable.star,
             R.drawable.rotate,
-            R.drawable.add,
-            R.drawable.sun,
-            R.drawable.snowflake,
+            R.drawable.add
         )
     }
 }

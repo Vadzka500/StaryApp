@@ -119,7 +119,7 @@ fun ReviewScreen(
         reviewViewModel.onIntent(ReviewIntent.LoadReviews(id))
     }
 
-    Column() {
+    Column(modifier = modifier) {
         Row(
             modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -172,7 +172,7 @@ fun ReviewScreen(
                 is ReviewResult.Success -> {
                     isLoad = false
                     if ((data.list as List<UserReview>).isNotEmpty()) {
-                        InitList(list = data.list, modifier = modifier)
+                        InitList(list = data.list)
                     } else {
                         EmptyList()
                     }

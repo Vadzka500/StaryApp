@@ -76,12 +76,9 @@ fun FiltersPopup(
         skipPartiallyExpanded = false,
     )
 
-    movieViewModel.getCollections()
+    //movieViewModel.getCollections() //+++
     val state = movieViewModel.state_collection.collectAsState()
 
-    /* val listOfCollection = remember {
-         mutableStateOf<List<CollectionMovie>>(listOf())
-     }*/
 
     val listOfCollection = remember {
         mutableStateMapOf<CollectionMovie, Boolean>()

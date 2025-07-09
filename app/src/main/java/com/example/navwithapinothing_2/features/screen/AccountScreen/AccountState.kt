@@ -8,14 +8,15 @@ import com.example.moviesapi.models.movie.MovieDTO
  * @Date: 26.06.2025
  */
 data class AccountState (
-    var resultAccountViewed : ResultAccountData = ResultAccountData.None,
-    var resultAccountBookmark : ResultAccountData = ResultAccountData.None,
-    var countViewed: Int = 0,
-    var countBookmark: Int = 0,
-    var isShowEmptyHint: Boolean = false,
-    var bookmarkScrollOffSet:Int = 0,
-    var scrollViewed: ScrollState = ScrollState(),
-    var scrollBookmark: ScrollState = ScrollState()
+    val resultAccountViewed : ResultAccountData = ResultAccountData.None,
+    val resultAccountBookmark : ResultAccountData = ResultAccountData.None,
+    val countViewed: Int = 0,
+    val countBookmark: Int = 0,
+    val countFolders: Int = 0,
+    val isShowEmptyHint: Boolean = false,
+    val bookmarkScrollOffSet:Int = 0,
+    val scrollViewed: ScrollState = ScrollState(),
+    val scrollBookmark: ScrollState = ScrollState()
 )
 
 data class ScrollState(

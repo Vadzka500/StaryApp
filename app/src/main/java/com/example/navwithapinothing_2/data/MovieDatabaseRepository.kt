@@ -4,6 +4,7 @@ import com.example.navwithapinothing_2.database.MovieDao
 import com.example.navwithapinothing_2.database.models.CollectionMovieDb
 import com.example.navwithapinothing_2.database.models.Folder
 import com.example.navwithapinothing_2.database.models.FolderMovieRef
+import com.example.navwithapinothing_2.database.models.FolderWithMovies
 import com.example.navwithapinothing_2.database.models.MovieDb
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -66,7 +67,7 @@ class MovieDatabaseRepository @Inject constructor(private val movieDao: MovieDao
         }
     }
 
-    suspend fun getFolder(id: Long): ResultDb<Folder>{
+    suspend fun getFolder(id: Long): ResultDb<FolderWithMovies>{
         return try{
             ResultDb.Success(movieDao.getFolder(id))
         }catch (e: Exception){
@@ -131,6 +132,15 @@ class MovieDatabaseRepository @Inject constructor(private val movieDao: MovieDao
     suspend fun removeMovie(id: Long): ResultDb<Unit>{
         return try{
             movieDao.removeMovie(id)
+            ResultDb.Success(Unit)
+        }catch (e: Exception){
+            ResultDb.Error
+        }
+    }
+
+    suspend fun removeFolder(folder: Folder): ResultDb<Unit>{
+        return try{
+            movieDao.removeFolder(folder)
             ResultDb.Success(Unit)
         }catch (e: Exception){
             ResultDb.Error

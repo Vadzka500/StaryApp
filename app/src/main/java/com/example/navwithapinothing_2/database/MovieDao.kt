@@ -55,6 +55,9 @@ interface MovieDao {
     @Query("Delete from Movie where movieId = :id")
     suspend fun removeMovie(id: Long)
 
+    @Delete
+    suspend fun removeFolder(folder: Folder)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addFolder(folder: Folder)
 
@@ -69,7 +72,7 @@ interface MovieDao {
     fun getFolders(): Flow<List<FolderWithMovies>>
 
     @Query("Select * from Folder where folderId = :id")
-    suspend fun getFolder(id: Long): Folder
+    suspend fun getFolder(id: Long): FolderWithMovies
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addMovieToFolder(ref: FolderMovieRef)

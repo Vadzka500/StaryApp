@@ -8,4 +8,5 @@ package com.example.navwithapinothing_2.features.screen.FoldersScreen
 sealed class FoldersEffect {
     data class ToFolderScreen(val id: Long): FoldersEffect()
     object OnBack: FoldersEffect()
+    data class ErrorToast(val str: String): FoldersEffect()
 }

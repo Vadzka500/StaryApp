@@ -8,7 +8,10 @@ import com.example.navwithapinothing_2.data.MovieRepository
 import com.example.navwithapinothing_2.data.Result
 import com.example.navwithapinothing_2.data.ResultDb
 import com.example.navwithapinothing_2.database.models.MovieDb
+import com.example.navwithapinothing_2.usecase.GetAllFoldersUseCase
 import com.example.navwithapinothing_2.usecase.GetBookmarkMoviesUseCase
+import com.example.navwithapinothing_2.usecase.GetFolderUseCase
+import com.example.navwithapinothing_2.usecase.GetFoldersCountUseCase
 import com.example.navwithapinothing_2.usecase.GetMovieByIdsUseCase
 import com.example.navwithapinothing_2.usecase.GetViewedMoviesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,7 +35,8 @@ import javax.inject.Inject
 class AccountViewModel @Inject constructor(
     private val getViewedMoviesUseCase: GetViewedMoviesUseCase,
     private val getBookmarkMoviesUseCase: GetBookmarkMoviesUseCase,
-    private val getMovieByIdsUseCase: GetMovieByIdsUseCase
+    private val getMovieByIdsUseCase: GetMovieByIdsUseCase,
+    private val getAllFoldersUseCase: GetAllFoldersUseCase
 
 ) : ViewModel() {
 
@@ -52,8 +56,9 @@ class AccountViewModel @Inject constructor(
 
             combine(
                 getViewedMoviesUseCase(),
-                getBookmarkMoviesUseCase()
-            ) { viewedResult, bookmarkResult -> viewedResult to bookmarkResult }.collect { (viewed, bookmark) ->
+                getBookmarkMoviesUseCase(),
+                getAllFoldersUseCase()
+            ) { viewedResult, bookmarkResult, foldersResult -> Triple(viewedResult,bookmarkResult,foldersResult) }.collect { (viewed, bookmark, folders) ->
 
                 if (viewed is ResultDb.Success) {
                     _state.update { it.copy(countViewed = viewed.data.size) }
@@ -84,6 +89,10 @@ class AccountViewModel @Inject constructor(
                         )
                     }
                     updateHintState()
+                }
+
+                if(folders is ResultDb.Success){
+                    _state.update { it.copy(countFolders = folders.data.size) }
                 }
 
 

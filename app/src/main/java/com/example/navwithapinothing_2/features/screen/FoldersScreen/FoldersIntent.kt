@@ -11,5 +11,6 @@ sealed interface FoldersIntent {
     object OnBack: FoldersIntent
     data class UpdateNameFolder(val name:String): FoldersIntent
     data class UpdateColor(val colorIndex: Int): FoldersIntent
-    data class UpdateImage(val imageIndex: Int): FoldersIntent
+    data class UpdateImage(val imageIndex: Int, val selectImageName: String?): FoldersIntent
+    object AddFolder: FoldersIntent
 }

@@ -1,7 +1,9 @@
 package com.example.navwithapinothing_2.features.screen
 
 import android.annotation.SuppressLint
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -31,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -60,6 +63,9 @@ import com.example.navwithapinothing_2.navigation.UserCollections
 
 import com.example.navwithapinothing_2.navigation.listOfScreens
 import com.example.navwithapinothing_2.features.screen.AccountScreen.AccountScreen
+import com.example.navwithapinothing_2.features.screen.AccountScreen.AccountViewModel
+import com.example.navwithapinothing_2.features.screen.BookmarkMoviesScreen.BookmarkMoviesScreen
+import com.example.navwithapinothing_2.features.screen.CollectionMoviesScreen.AllMoviesScreen
 import com.example.navwithapinothing_2.features.screen.CollectionsScreen.CollectionsScreen
 import com.example.navwithapinothing_2.features.screen.MovieScreen.MovieScreen
 
@@ -69,22 +75,20 @@ import com.example.navwithapinothing_2.features.screen.ReviewScreen.ReviewScreen
 import com.example.navwithapinothing_2.features.screen.SearchScreen.SearchScreen
 import com.example.navwithapinothing_2.features.screen.FolderScreen.UserCollectionScreen
 import com.example.navwithapinothing_2.features.screen.FoldersScreen.UserCollectionsScreen
+import com.example.navwithapinothing_2.features.screen.ViewedMoviesScreen.ViewedMoviesScreen
 import com.example.navwithapinothing_2.features.screen.slider.SliderScreen
 import com.example.navwithapinothing_2.features.theme.poppinsFort
 import com.example.navwithapinothing_2.navigation.Bookmark
 import com.example.navwithapinothing_2.navigation.Viewed
 
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
 
     val navController = rememberNavController()
 
     val movieViewModel = viewModel<MovieViewModel>()
-
-    LaunchedEffect(Unit) {
-        movieViewModel.initFolders()
-    }
 
     fun toErrorScreen() {
         if (navController.currentBackStackEntry?.destination?.route != ErrorM::class.qualifiedName) {
@@ -133,17 +137,6 @@ fun MainScreen(modifier: Modifier = Modifier) {
                     toErrorScreen = {
                         toErrorScreen()
                     },
-                    toRandomScreen = {
-                        navController.navigate(Slider) {
-                            /*  popUpTo(navController.graph.findStartDestination().id) {
-                                  saveState = true
-                              }*/
-
-                            //  launchSingleTop = true
-                            //  restoreState = true
-
-                        }
-                    },
                     onSelectMovie = { id ->
                         println("click 1")
                         navController.navigate(Profile(id)) {
@@ -177,7 +170,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 println("id = " + profile.id)
                 MovieScreen(
                     id = profile.id,
-                    modifier = Modifier.padding(paddingValues = innerPadding),
+                    modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
                     onSelectMovie = { id ->
                         navController.navigate(Profile(id)) {
 
@@ -252,16 +245,29 @@ fun MainScreen(modifier: Modifier = Modifier) {
                     },
                     toBookmarkScreen = {
                         navController.navigate(Bookmark)
-                    })
+                    }
+                )
             }
 
             composable<Viewed> { navBackStackEntry ->
-
+                ViewedMoviesScreen(onBack = {
+                    navController.popBackStack()
+                }, onSelectMovie = { id ->
+                    navController.navigate(Profile(id))
+                }, modifier = Modifier.padding(paddingValues = innerPadding))
             }
 
             composable<Bookmark> { navBackStackEntry ->
-
+                BookmarkMoviesScreen(
+                    onBack = {
+                    navController.popBackStack()
+                },
+                    onSelectMovie = { id ->
+                        navController.navigate(Profile(id))
+                    }, modifier = Modifier.padding(paddingValues = innerPadding)
+                )
             }
+
 
             composable<UserCollections> { navBackStackEntry ->
                 UserCollectionsScreen(
@@ -277,6 +283,12 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 val userCollection: UserCollection = navBackStackEntry.toRoute()
                 UserCollectionScreen(
                     folderId = userCollection.id,
+                    onBack = {
+                        navController.popBackStack()
+                    },
+                    onSelectMovie = {
+                        navController.navigate(Profile(it))
+                    },
                     modifier = Modifier.padding(innerPadding)
                 )
             }
@@ -359,7 +371,7 @@ fun NavigationBottomBar(modifier: Modifier = Modifier, navController: NavControl
 
 
 
-    NavigationBar(modifier = Modifier.height(60.dp)) {
+    NavigationBar(modifier = Modifier.height(75.dp)) {
 
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination

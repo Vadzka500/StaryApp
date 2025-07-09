@@ -14,11 +14,11 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,14 +26,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.moviesapi.models.Response
-import com.example.moviesapi.models.movie.MovieDTO
 import com.example.navwithapinothing_2.R
-import com.example.navwithapinothing_2.data.Result
+
+import com.example.navwithapinothing_2.features.screen.CollectionMoviesScreen.InitList
+import com.example.navwithapinothing_2.features.screen.CollectionMoviesScreen.LoadList
 import com.example.navwithapinothing_2.features.screen.FilterSection
-import com.example.navwithapinothing_2.features.screen.InitList
-import com.example.navwithapinothing_2.features.screen.MovieViewModel
-import com.example.navwithapinothing_2.features.screen.ViewType
+import kotlinx.coroutines.flow.collectLatest
 
 /**
  * @Author: Vadim
@@ -43,24 +41,18 @@ import com.example.navwithapinothing_2.features.screen.ViewType
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
-    movieViewModel: MovieViewModel = hiltViewModel(),
+    searchViewModel: SearchViewModel = hiltViewModel(),
     onSelectMovie: (Long) -> Unit
 ) {
-    //var text by remember { mutableStateOf("") }
 
-    val state = movieViewModel.state_movie_search.collectAsState()
-    val text = movieViewModel.searchStr
+    val state = searchViewModel.state.collectAsState()
 
-    val isVisibleFilter = remember {
-        mutableStateOf(false)
-    }
-
-    val list = remember {
-        mutableStateOf<List<MovieDTO>>(listOf())
-    }
-
-    val viewType = remember {
-        mutableStateOf(ViewType.GRID)
+    LaunchedEffect(Unit) {
+        searchViewModel.effect.collectLatest { effect ->
+            when (effect) {
+                is SearchEffect.OnSelectMovie -> onSelectMovie(effect.id)
+            }
+        }
     }
 
     Box() {
@@ -69,8 +61,12 @@ fun SearchScreen(
 
 
                 TextField(
-                    value = text.value,
-                    onValueChange = { text.value = it },
+                    value = state.value.searchStr,
+                    onValueChange = { searchViewModel.onIntent(SearchIntent.UpdateSearchStr(it)) },
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent
+                    ),
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Search,
@@ -100,37 +96,56 @@ fun SearchScreen(
                             CircleShape
                         )
                         .clickable {
-                            isVisibleFilter.value = !isVisibleFilter.value
+                            searchViewModel.onIntent(SearchIntent.IsShowFilter(!state.value.isVisibleFilter))
+
                         }
                         .padding(8.dp)) // внутренний отступ, чтобы иконка была не впритык)
 
             }
 
 
-            when (val data = state.value) {
-                is Result.Error<*> -> {
-                    println("error")
+            when (val data = state.value.list) {
+
+
+                is SearchResult.Error -> {
+
                 }
 
-                Result.Loading -> {
-                    println("loading")
+                SearchResult.Loading -> {
+                    LoadList()
                 }
 
-                is Result.Success<*> -> {
-                    println("success")
-                    list.value = (data.data as Response<*>).docs as List<MovieDTO>
-                    InitList(modifier = Modifier, list = list, onClick = onSelectMovie, viewType)
-
+                is SearchResult.Success -> {
+                    InitList(modifier = Modifier, list = data.list, onClick = { id ->
+                        searchViewModel.onIntent(
+                            SearchIntent.OnSelectMovie(id)
+                        )
+                    }, viewType = state.value.viewMode)
                 }
             }
 
-
         }
-        FilterSection(modifier = Modifier.padding(top = 85.dp), list = list, isVisibleFilter = isVisibleFilter, viewType = viewType, false)
-    }
+        FilterSection(
+            modifier = Modifier.padding(top = 135.dp),
+            isVisibleFilter = state.value.isVisibleFilter,
+            viewType = state.value.viewMode,
+            false,
+            onHideFilter = {
+                searchViewModel.onIntent(SearchIntent.IsShowFilter(false))
+            },
+            setGridView = {
+                searchViewModel.onIntent(SearchIntent.SetGridViewMode)
+            },
+            setListView = {
+                searchViewModel.onIntent(SearchIntent.SetListViewMode)
+            }, toggleSortDirection = {
 
-    LaunchedEffect(text.value) {
-        movieViewModel.getSearchMovies(text.value)
+            }, setSortType = {
+
+            }, sortList = {
+
+            }
+        )
     }
 
 }

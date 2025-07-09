@@ -119,7 +119,7 @@ fun AccountScreen(
                     }
 
                     ResultAccountData.Loading -> {
-                        ShimmerMovies(visible = false)
+                        ShimmerMovies()
                     }
 
                     ResultAccountData.None -> {
@@ -144,7 +144,7 @@ fun AccountScreen(
                     }
 
                     ResultAccountData.Loading -> {
-                        ShimmerMovies(visible = false)
+                        ShimmerMovies()
                     }
 
                     ResultAccountData.None -> {
@@ -203,7 +203,9 @@ fun ListOfCollectionBlock(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { }
+            .clickable {
+                accountViewModel.onIntent(AccountIntent.ToBookmarkScreen)
+            }
             .padding(horizontal = 16.dp)
             .padding(vertical = 16.dp), verticalAlignment = Alignment.CenterVertically
     ) {
@@ -238,7 +240,9 @@ fun ListOfCollectionBlock(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { }
+            .clickable {
+                accountViewModel.onIntent(AccountIntent.ToViewedScreen)
+            }
             .padding(horizontal = 16.dp)
             .padding(vertical = 16.dp), verticalAlignment = Alignment.CenterVertically
     ) {
@@ -298,6 +302,12 @@ fun ListOfCollectionBlock(
         )
 
         Spacer(modifier = Modifier.weight(1f))
+
+        Text(
+            text = state.value.countFolders.toString(), fontWeight = FontWeight.SemiBold,
+            fontFamily = poppinsFort,
+            fontSize = 14.sp
+        )
 
 
     }

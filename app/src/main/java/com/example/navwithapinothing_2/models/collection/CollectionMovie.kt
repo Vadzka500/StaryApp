@@ -1,6 +1,5 @@
 package com.example.navwithapinothing_2.models.collection
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable

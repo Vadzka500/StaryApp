@@ -1,4 +1,4 @@
-package com.example.navwithapinothing_2.features.screen
+package com.example.navwithapinothing_2.features.screen.CollectionMoviesScreen
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -52,7 +52,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -80,34 +79,27 @@ import coil.request.ImageRequest
 import com.example.moviesapi.models.movie.MovieDTO
 import com.example.navwithapinothing_2.R
 import com.example.navwithapinothing_2.data.Result
+import com.example.navwithapinothing_2.features.screen.FilterSection
+import com.example.navwithapinothing_2.features.screen.MovieViewModel
 import com.example.navwithapinothing_2.features.screen.MoviesListScreen.MovieCardGrid
 import com.example.navwithapinothing_2.features.screen.MoviesListScreen.MovieCardGridShimmer
+import com.example.navwithapinothing_2.features.screen.SearchScreen.SearchIntent
+
+import com.example.navwithapinothing_2.features.screen.shimmerEffect
 import com.example.navwithapinothing_2.features.theme.Purple40
 
 import com.example.navwithapinothing_2.features.theme.poppinsFort
+import com.example.navwithapinothing_2.models.common.ListMoviesResult
+import com.example.navwithapinothing_2.models.common.SortDirection
+import com.example.navwithapinothing_2.models.common.SortType
+import com.example.navwithapinothing_2.models.common.ViewMode
 import com.example.navwithapinothing_2.utils.ScoreManager
+import kotlinx.coroutines.flow.collectLatest
 
 /**
  * @Author: Vadim
  * @Date: 23.04.2025
  */
-
-enum class ViewType {
-    GRID,
-    LIST
-}
-
-enum class SortType {
-    DATE,
-    NAME,
-    RATING,
-    NONE
-}
-
-enum class SortDirection {
-    ASCENDING,
-    DESCENDING
-}
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -117,65 +109,53 @@ fun AllMoviesScreen(
     slug: String,
     onSelectMovie: (Long) -> Unit,
     onBack: () -> Unit,
-    movieViewModel: MovieViewModel = hiltViewModel(),
-    lifeCycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+    listMoviesViewModel: ListMoviesViewModel = hiltViewModel()
 ) {
 
-    val state = movieViewModel.state_movie_collections_all.collectAsState()
+    val state = listMoviesViewModel.state.collectAsState()
 
     LaunchedEffect(slug) {
-        movieViewModel.getMoviesByCollection(slug, limit = 250)
+        if (state.value.list == ListMoviesResult.Loading)
+            listMoviesViewModel.getMoviesByCollection(slug, limit = 250)
     }
 
 
+    LaunchedEffect(Unit) {
+        listMoviesViewModel.effect.collectLatest { effect ->
+            when (effect) {
+                is ListMoviesEffect.OnBack -> {
+                    onBack()
+                }
 
-
-
-
-    /*BackHandler {
-        movieViewModel.resetStateMovieByCollectionAll()
-        navController.navigateUp()
-    }*/
-
-
-    val isVisibleFilter = remember {
-        mutableStateOf(false)
+                is ListMoviesEffect.OnSelectMovie -> {
+                    onSelectMovie(effect.id)
+                }
+            }
+        }
     }
 
-    val list = remember {
-        mutableStateOf<List<MovieDTO>>(listOf())
-    }
+    Box(modifier = modifier.padding(top = 5.dp)) {
 
-    val viewType = remember {
-        mutableStateOf(ViewType.GRID)
-    }
+        when (val data = state.value.list) {
 
+            is ListMoviesResult.Error -> {
 
-    Box(modifier = Modifier.padding(top = 5.dp)) {
-
-        when (val data = state.value) {
-
-            Result.Loading -> {
-                LoadList()
             }
 
-            is Result.Success<*> -> {
+            ListMoviesResult.Loading -> {
+                LoadList(modifier = Modifier.padding(top = 54.dp))
+            }
 
-                if (list.value.isEmpty()) {
-                    list.value = data.data as List<MovieDTO>
-
-                }
+            is ListMoviesResult.Success -> {
                 InitList(
                     modifier = Modifier.padding(top = 54.dp),
-                    list = list,
-                    onClick = onSelectMovie,
-                    viewType = viewType
+                    list = data.list,
+                    onClick = { id ->
+                        listMoviesViewModel.onIntent(ListMoviesIntent.OnSelectMovie(id))
+
+                    },
+                    viewType = state.value.viewMode
                 )
-                //sortMovies(list, sortType, sortDirection)
-            }
-
-            is Result.Error<*> -> {
-
             }
         }
 
@@ -205,7 +185,7 @@ fun AllMoviesScreen(
                         CircleShape
                     )
                     .clickable {
-                        onBack()
+                        listMoviesViewModel.onIntent(ListMoviesIntent.OnBack)
                     }
                     .padding(8.dp)
                     .align(Alignment.CenterStart))
@@ -219,7 +199,7 @@ fun AllMoviesScreen(
                         CircleShape
                     )
                     .clickable {
-                        isVisibleFilter.value = !isVisibleFilter.value
+                        listMoviesViewModel.onIntent(ListMoviesIntent.IsShowFilter(!state.value.isShowFilter))
                     }
                     .padding(8.dp)
                     .align(Alignment.CenterEnd))
@@ -227,275 +207,39 @@ fun AllMoviesScreen(
         }
 
 
-
     }
 
-    FilterSection(modifier = Modifier.padding(top = 55.dp), list = list, isVisibleFilter = isVisibleFilter, viewType = viewType, true)
-}
-
-@Composable
-fun FilterSection(modifier: Modifier = Modifier, list: MutableState<List<MovieDTO>>, isVisibleFilter: MutableState<Boolean>, viewType: MutableState<ViewType>, isShowSort : Boolean) {
-
-
-
-    val sortDirection = remember {
-        mutableStateOf(SortDirection.DESCENDING)
-    }
-
-    val sortType = remember {
-        mutableStateOf(SortType.NONE)
-    }
-
-    val alpha by animateFloatAsState(
-        targetValue = if (isVisibleFilter.value) 0.4f else 0f,
-        animationSpec = tween(durationMillis = 300)
+    FilterSection(
+        modifier = Modifier.padding(top = 105.dp),
+        isVisibleFilter = state.value.isShowFilter,
+        viewType = state.value.viewMode,
+        true,
+        onHideFilter = {
+            listMoviesViewModel.onIntent(ListMoviesIntent.IsShowFilter(false))
+        },
+        setGridView = {
+            listMoviesViewModel.onIntent(ListMoviesIntent.SetGridViewMode)
+        },
+        setListView = {
+            listMoviesViewModel.onIntent(ListMoviesIntent.SetListViewMode)
+        }, sortType = state.value.sortType, sortDirection = state.value.sortDirection
+        , toggleSortDirection = {
+            listMoviesViewModel.onIntent(ListMoviesIntent.ToggleSortDirection)
+        }, setSortType = {
+            listMoviesViewModel.onIntent(ListMoviesIntent.SetSortType(it))
+        }, sortList = {
+            listMoviesViewModel.onIntent(ListMoviesIntent.SortMovies)
+        }
     )
-
-    AnimatedVisibility(
-        visible = isVisibleFilter.value,
-        enter = fadeIn(),
-        exit = fadeOut(),
-        modifier = modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = alpha))
-            //.cloudy(radius = 15)
-            .clickable(indication = null, interactionSource = null) { isVisibleFilter.value = false }
-    ) {
-
-    }
-
-
-    AnimatedVisibility(
-        visible = isVisibleFilter.value,
-        enter = expandVertically(),
-        exit = shrinkVertically(),
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        ElevatedCard(
-            elevation = CardDefaults.cardElevation(),
-            shape = RoundedCornerShape(
-                topStart = 0.dp,
-                topEnd = 0.dp,
-                bottomStart = 8.dp,
-                bottomEnd = 8.dp
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background)
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 12.dp)
-            ) {
-
-                Text(
-                    "Вид:", fontWeight = FontWeight.Medium,
-                    fontFamily = poppinsFort,
-                    fontSize = 16.sp,
-                )
-
-                FlowRow(
-                    modifier = Modifier.padding(top = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    FilterChip(
-                        modifier = Modifier,
-                        shape = RoundedCornerShape(15.dp),
-                        onClick = {
-                            viewType.value = ViewType.GRID
-                        },
-                        label = {
-                            Text(
-                                "Таблица", fontWeight = FontWeight.Medium,
-                                fontFamily = poppinsFort,
-                                fontSize = 14.sp
-                            )
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.GridView,
-                                contentDescription = "",
-                                tint = Purple40
-                            )
-                        },
-                        selected = viewType.value == ViewType.GRID,
-
-                        )
-
-                    FilterChip(
-                        modifier = Modifier,
-                        shape = RoundedCornerShape(15.dp),
-                        onClick = {
-                            viewType.value = ViewType.LIST
-                        },
-                        label = {
-                            Text("Список")
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.ViewList,
-                                contentDescription = "",
-                                tint = Purple40
-                            )
-                        },
-                        selected = viewType.value == ViewType.LIST,
-
-                        )
-                }
-                if(isShowSort) {
-                    Text(
-                        "Сортировка:",
-                        modifier = Modifier.padding(top = 12.dp),
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = poppinsFort,
-                        fontSize = 16.sp
-                    )
-
-                    FlowRow(
-                        modifier = Modifier.padding(top = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        FilterChip(
-                            modifier = Modifier,
-                            shape = RoundedCornerShape(15.dp),
-                            onClick = {
-                                if (sortType.value == SortType.NAME) sortDirection.value =
-                                    sortDirection.value.toggle()
-                                sortType.value = SortType.NAME
-
-                                sortMovies(list, sortType.value, sortDirection.value)
-                            },
-                            label = {
-                                Text("Название")
-                            },
-                            leadingIcon = {
-                                if (sortType.value == SortType.NAME)
-                                    Icon(
-                                        imageVector = if (sortDirection.value == SortDirection.ASCENDING) Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
-                                        contentDescription = "",
-                                        tint = Purple40
-                                    )
-                            },
-                            selected = sortType.value == SortType.NAME,
-
-                            )
-
-                        FilterChip(
-                            modifier = Modifier,
-                            shape = RoundedCornerShape(15.dp),
-                            onClick = {
-                                if (sortType.value == SortType.RATING) sortDirection.value =
-                                    sortDirection.value.toggle()
-                                sortType.value = SortType.RATING
-
-                                sortMovies(list, sortType.value, sortDirection.value)
-                            },
-                            label = {
-                                Text("Оценка")
-                            },
-                            leadingIcon = {
-                                if (sortType.value == SortType.RATING)
-                                    Icon(
-                                        imageVector = if (sortDirection.value == SortDirection.ASCENDING) Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
-                                        contentDescription = "",
-                                        tint = Purple40
-                                    )
-                            },
-                            selected = sortType.value == SortType.RATING,
-
-                            )
-
-                        FilterChip(
-                            modifier = Modifier,
-                            shape = RoundedCornerShape(15.dp),
-                            onClick = {
-                                if (sortType.value == SortType.DATE) sortDirection.value =
-                                    sortDirection.value.toggle()
-                                sortType.value = SortType.DATE
-
-                                sortMovies(list, sortType.value, sortDirection.value)
-                            },
-                            label = {
-                                Text("Дата выхода")
-                            },
-                            leadingIcon = {
-                                if (sortType.value == SortType.DATE)
-                                    Icon(
-                                        imageVector = if (sortDirection.value == SortDirection.ASCENDING) Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
-                                        contentDescription = "",
-                                        tint = Purple40
-                                    )
-                            },
-                            selected = sortType.value == SortType.DATE,
-
-                            )
-                    }
-                }
-            }
-        }
-    }
 }
 
-fun SortDirection.toggle(): SortDirection {
-    return if (this == SortDirection.DESCENDING) SortDirection.ASCENDING else SortDirection.DESCENDING
-}
-
-
-fun sortMovies(
-    list: MutableState<List<MovieDTO>>,
-    sortType: SortType,
-    sortDirection: SortDirection
-) {
-
-
-    when (sortType) {
-        SortType.DATE -> {
-            if (sortDirection == SortDirection.DESCENDING) {
-                list.value =
-                    list.value.sortedBy { if (!it.isSeries!!) it.year else if (it.releaseYears != null) it.releaseYears[0].start else null }
-                        .reversed()
-            } else {
-                list.value =
-                    list.value.sortedBy { if (!it.isSeries!!) it.year else if (it.releaseYears != null) it.releaseYears[0].start else null }
-            }
-        }
-
-        SortType.NAME -> {
-
-            if (sortDirection == SortDirection.DESCENDING) list.value =
-                list.value.sortedBy { it.name }
-                    .reversed()
-            else list.value = list.value.sortedBy { it.name }
-
-        }
-
-        SortType.RATING -> {
-            if (sortDirection == SortDirection.DESCENDING) list.value =
-                list.value.sortedBy { it.rating?.kp }
-                    .reversed()
-            else list.value = list.value.sortedBy { it.rating?.kp }
-        }
-
-        SortType.NONE -> {
-
-        }
-    }
-
-}
 
 
 @Composable
 fun LoadList(modifier: Modifier = Modifier) {
     LazyVerticalGrid(
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .padding(top = 54.dp),
+        modifier = modifier
+            .padding(horizontal = 16.dp),
         columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -507,16 +251,21 @@ fun LoadList(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun InitList(modifier: Modifier = Modifier, list: State<List<MovieDTO>>, onClick: (Long) -> Unit, viewType: State<ViewType>) {
+fun InitList(
+    modifier: Modifier = Modifier,
+    list: List<MovieDTO>,
+    onClick: (Long) -> Unit,
+    viewType: ViewMode
+) {
 
     AnimatedContent(
         targetState = viewType,
         transitionSpec = { fadeIn() togetherWith ExitTransition.None }) { viewType ->
 
-        if (viewType.value == ViewType.GRID) {
-            GridView(modifier, list = list.value, onClick = onClick)
+        if (viewType == ViewMode.GRID) {
+            GridView(modifier, list = list, onClick = onClick)
         } else {
-            ListView(modifier, list = list.value, onClick = onClick)
+            ListView(modifier, list = list, onClick = onClick)
         }
     }
 

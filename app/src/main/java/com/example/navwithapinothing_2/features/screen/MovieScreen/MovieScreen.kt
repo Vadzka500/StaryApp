@@ -163,13 +163,13 @@ fun MovieScreen(
             }
 
             ResultMovie.Loading -> {
-                ShimmerScreen()
+                ShimmerScreen(modifier = modifier)
             }
 
             is ResultMovie.Success -> {
                 InitMovie(
                     state = state,
-                    modifier = modifier,
+                    modifier = modifier
                 )
             }
         }
@@ -179,15 +179,16 @@ fun MovieScreen(
 
 @Composable
 fun ShimmerScreen(modifier: Modifier = Modifier) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize()) {
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(300.dp), contentAlignment = Alignment.Center
+                .height(400.dp), contentAlignment = Alignment.Center
         ) {
             Box(
                 modifier = Modifier
+                    .padding(top = 40.dp)
                     .width(160.dp)
                     .height(240.dp)
                     .clip(
@@ -361,7 +362,7 @@ fun InitMovie(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(300.dp), contentAlignment = Alignment.Center
+                .height(400.dp), contentAlignment = Alignment.Center
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current).data(movie.backdrop?.url)
@@ -370,7 +371,7 @@ fun InitMovie(
 
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp)
+                    .height(400.dp)
                     .blur(radiusX = 3.dp, radiusY = 3.dp)
                     .graphicsLayer { alpha = 0.99f }
                     .drawWithContent {
@@ -396,6 +397,7 @@ fun InitMovie(
                     ).crossfade(true).build(),
                 contentDescription = "",
                 modifier = Modifier
+                    .padding(top = 40.dp)
                     .width(160.dp)
                     .height(240.dp)
                     .clip(

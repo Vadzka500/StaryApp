@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,10 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,11 +35,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.navwithapinothing_2.data.Result
 import com.example.navwithapinothing_2.models.collection.CollectionMovie
 
-import com.example.navwithapinothing_2.features.screen.MovieViewModel
-import com.example.navwithapinothing_2.features.screen.ReviewScreen.ReviewIntent
 import com.example.navwithapinothing_2.features.screen.shimmerEffect
 import com.example.navwithapinothing_2.features.theme.poppinsFort
 import kotlinx.coroutines.flow.collectLatest
@@ -82,7 +74,7 @@ fun CollectionsScreen(
     }
 
 
-    Column {
+    Column(modifier = modifier) {
         Row(
             modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -136,7 +128,7 @@ fun CollectionsScreen(
                 is CollectionsResult.Success -> {
                     ShowCollections(
                         list = data.list as List<CollectionMovie>,
-                        modifier = modifier
+                        modifier = Modifier
                     )
                 }
             }

@@ -37,7 +37,7 @@ data class Folder(
     @PrimaryKey(autoGenerate = true) var folderId: Long = 0,
     var folderName: String,
     val color: Int,
-    val imageResName: String
+    val imageResName: String?
 
 )
 

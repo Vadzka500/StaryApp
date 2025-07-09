@@ -2,9 +2,6 @@ package com.example.navwithapinothing_2.features.screen.MoviesListScreen
 
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -74,196 +71,101 @@ import com.example.navwithapinothing_2.features.screen.PersonScreen.ShimmerMovie
 import com.example.navwithapinothing_2.features.screen.shimmerEffect
 import com.example.navwithapinothing_2.features.theme.Purple40
 import com.example.navwithapinothing_2.features.theme.poppinsFort
+import com.example.navwithapinothing_2.models.common.ListMoviesResult
+import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.absoluteValue
 
 @Composable
 @Preview
 fun ListScreen(
     modifier: Modifier = Modifier,
-    movieViewModel: MovieViewModel = hiltViewModel(),
-    toRandomScreen: () -> Unit,
+    mainViewModel: MainViewModel = hiltViewModel(),
     onSelectMovie: (Long) -> Unit,
     onSelectListMovies: (String, String) -> Unit,
     toErrorScreen: () -> Unit,
     toCollectionScreen: () -> Unit
 ) {
-    val collection = movieViewModel.state_collection.collectAsState()
-    val movie_ = movieViewModel.state_movies_collection.collectAsState()
-    val movie_list_ = movieViewModel.state_movie_home.collectAsState()
+
+    val state = mainViewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        mainViewModel.effect.collectLatest { effect ->
+            when (effect) {
+                is MainEffect.OnSelectCollection -> {
+                    onSelectListMovies(effect.name, effect.slug)
+                }
+
+                is MainEffect.OnSelectMovie -> {
+                    onSelectMovie(effect.id)
+                }
+
+                MainEffect.OsSelectCollections -> {
+                    toCollectionScreen()
+                }
+
+                MainEffect.ToErrorScreen -> {
+                    toErrorScreen()
+                }
+            }
+        }
+    }
+
+    MainScreen(
+        state = state,
+        toErrorScreen = {
+            mainViewModel.onIntent(MainIntent.ToErrorScreen)
+        },
+        toCollectionScreen = {
+            mainViewModel.onIntent(MainIntent.OsSelectCollections)
+        }, onSelectMovie = {
+            mainViewModel.onIntent(MainIntent.OnSelectMovie(it))
+        }, onSelectListMovies = { name, slug ->
+            mainViewModel.onIntent(MainIntent.OnSelectCollection(name, slug))
+        }, modifier = modifier
+    )
 
 
+}
 
-    val configuration = LocalConfiguration.current
-    val height = (configuration.screenWidthDp - 90) * 1.5
-
-    val heightBox = height + 30
-
+@Composable
+private fun MainScreen(
+    state: State<MainState>,
+    onSelectMovie: (Long) -> Unit,
+    toErrorScreen: () -> Unit,
+    onSelectListMovies: (String, String) -> Unit,
+    toCollectionScreen: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
 
     ) {
 
-
         item {
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(heightBox.dp)
-            ) {
-
-
-                AnimatedContent(
-                    targetState = movie_.value,
-                    /*transitionSpec = { fadeIn() togetherWith ExitTransition.None }*/) { state ->
-                    when (state) {
-
-                        Result.Loading -> {
-                            ShimmerTop()
-                        }
-
-                        is Result.Success<*> -> {
-
-                            Column(modifier = Modifier.padding(top = 16.dp)) {
-
-                                val pagerState =
-                                    rememberPagerState(
-                                        initialPage = 0,
-                                        pageCount = { (state.data as List<MovieDTO>).size })
-
-
-                                Text(
-                                    "Топ ожидаемых фильмов",
-                                    fontSize = 22.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier
-                                        .padding(start = 20.dp)
-                                        .padding(bottom = 12.dp)
-                                )
-
-                                HorizontalPager(
-                                    state = pagerState,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(height.dp)
-                                        .padding(top = 4.dp),
-                                    contentPadding = PaddingValues(end = 89.dp, start = 16.dp)
-                                ) { page ->
-                                    InitPagerCard(
-                                        index = page,
-                                        pagerState = pagerState,
-                                        item = (state.data as List<MovieDTO>)[page],
-                                        onSelectMovie = onSelectMovie
-                                    )
-                                }
-                            }
-
-
-                        }
-
-                        is Result.Error<*> -> {
-                            LaunchedEffect(Unit) {
-                                toErrorScreen()
-                            }
-
-                        }
-                    }
-                }
-
-            }
+            TopBannedList(
+                state = state,
+                toErrorScreen = toErrorScreen,
+                onSelectMovie = onSelectMovie
+            )
         }
 
         item {
 
-            AnimatedContent(
-
-                targetState = movie_list_.value,
-                /*transitionSpec = { fadeIn() togetherWith ExitTransition.None }*/) { state ->
-
-                when (state) {
-                    is Result.Error<*> -> {
-                        toErrorScreen()
-                    }
-
-                    is Result.Loading -> {
-                        Column {
-                            ShimmerMovies(visible = false)
-                            ShimmerMovies(visible = false)
-                            ShimmerMovies(visible = false)
-                            ShimmerMovies(visible = false)
-
-                        }
-                    }
-
-                    is Result.Success<*> -> {
-
-                        Column {
-                            val d = (state.data as Map<*, *>)
-
-                            d.forEach { result ->
-
-
-                                when (val collection = result.value) {
-
-                                    Result.Loading -> {
-
-                                    }
-
-                                    is Result.Success<*> -> {
-
-
-                                        InitRow(
-                                            label = (result.key as Pair<*, *>).first.toString(),
-                                            onClick = {
-                                                onSelectListMovies(
-                                                    (result.key as Pair<*, *>).first.toString(),
-                                                    (result.key as Pair<*, *>).second.toString()
-                                                )
-                                            })
-
-                                        LazyRow(
-                                            modifier = Modifier.padding(top = 10.dp),
-                                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                            contentPadding = PaddingValues(horizontal = 16.dp)
-                                        ) {
-
-                                            itemsIndexed((collection.data as List<MovieDTO>).take(10), key = {_, item -> item.id!!}) { index, item, ->
-
-                                                MovieCard(
-                                                    item = (collection.data as List<MovieDTO>)[index]!!,
-                                                    index = index,
-                                                    onSelectMovie = onSelectMovie
-                                                )
-
-                                            }
-                                        }
-
-                                    }
-
-                                    is Result.Error<*> -> {
-
-                                    }
-                                }
-
-
-                            }
-                        }
-
-                    }
-                }
-            }
-
+            MainListMovies(
+                state = state,
+                toErrorScreen = toErrorScreen,
+                onSelectMovie = onSelectMovie,
+                onSelectListMovies = onSelectListMovies
+            )
         }
-
-
-
 
 
         item {
 
             InitCollections(
-                state = collection,
+                state = state,
                 toCollectionScreen = toCollectionScreen,
                 onSelectCollection = onSelectListMovies,
                 toErrorScreen = toErrorScreen
@@ -272,13 +174,169 @@ fun ListScreen(
 
 
     }
+}
 
-    LaunchedEffect(Unit) {
-        movieViewModel.getHomeData()
-        movieViewModel.getCollections()
+@Composable
+fun TopBannedList(
+    state: State<MainState>,
+    onSelectMovie: (Long) -> Unit,
+    toErrorScreen: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+
+    val configuration = LocalConfiguration.current
+    val height = (configuration.screenWidthDp - 90) * 1.5
+    val heightBox = height + 30
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(heightBox.dp)
+    ) {
+
+
+        AnimatedContent(
+            targetState = state.value.listTopBanned,
+            /*transitionSpec = { fadeIn() togetherWith ExitTransition.None }*/
+        ) { state ->
+            when (state) {
+                is ListMoviesResult.Error -> {
+                    LaunchedEffect(Unit) {
+                        toErrorScreen()
+                    }
+                }
+
+                ListMoviesResult.Loading -> {
+                    ShimmerTop()
+                }
+
+                is ListMoviesResult.Success -> {
+                    Column(modifier = Modifier.padding(top = 16.dp)) {
+
+                        val pagerState =
+                            rememberPagerState(
+                                initialPage = 0,
+                                pageCount = { state.list.size })
+
+
+                        Text(
+                            "Топ ожидаемых фильмов",
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .padding(start = 20.dp)
+                                .padding(bottom = 12.dp)
+                        )
+
+                        HorizontalPager(
+                            state = pagerState,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(height.dp)
+                                .padding(top = 4.dp),
+                            contentPadding = PaddingValues(end = 89.dp, start = 16.dp)
+                        ) { page ->
+                            InitPagerCard(
+                                index = page,
+                                pagerState = pagerState,
+                                item = state.list[page],
+                                onSelectMovie = onSelectMovie
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
     }
+}
+
+@Composable
+fun MainListMovies(
+    state: State<MainState>,
+    onSelectMovie: (Long) -> Unit,
+    toErrorScreen: () -> Unit,
+    onSelectListMovies: (String, String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AnimatedContent(
+
+        targetState = state.value.listHomePage,
+        /*transitionSpec = { fadeIn() togetherWith ExitTransition.None }*/
+    ) { state ->
+
+        when (state) {
+
+            ListHomePageResult.Error -> {
+                toErrorScreen()
+            }
+
+            ListHomePageResult.Loading -> {
+                Column {
+                    ShimmerMovies()
+                    ShimmerMovies()
+                    ShimmerMovies()
+                    ShimmerMovies()
+                }
+            }
+
+            is ListHomePageResult.Success -> {
+                Column {
+                    val d = (state.data as Map<*, *>)
+
+                    d.forEach { result ->
 
 
+                        when (val collection = result.value) {
+
+                            Result.Loading -> {
+
+                            }
+
+                            is Result.Success<*> -> {
+
+
+                                InitRow(
+                                    label = (result.key as Pair<*, *>).first.toString(),
+                                    onClick = {
+                                        onSelectListMovies(
+                                            (result.key as Pair<*, *>).first.toString(),
+                                            (result.key as Pair<*, *>).second.toString()
+                                        )
+                                    })
+
+                                LazyRow(
+                                    modifier = Modifier.padding(top = 10.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    contentPadding = PaddingValues(horizontal = 16.dp)
+                                ) {
+
+                                    itemsIndexed(
+                                        (collection.data as List<MovieDTO>).take(10),
+                                        key = { _, item -> item.id!! }) { index, item ->
+
+                                        MovieCard(
+                                            item = (collection.data as List<MovieDTO>)[index]!!,
+                                            index = index,
+                                            onSelectMovie = onSelectMovie
+                                        )
+
+                                    }
+                                }
+
+                            }
+
+                            is Result.Error<*> -> {
+
+                            }
+                        }
+
+
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -363,28 +421,27 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 @Preview
 fun InitCollections(
     modifier: Modifier = Modifier,
-    state: State<Result>,
+    state: State<MainState>,
     toCollectionScreen: () -> Unit,
     onSelectCollection: (String, String) -> Unit,
     toErrorScreen: () -> Unit
 ) {
-    when (val data = state.value) {
+    when (val data = state.value.listCollection) {
 
+        ListCollectionResult.Error -> {
+            toErrorScreen()
+        }
 
-        Result.Loading -> {
+        ListCollectionResult.Loading -> {
 
         }
 
-        is Result.Success<*> -> {
+        is ListCollectionResult.Success -> {
             ShowCollection(
                 list = data.data as List<CollectionMovie>,
                 toCollectionScreen = toCollectionScreen,
                 onSelectCollection = onSelectCollection
             )
-        }
-
-        is Result.Error<*> -> {
-            toErrorScreen()
         }
     }
 }
@@ -422,7 +479,12 @@ fun InitRow(modifier: Modifier = Modifier, label: String, onClick: () -> Unit) {
                 onClick()
             }
         )
-        Icon(modifier = Modifier.size(14.dp), imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = "Все", tint = Purple40)
+        Icon(
+            modifier = Modifier.size(14.dp),
+            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+            contentDescription = "Все",
+            tint = Purple40
+        )
     }
 }
 
@@ -525,7 +587,9 @@ fun InitPagerCard(
                 model = item.poster?.url,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize().shimmerEffect()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .shimmerEffect()
 
             )
         }
@@ -587,7 +651,8 @@ fun MovieCard(
                         if (isShimmer) Modifier.shimmerEffect()
                         else Modifier
                     ),
-                model = ImageRequest.Builder(LocalContext.current).data(item.poster?.previewUrl).crossfade(true)
+                model = ImageRequest.Builder(LocalContext.current).data(item.poster?.previewUrl)
+                    .crossfade(true)
 
                     .listener(onStart = {
                         scale = ContentScale.Crop

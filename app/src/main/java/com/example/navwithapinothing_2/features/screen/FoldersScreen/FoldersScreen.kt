@@ -1,5 +1,7 @@
 package com.example.navwithapinothing_2.features.screen.FoldersScreen
 
+import android.widget.Toast
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,8 +22,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
@@ -36,6 +41,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,6 +52,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,6 +64,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -85,6 +93,7 @@ fun UserCollectionsScreen(
 ) {
 
     val state = foldersViewModel.state.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         foldersViewModel.effect.collectLatest { effect ->
@@ -95,6 +104,10 @@ fun UserCollectionsScreen(
 
                 is FoldersEffect.ToFolderScreen -> {
                     onSelectFolder(data.id)
+                }
+
+                is FoldersEffect.ErrorToast -> {
+                    Toast.makeText(context, data.str, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -196,18 +209,26 @@ fun ShowCreateFolderBottomSheet(
 fun CreateSheetData(
     modifier: Modifier = Modifier,
     state: State<FoldersState>,
-    foldersViewModel: FoldersViewModel = hiltViewModel()
+    foldersViewModel: FoldersViewModel = hiltViewModel(),
 ) {
 
+    val context = LocalContext.current
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .verticalScroll(scrollState)
             .padding(horizontal = 16.dp)
     ) {
         TextField(
             modifier = Modifier.fillMaxWidth(),
             value = state.value.textFieldFolderValue,
+            isError = state.value.isErrorEmptyName,
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent
+            ),
             onValueChange = { foldersViewModel.onIntent(FoldersIntent.UpdateNameFolder(it)) },
             label = {
                 Text(
@@ -232,7 +253,7 @@ fun CreateSheetData(
             modifier = Modifier,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            itemsIndexed(items = FiltersUtil.listOfColors) { index, item ->
+            itemsIndexed(items = state.value.listOfColors) { index, item ->
                 Card(
                     modifier = Modifier.size(48.dp),
                     border = BorderStroke(
@@ -264,22 +285,29 @@ fun CreateSheetData(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
-            itemsIndexed(FiltersUtil.listOfImage) { index, item ->
+            itemsIndexed(state.value.listOfImages) { index, item ->
                 Card(
                     modifier = Modifier.size(96.dp),
-                    onClick = { foldersViewModel.onIntent(FoldersIntent.UpdateImage(index)) },
+                    onClick = {
+
+                        val name = if( item != null )context.resources.getResourceEntryName(item) else null
+                        foldersViewModel.onIntent(FoldersIntent.UpdateImage(index, name))
+                    },
                     border = BorderStroke(
                         if (state.value.selectImage == index) 3.dp else 0.dp,
                         MaterialTheme.colorScheme.outlineVariant
                     )
                 ) {
-                    Image(
-                        painter = painterResource(item),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .rotate(40f)
-                    )
+                    if(item != null) {
+                        Image(
+                            painter = painterResource(item),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .rotate(40f)
+                                .padding(4.dp)
+                        )
+                    }
                 }
 
             }
@@ -318,20 +346,22 @@ fun CreateSheetData(
                     Row(
 
                     ) {
-                        Image(
-                            painter = painterResource(
-                                FiltersUtil.listOfImage[state.value.selectImage]
-                            ),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .width(150.dp)
-                                .offset(y = 30.dp, x = (-10).dp)
-                                .rotate(40f)
-                        )
+                        if(FiltersUtil.listOfImage[state.value.selectImage] != null) {
+                            Image(
+                                painter = painterResource(
+                                    FiltersUtil.listOfImage[state.value.selectImage]!!
+                                ),
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .width(150.dp)
+                                    .offset(y = 30.dp, x = (-10).dp)
+                                    .rotate(40f)
+                            )
+                        }
                         Column(
                             modifier = Modifier
-                                .fillMaxWidth()
+                                .fillMaxSize()
                                 .padding(16.dp)
                                 .padding(start = 16.dp)
                                 .padding(top = 16.dp),
@@ -341,6 +371,8 @@ fun CreateSheetData(
                                 state.value.textFieldFolderValue,
                                 fontWeight = FontWeight.SemiBold,
                                 fontFamily = poppinsFort,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
                                 color = MaterialTheme.colorScheme.onSecondary,
                                 fontSize = 22.sp,
                                 textAlign = TextAlign.Center
@@ -358,7 +390,7 @@ fun CreateSheetData(
             }
         }
 
-        Button(onClick = {}) {
+        Button(modifier = Modifier.fillMaxWidth(), onClick = { foldersViewModel.onIntent(FoldersIntent.AddFolder) }) {
             Text("Добавить коллекцию")
         }
 
@@ -372,7 +404,11 @@ fun ShowCollectionList(
     movieId: Long = -1,
     onSelectFolder: (Long) -> Unit
 ) {
+    val lazyListState = rememberLazyListState()
 
+    var count by remember {
+        mutableIntStateOf(0)
+    }
 
     when (val data = list) {
         is ResultFilterData.Error -> {
@@ -384,10 +420,18 @@ fun ShowCollectionList(
         }
 
         is ResultFilterData.Success -> {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .animateContentSize(),
+                state = lazyListState
+            ) {
+                if (count == 0)
+                    count = (data.data as List<FolderWithMovies>).size
                 itemsIndexed(
                     (data.data as List<FolderWithMovies>),
                     key = { _, folder -> folder.folder.folderId }) { index, folder ->
+
                     InitFolderItem(
                         folder = folder,
                         index = index,
@@ -395,6 +439,13 @@ fun ShowCollectionList(
                         onSelectFolder = { id ->
                             onSelectFolder(id)
                         })
+                }
+            }
+
+            LaunchedEffect(data.data.size) {
+                if (data.data.size > count) {
+                    lazyListState.animateScrollToItem(0)
+                    count = data.data.size
                 }
             }
         }
@@ -444,24 +495,26 @@ fun InitFolderItem(
             Row(
 
             ) {
-                Image(
-                    painter = painterResource(
-                        LocalContext.current.resources.getIdentifier(
-                            folder.folder.imageResName,
-                            "drawable",
-                            LocalContext.current.packageName
-                        )
-                    ),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(150.dp)
-                        .offset(y = 30.dp, x = (-10).dp)
-                        .rotate(40f)
-                )
+                if(folder.folder.imageResName != null) {
+                    Image(
+                        painter = painterResource(
+                            LocalContext.current.resources.getIdentifier(
+                                folder.folder.imageResName,
+                                "drawable",
+                                LocalContext.current.packageName
+                            )
+                        ),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(150.dp)
+                            .offset(y = 30.dp, x = (-10).dp)
+                            .rotate(40f)
+                    )
+                }
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxSize()
                         .padding(16.dp)
                         .padding(start = 16.dp)
                         .padding(top = 16.dp),
@@ -472,6 +525,8 @@ fun InitFolderItem(
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = poppinsFort,
                         color = MaterialTheme.colorScheme.onSecondary,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
                         fontSize = 22.sp,
                         textAlign = TextAlign.Center
                     )
