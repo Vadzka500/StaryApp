@@ -1,10 +1,8 @@
 package com.example.navwithapinothing_2.data
 
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
+
 import com.example.moviesapi.models.Response
 import com.example.navwithapinothing_2.api.MovieApi
-import com.example.navwithapinothing_2.api.MoviePagingSource
 import com.example.navwithapinothing_2.models.Filter
 import com.example.navwithapinothing_2.features.screen.slider.listOfYears
 import kotlinx.coroutines.flow.Flow
@@ -15,26 +13,6 @@ import javax.inject.Inject
 
 
 class MovieRepository @Inject constructor(private val movieService: MovieApi) {
-
-    fun getAll() = Pager(
-        config = PagingConfig(pageSize = 10),
-        pagingSourceFactory = { MoviePagingSource(movieService) }
-    ).flow
-
-    /* fun getAll(): Flow<Result> {
-         val f =  flow {
-             emit(movieService.getAllMovies())
-         }.map { result ->
-             if(result.isSuccessful){
-                 println("body = " + result.body().toString())
-                 Result.Success(result.body()!!)
-             }else{
-                 println("error = " + result.message())
-                 Result.Error
-             }
-         }
-         return f
-     }*/
 
     fun getRandom(filter: Filter? = null): Flow<Result> {
 
@@ -78,16 +56,6 @@ class MovieRepository @Inject constructor(private val movieService: MovieApi) {
 
         return merge(f2, f)
     }
-
-   /* private fun <T> retrofit2.Response<T>.toRequestResult(): Result {
-        return if (isSuccessful) {
-            if (body() != null)
-                Result.Success(body())
-            else Result.Error(result.code())
-        } else {
-            Result.Error(result.code())
-        }
-    }*/
 
     fun getMovieById(id: Long): Flow<Result> {
         val flow = flow {
