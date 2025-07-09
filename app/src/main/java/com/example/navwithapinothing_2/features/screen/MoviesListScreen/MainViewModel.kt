@@ -100,6 +100,7 @@ class MainViewModel @Inject constructor(
 
 
 
+
     fun getHomeData() {
 
         Collections.listOfFavoriteCollections.shuffled().take(4).forEach {
