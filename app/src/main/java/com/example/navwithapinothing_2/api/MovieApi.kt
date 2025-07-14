@@ -28,8 +28,9 @@ interface MovieApi {
         @Query("notNullFields") field: List<String> = listOf("poster.url", "name", "year"),
         @Query("lists") lists: List<String>? = null,
         @Query("type") listsType: List<String>? = null, //listOf("tv-series"/*"tv-series"*/),
-        @Query("year") listYears: List<String>? = listOf("1874-2024"),
-        @Query("genres.name") listGenres: List<String>? = null
+        @Query("year") listYears: String? = null,
+        @Query("genres.name") listGenres: List<String>? = null,
+        @Query("rating.kp") score: String? = null
     ): Response<MovieDTO>
 
     @GET("list")

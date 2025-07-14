@@ -36,7 +36,7 @@ object NetworkModule {
     fun provideRetrofit(): Retrofit {
 
         val json = Json {
-            /*  coerceInputValues = true
+           /* *//*  coerceInputValues = true
               isLenient = true
               encodeDefaults = true*/
             //explicitNulls = true
@@ -48,8 +48,8 @@ object NetworkModule {
 
         return Retrofit.Builder()
             .baseUrl(BuildConfig.MOVIES_API_BASE_URL)
-            //.addConverterFactory(GsonConverterFactory.create())
-            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .addConverterFactory(GsonConverterFactory.create())
+            //.addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .client(provideOkHttpClient())
             .build()
     }

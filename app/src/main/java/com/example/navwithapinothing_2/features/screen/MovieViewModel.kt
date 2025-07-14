@@ -64,32 +64,7 @@ class MovieViewModel @Inject constructor(
 
 
 
-    fun getRandom(filter: Filter? = null) {
-        println("rand")
-        viewModelScope.launch {
 
-            //delay(5000)
-            //_state_random.value = Result.Loading
-            movieRepository.getRandom(filter).collect {
-                _state_random.value = when (it) {
-
-                    is Result.Loading -> {
-                        it
-                    }
-
-                    is Result.Error<*> -> {
-                        it
-                    }
-
-                    is Result.Success<*> -> {
-                        it
-                    }
-
-                }
-
-            }
-        }
-    }
 
 
 }

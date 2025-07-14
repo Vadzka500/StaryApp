@@ -428,7 +428,7 @@ fun CardList(
                         }
 
                         Text(
-                            text = item.name.replaceFirstChar { it.uppercase() },
+                            text = item.name!!.replaceFirstChar { it.uppercase() },
                             fontWeight = FontWeight.Light,
                             fontFamily = poppinsFort,
                             fontSize = 12.sp

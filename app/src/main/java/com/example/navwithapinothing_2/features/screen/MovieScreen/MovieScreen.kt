@@ -1147,7 +1147,7 @@ fun RowGenres(modifier: Modifier = Modifier, movie: MovieDTO) {
         movie.genres?.take(2)?.forEachIndexed { index, item ->
             Text(text = "•", color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
             Text(
-                text = item.name.replaceFirstChar { it.uppercase() },
+                text = item.name!!.replaceFirstChar { it.uppercase() },
                 fontWeight = FontWeight.Normal,
                 fontFamily = poppinsFort,
                 fontSize = 14.sp

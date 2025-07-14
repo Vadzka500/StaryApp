@@ -3,45 +3,40 @@ package com.example.navwithapinothing_2.data
 
 import com.example.moviesapi.models.Response
 import com.example.navwithapinothing_2.api.MovieApi
-import com.example.navwithapinothing_2.models.Filter
-import com.example.navwithapinothing_2.features.screen.slider.listOfYears
+
+import com.example.navwithapinothing_2.utils.RandomFiltersOption
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import java.util.Locale
 import javax.inject.Inject
 
 
 class MovieRepository @Inject constructor(private val movieService: MovieApi) {
 
-    fun getRandom(filter: Filter? = null): Flow<Result> {
-
-        val f2 = flow {
+    fun getRandom(filter: RandomFiltersOption? = null): Flow<Result> {
 
 
-            emit(Result.Loading)
-        }
+        val flow = flow{
 
-        val f = flow {
+            val years = filter!!.years?.joinToString("-")
+            val type = filter.listOfType?.map { it.value }
+            val genres = filter.listOfGenres?.map { it.lowercase() }
+            val score = filter.listOfScore?.joinToString("-")
 
-            println("list1 = " + filter?.listOfCollection)
-            println("list2 = " + filter?.year)
-            println("list3 = " + filter?.listOfType)
-            println("list4 = " + filter?.listOfGenres)
-            var years: List<String>? = filter?.year ?: listOf(listOfYears.random())
+            println("year = " + years)
+            println("type = " + type)
+            println("genres = " + genres)
+            println("score = " + score)
 
-            filter?.listOfCollection?.let {
-                println("not null collection")
-                years = filter.year
-            }
-            println("list5 = $years")
-            emit(
-                movieService.getRandom(
-                    lists = filter?.listOfCollection/*, listYears = years*//*, listsType = filter?.listOfType*/,
-                    listGenres = filter?.listOfGenres?.map { it.lowercase() })
-            )
+            emit(movieService.getRandom(
+                listYears = years,
+                listsType = type,
+                listGenres = genres,
+                score = score
+            ))
         }.map { result ->
-            println("isSuccess = " + result.isSuccessful)
 
             if (result.isSuccessful) {
                 if (result.body() != null) {
@@ -49,12 +44,13 @@ class MovieRepository @Inject constructor(private val movieService: MovieApi) {
                     Result.Success(result.body())
                 } else Result.Error(result.code())
             } else {
+                println("err1 = " + result.errorBody()!!.string())
                 Result.Error(result.code())
             }
         }
 
 
-        return merge(f2, f)
+        return flow
     }
 
     fun getMovieById(id: Long): Flow<Result> {

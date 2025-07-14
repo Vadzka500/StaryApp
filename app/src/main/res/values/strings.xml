@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Stary</string>
     <string name="empty_result_random">Похоже мы ничего не нашли по вашим запросам, проверьте фильтры</string>
+    <string name="text_random_none">Найди случайный фильм, фильтры на любой вкус</string>
 </resources>

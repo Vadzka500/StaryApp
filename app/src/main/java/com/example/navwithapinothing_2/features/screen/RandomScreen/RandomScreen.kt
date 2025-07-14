@@ -1,4 +1,4 @@
-package com.example.navwithapinothing_2.features.screen.slider
+package com.example.navwithapinothing_2.features.screen.RandomScreen
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.EaseInOutCirc
@@ -25,24 +25,28 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerDefaults
-import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -68,19 +72,20 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.example.moviesapi.models.movie.MovieDTO
 import com.example.navwithapinothing_2.R
-import com.example.navwithapinothing_2.data.Result
-import com.example.navwithapinothing_2.models.Filter
 import com.example.navwithapinothing_2.features.screen.MovieViewModel
+import com.example.navwithapinothing_2.features.screen.MoviesListScreen.ListCollectionResult
+import com.example.navwithapinothing_2.features.theme.Purple40
 import com.example.navwithapinothing_2.features.theme.poppinsFort
+import com.example.navwithapinothing_2.utils.RandomFiltersOption
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
-import kotlin.random.Random
 
 
 val listOfPoster = listOf(
@@ -112,12 +117,10 @@ val listOfPoster = listOf(
 
 //val listOfYears = (1874..Calendar.getInstance().get(Calendar.YEAR)).toList()
 
-
 enum class RandomStatus {
     SUCCESS, ERROR, LOADING, EMPTY, NONE
 }
 
-var filter: Filter? = null
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
@@ -125,82 +128,130 @@ var filter: Filter? = null
 fun SliderScreen(
     modifier: Modifier = Modifier,
     movieViewModel: MovieViewModel = hiltViewModel(),
+    randomViewModel: RandomViewModel = hiltViewModel(),
     onSelectMovie: (Long) -> Unit
 ) {
 
-    val targetUrl = remember {
-        mutableStateOf("")
+    val state by randomViewModel.state.collectAsState()
+
+    val status = remember {
+        derivedStateOf { state.randomMovie }
     }
 
-    val nameOfMovie = remember {
-        mutableStateOf("Найди случайный фильм, фильтры на любой вкус")
-    }
+    LaunchedEffect(Unit) {
+        randomViewModel.effect.collectLatest { effect ->
+            when (effect) {
 
-    val randomStatus = remember {
-        mutableStateOf(RandomStatus.NONE)
-    }
-
-    val state = movieViewModel.state_random.collectAsState()
-    when (val data = state.value) {
-        is Result.Error<*> -> {
-            println("stat err")
-            randomStatus.value = RandomStatus.ERROR
-        }
-
-        is Result.Loading -> {
-            println("stat load")
-            randomStatus.value = RandomStatus.LOADING
-        }
-
-        is Result.Success<*> -> {
-            randomStatus.value = RandomStatus.SUCCESS
-            targetUrl.value = (data.data as MovieDTO).poster!!.previewUrl!!
-            println("name = " + data.data.name)
-            println("year = " + data.data.year)
-            nameOfMovie.value = data.data.name!! + " (" + data.data.year + ")"
+                else -> {}
+            }
         }
     }
+
+
 
     InitView(
-        targetUrl = targetUrl.value,
-        randomStatus = randomStatus,
-        nameMovie = nameOfMovie.value,
+        status = status,
+        isSearch = state.isSearch,
+        setShowFilters = {
+            randomViewModel.onIntent(RandomIntent.SetShowFilters(it))
+        },
+        setSearch = {
+            randomViewModel.onIntent(RandomIntent.IsSearch(it))
+        },
         random = {
-            //println("filter = " + filter)
-            randomStatus.value = RandomStatus.LOADING
-            movieViewModel.getRandom(filter)
-            nameOfMovie.value = ""
-            targetUrl.value = ""
-
-        }, onSelectMovie = onSelectMovie
+            randomViewModel.onIntent(RandomIntent.Random)
+        }, updateCurrentPage = { page, offset ->
+            randomViewModel.onIntent(RandomIntent.UpdateCurrentPage(page, offset))
+        }, onSelectMovie = onSelectMovie, initialPage = state.initialPage, modifier = modifier
     )
 
+
+    if (state.isFiltersShown) {
+
+        FiltersPopup(
+            filters = state.filter,
+            listOfCollectionResult = state.listOfCollections,
+            filerIntent = randomViewModel::onIntent
+        )
+
+    }
 
 }
 
 @Composable
 
 fun InitView(
-    modifier: Modifier = Modifier,
-    targetUrl: String,
-    randomStatus: MutableState<RandomStatus>,
-    nameMovie: String,
     random: () -> Unit,
-    onSelectMovie: (Long) -> Unit
+    onSelectMovie: (Long) -> Unit,
+    setSearch: (Boolean) -> Unit,
+    setShowFilters: (Boolean) -> Unit,
+    updateCurrentPage: (Int, Float) -> Unit,
+    status: State<MovieRandomStatus>,
+    initialPage: Int,
+    isSearch: Boolean,
+    modifier: Modifier = Modifier,
 ) {
 
+    var posterUrl by remember {
+        mutableStateOf("")
+    }
+
+    var nameOfMovie by remember { mutableStateOf("") }
+
+    var movieId by remember {
+        mutableLongStateOf(0L)
+    }
+
+    var statusFlow = remember {
+        mutableStateOf(RandomStatus.NONE)
+    }
+
+    when (val data = status.value) {
+
+        is MovieRandomStatus.Success -> {
+            posterUrl = data.movie.poster!!.previewUrl!!
+            nameOfMovie = data.movie.name!! + " (" + data.movie.year + ")"
+            movieId = data.movie.id!!
+            statusFlow.value = RandomStatus.SUCCESS
+        }
+
+        MovieRandomStatus.None -> {
+            nameOfMovie = stringResource(R.string.text_random_none)
+
+        }
+
+
+
+       /* else -> {
+            statusFlow.value = RandomStatus.LOADING
+        }*/
+        MovieRandomStatus.Error -> {
+            nameOfMovie = ""
+            statusFlow.value = RandomStatus.ERROR
+        }
+        MovieRandomStatus.Loading -> {
+            statusFlow.value = RandomStatus.LOADING
+        }
+    }
+
+    println("STATUSS = " + statusFlow.value)
+
+
     val pagerState = rememberPagerState(
-        initialPage = 1,
+        initialPage = initialPage,
         pageCount = { Int.MAX_VALUE },
         initialPageOffsetFraction = 0f
     )
 
-
-    val isProgressAnim = remember { mutableStateOf(false) }
+    DisposableEffect(Unit) {
+        onDispose {
+            updateCurrentPage(pagerState.currentPage, pagerState.currentPageOffsetFraction)
+        }
+    }
 
     val painter = rememberAsyncImagePainter(
         ImageRequest.Builder(LocalContext.current).size(coil.size.Size.ORIGINAL)
-            .data(targetUrl).build()
+            .data(posterUrl).build()
     )
 
 
@@ -208,50 +259,16 @@ fun InitView(
 
     val scrollState = rememberScrollState()
 
-    var showFilter by remember { mutableStateOf(false) }
+    Column(modifier = modifier.verticalScroll(state = scrollState)) {
 
-    Column(modifier = Modifier.verticalScroll(state = scrollState)) {
-
-        val fling = PagerDefaults.flingBehavior(
-            state = pagerState,
-            pagerSnapDistance = PagerSnapDistance.atMost(50),
+        RandomCardPager(
+            pagerState = pagerState,
+            painter = painter,
+            posterUrl = posterUrl,
+            onSelectMovie = onSelectMovie,
+            status = status,
+            movieId = movieId
         )
-
-        val configuration = LocalConfiguration.current
-        val height = (configuration.screenWidthDp - 140) * 1.5
-
-        HorizontalPager(
-            modifier = Modifier
-                .padding(top = 20.dp, bottom = 20.dp)
-                .height(height.dp),
-            state = pagerState,
-            //beyondViewportPageCount = 30,
-            //flingBehavior = fling,
-            contentPadding = PaddingValues(horizontal = 70.dp)
-        ) { page ->
-            if (page > 100 && page % 100 == 1) {
-                println("state = " + painter.state)
-                println("state = " + painter.request.data)
-                PagerCardImage(
-                    posterUrl = targetUrl,
-                    pagerState,
-                    page,
-                    painter = painter,
-                    status = randomStatus.value,
-                    onSelectMovie = onSelectMovie
-                )
-            } else {
-                PagerCardImage(
-                    posterUrl = listOfPoster[page % 24],
-                    pagerState,
-                    page,
-                    onSelectMovie = onSelectMovie
-                )
-            }
-        }
-
-
-        //Spacer(modifier = Modifier.height(50.dp))
 
 
         val displayMetrics = LocalContext.current.resources.displayMetrics
@@ -264,16 +281,14 @@ fun InitView(
 
         val scrollWidth = screenWidthPx * 100f
 
-        var targetPage = remember { mutableIntStateOf(101) }
-
-
+        var targetPage = remember { mutableIntStateOf(pagerState.currentPage + 100) }
 
 
         ConstraintLayout(modifier = Modifier.fillMaxSize()) {
             val (button, filters, text) = createRefs()
 
             androidx.compose.animation.AnimatedVisibility(
-                visible = !isProgressAnim.value,
+                visible = !isSearch,
                 enter = slideInVertically() + fadeIn(),
                 exit = slideOutVertically() + fadeOut(),
                 modifier = Modifier.constrainAs(text) {
@@ -284,7 +299,7 @@ fun InitView(
 
 
                 Text(
-                    text = nameMovie,
+                    text = nameOfMovie,
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
                     fontSize = 18.sp,
@@ -292,40 +307,46 @@ fun InitView(
                 )
             }
 
-            Button(shape = CircleShape, onClick = {
+            ElevatedButton(
+                shape = CircleShape,
+                onClick = {
+
+                    anim(
+                        coroutineScope = coroutineScope,
+                        setSearch = setSearch,
+                        scrollWidth = scrollWidth,
+                        pagerState = pagerState,
+                        targetPage = targetPage,
+                        random = random,
+                        randomStatus = status,
+                        widthItem = screenWidthPx,
+                        easy = EaseInOutCirc
+                    )
+
+                    coroutineScope.launch {
+                        delay(500)
+                        random()
+                    }
 
 
-                anim(
-                    coroutineScope = coroutineScope,
-                    isProgressAnim = isProgressAnim,
-                    scrollWidth = scrollWidth,
-                    pagerState = pagerState,
-                    targetPage = targetPage,
-                    random = random,
-                    randomStatus = randomStatus,
-                    widthItem = screenWidthPx,
-                    easy = EaseInOutCirc//FastOutSlowInEasing
-                )
-
-                coroutineScope.launch {
-                    delay(500)
-                    random()
-                }
-
-
-            }, enabled = !isProgressAnim.value, modifier = Modifier.constrainAs(button) {
-                start.linkTo(anchor = parent.start)
-                end.linkTo(anchor = parent.end)
-                bottom.linkTo(anchor = parent.bottom, margin = 5.dp)
-                top.linkTo(anchor = parent.top, margin = 90.dp)
-            }) {
+                },
+                elevation = ButtonDefaults.elevatedButtonElevation(8.dp),
+                enabled = !isSearch,
+                colors = ButtonDefaults.buttonColors(containerColor = Purple40),
+                modifier = Modifier
+                    .size(150.dp)
+                    .constrainAs(button) {
+                        start.linkTo(anchor = parent.start)
+                        end.linkTo(anchor = parent.end)
+                        bottom.linkTo(anchor = parent.bottom, margin = 25.dp)
+                        top.linkTo(anchor = parent.top, margin = 90.dp)
+                    }) {
                 Text(
                     modifier = Modifier.padding(8.dp),
-                    text = "Крутить!",
+                    text = "ПОИСК",
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = poppinsFort,
-                    //color = Purple40,
-                    fontSize = 18.sp
+                    fontSize = 20.sp
                 )
             }
 
@@ -334,11 +355,11 @@ fun InitView(
                     .size(40.dp)
                     .clip(CircleShape)
                     .clickable {
-                        showFilter = true
+                        setShowFilters(true)
                     }
                     .constrainAs(filters) {
                         start.linkTo(anchor = button.end, margin = 30.dp)
-                        top.linkTo(anchor = parent.top, margin = 90.dp)
+                        top.linkTo(anchor = parent.top, margin = 65.dp)
                         bottom.linkTo(anchor = parent.bottom)
                     }, contentAlignment = Alignment.Center
             ) {
@@ -362,54 +383,71 @@ fun InitView(
 
     }
 
-    if (showFilter) {
-
-        FiltersPopup(hideFilters = { listOfTypes, listGenres, listCollections, textFieldStateBegin ->
-            filter = Filter().apply {
-                listOfType = listOfTypes
-                listOfGenres = listGenres
-                listOfCollection = listCollections.map { it.slug }
-                if (textFieldStateBegin == listOfYearsUi.first())
-                    year = if (listCollections.isEmpty()) listOf(listOfYears.random())
-                    else null
-                else if (textFieldStateBegin == listOfYearsUi.last()) {
-                    year = if (listCollections.isEmpty()) listOf(listOfYearsOld.random())
-                    else null
-                } else {
-                    year = listOf(textFieldStateBegin)
-                }
-            }
-
-
-            // filter.year = listOf("$testFieldStateBegin-$testFieldStateEnd")
-
-
-            println("list type = " + listOfTypes)
-            println("list genres = " + listGenres)
-            println("list collection = " + listCollections)
-            println("testFieldStateBegin = " + filter!!.year)
-            //  println("testFieldStateEnd = " + testFieldStateEnd)
-            showFilter = false
-        }, filter = filter)
-
-    }
-
 }
+
+@Composable
+private fun RandomCardPager(
+    modifier: Modifier = Modifier,
+    pagerState: PagerState,
+    painter: AsyncImagePainter,
+    posterUrl: String,
+    onSelectMovie: (Long) -> Unit,
+    status: State<MovieRandomStatus>,
+    movieId: Long
+) {
+    val configuration = LocalConfiguration.current
+    val height = (configuration.screenWidthDp - 140) * 1.5
+
+    HorizontalPager(
+        modifier = Modifier
+            .padding(top = 20.dp, bottom = 20.dp)
+            .height(height.dp),
+        state = pagerState,
+        userScrollEnabled = false,
+        contentPadding = PaddingValues(horizontal = 70.dp)
+    ) { page ->
+        if (page > 100 && page % 100 == 1) {
+            println("state = " + painter.state)
+            println("state = " + painter.request.data)
+            PagerCardImage(
+                posterUrl = posterUrl,
+                pagerState,
+                page,
+                painter = painter,
+                status = status.value,
+                onSelectMovie = onSelectMovie,
+                movieId = movieId
+            )
+        } else {
+            PagerCardImage(
+                posterUrl = listOfPoster[page % 24],
+                pagerState,
+                page,
+                onSelectMovie = onSelectMovie,
+                status = status.value
+            )
+        }
+    }
+}
+
+
 
 fun anim(
     coroutineScope: CoroutineScope,
-    isProgressAnim: MutableState<Boolean>,
+    setSearch: (Boolean) -> Unit,
     scrollWidth: Float,
     pagerState: PagerState,
     targetPage: MutableState<Int>,
     random: () -> Unit,
-    randomStatus: MutableState<RandomStatus>,
+    randomStatus: State<MovieRandomStatus>,
     widthItem: Int,
     easy: Easing,
 ) {
+    println("status = ${randomStatus.value}")
     println("anim")
+
     coroutineScope.launch {
-        isProgressAnim.value = true
+        setSearch(true)
         targetPage.value += 100 //
         pagerState.animateScrollBy(
             scrollWidth,
@@ -422,7 +460,7 @@ fun anim(
             //pagerState.animateScrollToPage(targetPage.value)
             //targetPage.value += 100
             //}
-            isProgressAnim.value = false
+            setSearch(false)
         }
 
     }
@@ -435,10 +473,11 @@ fun anim(
 
         val width = pagerState.getOffsetDistanceInPages(targetPage.value + 100) * widthItem
         println("randomStatus2 = " + width)
-        if (randomStatus.value == RandomStatus.LOADING) {
+        if (randomStatus.value is MovieRandomStatus.Loading) {
+
             anim(
                 coroutineScope,
-                isProgressAnim,
+                setSearch,
                 width,
                 pagerState,
                 targetPage,
@@ -457,8 +496,9 @@ fun PagerCardImage(
     pagesState: PagerState,
     index: Int,
     painter: Painter? = null,
-    status: RandomStatus = RandomStatus.NONE,
-    onSelectMovie: (Long) -> Unit
+    status: MovieRandomStatus,
+    onSelectMovie: (Long) -> Unit,
+    movieId: Long = -1
 ) {
 
     val pageOffSet = (pagesState.currentPage - index) + pagesState.currentPageOffsetFraction
@@ -475,7 +515,7 @@ fun PagerCardImage(
                     scaleY = scale.value
                 }
             }
-            .clickable { onSelectMovie(Random.nextLong()) },
+            .clickable { onSelectMovie(movieId) },
         elevation = CardDefaults.cardElevation(12.dp),
         shape = RoundedCornerShape(32.dp)
     ) {
@@ -489,7 +529,7 @@ fun PagerCardImage(
             )
         } else {
 
-            if (status == RandomStatus.SUCCESS) {
+            if (status is MovieRandomStatus.Success) {
                 Image(
                     painter = painter,
                     contentDescription = null,
@@ -497,7 +537,7 @@ fun PagerCardImage(
                     modifier = Modifier
                         .fillMaxSize()
                 )
-            } else if (status == RandomStatus.ERROR) {
+            } else if (status is MovieRandomStatus.Error) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()

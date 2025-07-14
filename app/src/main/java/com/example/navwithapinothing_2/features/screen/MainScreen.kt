@@ -33,7 +33,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -56,14 +55,12 @@ import com.example.navwithapinothing_2.navigation.Profile
 import com.example.navwithapinothing_2.navigation.Random
 import com.example.navwithapinothing_2.navigation.Review
 import com.example.navwithapinothing_2.navigation.Search
-import com.example.navwithapinothing_2.navigation.Slider
 import com.example.navwithapinothing_2.navigation.UserCollection
 import com.example.navwithapinothing_2.navigation.UserCollections
 
 
 import com.example.navwithapinothing_2.navigation.listOfScreens
 import com.example.navwithapinothing_2.features.screen.AccountScreen.AccountScreen
-import com.example.navwithapinothing_2.features.screen.AccountScreen.AccountViewModel
 import com.example.navwithapinothing_2.features.screen.BookmarkMoviesScreen.BookmarkMoviesScreen
 import com.example.navwithapinothing_2.features.screen.CollectionMoviesScreen.AllMoviesScreen
 import com.example.navwithapinothing_2.features.screen.CollectionsScreen.CollectionsScreen
@@ -76,7 +73,7 @@ import com.example.navwithapinothing_2.features.screen.SearchScreen.SearchScreen
 import com.example.navwithapinothing_2.features.screen.FolderScreen.UserCollectionScreen
 import com.example.navwithapinothing_2.features.screen.FoldersScreen.UserCollectionsScreen
 import com.example.navwithapinothing_2.features.screen.ViewedMoviesScreen.ViewedMoviesScreen
-import com.example.navwithapinothing_2.features.screen.slider.SliderScreen
+import com.example.navwithapinothing_2.features.screen.RandomScreen.SliderScreen
 import com.example.navwithapinothing_2.features.theme.poppinsFort
 import com.example.navwithapinothing_2.navigation.Bookmark
 import com.example.navwithapinothing_2.navigation.Viewed
@@ -157,7 +154,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
                     navController.navigate(Profile(id)) {
 
                     }
-                })
+                }, modifier = Modifier.padding(paddingValues = innerPadding))
             }
 
 
