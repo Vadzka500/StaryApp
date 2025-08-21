@@ -1,9 +1,9 @@
 package com.sidspace.stary.search.presentation.screen
 
-import com.example.ui.enum.ViewMode
-import com.example.ui.model.MovieData
-import com.example.ui.model.ResultData
 
+import com.sidspace.stary.ui.enum.ViewMode
+import com.sidspace.stary.ui.model.MovieData
+import com.sidspace.stary.ui.model.ResultData
 
 
 data class SearchState(

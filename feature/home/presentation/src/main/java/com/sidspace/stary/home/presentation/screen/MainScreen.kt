@@ -59,15 +59,17 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.ui.HorizontalHomeList
-import com.example.ui.ShimmerMovies
-import com.example.ui.model.CollectionUi
-import com.example.ui.model.MovieUi
-import com.example.ui.model.ResultData
-import com.example.ui.shimmerEffect
-import com.example.ui.uikit.Purple40
-import com.example.ui.uikit.poppinsFort
-import com.example.ui.utils.InitRatingView
+import com.sidspace.stary.ui.HorizontalHomeList
+import com.sidspace.stary.ui.R
+import com.sidspace.stary.ui.ShimmerMovies
+import com.sidspace.stary.ui.model.CollectionUi
+import com.sidspace.stary.ui.model.MovieUi
+import com.sidspace.stary.ui.model.ResultData
+import com.sidspace.stary.ui.shimmerEffect
+import com.sidspace.stary.ui.uikit.Purple40
+import com.sidspace.stary.ui.uikit.poppinsFort
+import com.sidspace.stary.ui.utils.InitRatingView
+
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.absoluteValue
 
@@ -700,7 +702,7 @@ fun MovieCard(
                     .crossfade(true).build(),
                 contentScale = scale,
                 contentDescription = null,
-                error = painterResource(com.example.ui.R.drawable.ic_placeholder_4)
+                error = painterResource(R.drawable.ic_placeholder_4)
             )
             Text(
                 modifier = Modifier.padding(top = 5.dp),

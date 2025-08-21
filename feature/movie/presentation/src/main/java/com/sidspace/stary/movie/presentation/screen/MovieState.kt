@@ -3,9 +3,9 @@ package com.sidspace.stary.movie.presentation.screen
 import com.sidspace.stary.domain.model.Folder
 import com.sidspace.stary.movie.presentation.model.LocalMovieUi
 
-import com.example.ui.model.MovieData
-import com.example.ui.model.ResultData
 
+import com.sidspace.stary.ui.model.MovieData
+import com.sidspace.stary.ui.model.ResultData
 
 
 data class MovieState(

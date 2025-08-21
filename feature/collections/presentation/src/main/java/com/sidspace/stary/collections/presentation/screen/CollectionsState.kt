@@ -1,9 +1,8 @@
 package com.sidspace.stary.collections.presentation.screen
 
-import com.example.ui.model.CollectionUi
-import com.example.ui.model.ResultData
 
-
+import com.sidspace.stary.ui.model.CollectionUi
+import com.sidspace.stary.ui.model.ResultData
 
 
 data class CollectionsState(

@@ -3,8 +3,9 @@ package com.sidspace.stary.folders.presentation.screen
 import androidx.compose.ui.graphics.Color
 import com.sidspace.stary.domain.model.Folder
 
-import com.example.ui.model.ResultData
+
 import com.sidspace.stary.folders.presentation.FiltersUtil
+import com.sidspace.stary.ui.model.ResultData
 
 
 data class FoldersState(

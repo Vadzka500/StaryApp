@@ -2,9 +2,9 @@ package com.sidspace.stary.random.presentation.screen
 
 import com.sidspace.stary.domain.RandomFiltersOption
 import com.sidspace.stary.random.presentation.model.CollectionRandomUi
-import com.example.ui.model.MovieUi
-import com.example.ui.model.ResultData
 
+import com.sidspace.stary.ui.model.MovieUi
+import com.sidspace.stary.ui.model.ResultData
 
 
 data class RandomState(

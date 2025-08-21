@@ -7,11 +7,13 @@ import com.sidspace.stary.domain.model.Folder
 import com.sidspace.stary.domain.model.Result
 import com.example.domain.usecase.folder.GetFolderUseCase
 import com.example.domain.usecase.folder.RemoveFolderUseCase
-import com.example.ui.enum.ViewMode
-import com.example.ui.enum.toggle
+import com.sidspace.stary.ui.enum.ViewMode
+import com.sidspace.stary.ui.enum.toggle
+
 import com.sidspace.stary.ui.mapper.toMovieData
-import com.example.ui.model.ResultData
-import com.example.ui.sort.sortListMovies
+import com.sidspace.stary.ui.model.ResultData
+import com.sidspace.stary.ui.sort.sortListMovies
+
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow

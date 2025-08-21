@@ -1,9 +1,8 @@
 package com.sidspace.stary.person.presentation.screen
 
-import com.example.ui.model.MovieData
-import com.example.ui.model.PersonUi
-import com.example.ui.model.ResultData
-
+import com.sidspace.stary.ui.model.MovieData
+import com.sidspace.stary.ui.model.PersonUi
+import com.sidspace.stary.ui.model.ResultData
 
 
 data class PersonState(

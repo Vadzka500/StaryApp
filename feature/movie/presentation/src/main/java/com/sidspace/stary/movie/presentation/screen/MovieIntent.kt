@@ -1,9 +1,6 @@
 package com.sidspace.stary.movie.presentation.screen
 
-
-import com.example.ui.model.MovieData
-
-
+import com.sidspace.stary.ui.model.MovieData
 
 
 sealed interface MovieIntent {

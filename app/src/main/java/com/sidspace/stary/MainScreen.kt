@@ -53,10 +53,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-
-import com.example.navigation.NavigationBottomBar
-
-
+import com.sidspace.stary.navigation.AppNavHost
+import com.sidspace.stary.navigation.NavigationBottomBar
 
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -93,7 +91,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
     }) { innerPadding ->
 
 
-        com.example.navigation.AppNavHost(navController = navController, innerPaddingValues = innerPadding)
+        AppNavHost(navController = navController, innerPaddingValues = innerPadding)
 
         /*NavHost(
             navController = navController,

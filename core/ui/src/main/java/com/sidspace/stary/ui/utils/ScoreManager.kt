@@ -1,11 +1,7 @@
-package com.example.navwithapinothing_2.utils
+package com.sidspace.stary.ui.utils
 
 import java.util.Locale
 
-/**
- * @Author: Vadim
- * @Date: 25.12.2024
- */
 class ScoreManager {
 
     companion object{

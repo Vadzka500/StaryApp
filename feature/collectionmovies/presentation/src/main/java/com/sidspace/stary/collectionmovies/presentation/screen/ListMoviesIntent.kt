@@ -1,6 +1,6 @@
 package com.sidspace.stary.collectionmovies.presentation.screen
 
-import com.example.ui.enum.SortType
+import com.sidspace.stary.ui.enum.SortType
 
 
 sealed interface ListMoviesIntent {

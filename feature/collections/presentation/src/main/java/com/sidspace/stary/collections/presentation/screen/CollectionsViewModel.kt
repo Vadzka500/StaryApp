@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import com.sidspace.stary.domain.model.Result
-import com.example.domain.usecase.collection.GetCollectionUseCase
+import com.sidspace.stary.collections.domain.usecase.GetCollectionUseCase
 import com.sidspace.stary.ui.mapper.toCollectionUi
-import com.example.ui.model.ResultData
+import com.sidspace.stary.ui.model.ResultData
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow

@@ -1,7 +1,7 @@
 package com.sidspace.stary.account.data.di
 
-import com.sidspace.stary.core.data.api.MovieApi
-import com.sidspace.stary.core.data.database.MovieDao
+import com.sidspace.stary.data.api.MovieApi
+import com.sidspace.stary.data.database.MovieDao
 import com.sidspace.stary.account.data.repository.AccountRepositoryImpl
 import com.sidspace.stary.account.domain.repository.AccountRepository
 import dagger.Module

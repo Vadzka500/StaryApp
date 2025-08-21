@@ -32,13 +32,14 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.ui.ListView
-import com.example.ui.ShimmerMovies
-import com.example.ui.model.MovieData
-import com.example.ui.model.PersonUi
-import com.example.ui.model.ResultData
-import com.example.ui.shimmerEffect
-import com.example.ui.uikit.poppinsFort
+import com.sidspace.stary.ui.ListView
+import com.sidspace.stary.ui.ShimmerMovies
+import com.sidspace.stary.ui.model.MovieData
+import com.sidspace.stary.ui.model.PersonUi
+import com.sidspace.stary.ui.model.ResultData
+import com.sidspace.stary.ui.shimmerEffect
+import com.sidspace.stary.ui.uikit.poppinsFort
+
 
 import kotlinx.coroutines.flow.collectLatest
 import java.time.ZonedDateTime

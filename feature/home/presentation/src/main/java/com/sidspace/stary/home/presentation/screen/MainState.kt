@@ -1,9 +1,9 @@
 package com.sidspace.stary.home.presentation.screen
 
-import com.example.ui.model.CollectionUi
-import com.example.ui.model.MovieUi
-import com.example.ui.model.ResultData
 
+import com.sidspace.stary.ui.model.CollectionUi
+import com.sidspace.stary.ui.model.MovieUi
+import com.sidspace.stary.ui.model.ResultData
 
 
 data class MainState(

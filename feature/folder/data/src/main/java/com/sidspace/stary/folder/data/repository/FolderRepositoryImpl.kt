@@ -1,14 +1,14 @@
 package com.sidspace.stary.folder.data.repository
 
-import com.sidspace.stary.core.data.api.MovieApi
-import com.sidspace.stary.core.data.database.MovieDao
+import com.sidspace.stary.data.api.MovieApi
+import com.sidspace.stary.data.database.MovieDao
 
-import com.sidspace.stary.core.data.utils.ResultRemote
-import com.sidspace.stary.core.data.utils.safeCall
+import com.sidspace.stary.data.utils.ResultRemote
+import com.sidspace.stary.data.utils.safeCall
 import com.sidspace.stary.domain.model.Folder
 import com.sidspace.stary.domain.model.Result
 import com.sidspace.stary.folder.domain.repository.FolderRepository
-import com.sidspace.stary.core.data.mapper.toDomainFromDTO
+import com.sidspace.stary.data.mapper.toDomainFromDTO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject

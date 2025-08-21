@@ -1,12 +1,12 @@
 package com.sidspace.stary.folder.presentation.screen
 
 import com.sidspace.stary.domain.model.Folder
-import com.example.ui.enum.SortDirection
-import com.example.ui.enum.SortType
-import com.example.ui.enum.ViewMode
-import com.example.ui.model.MovieData
-import com.example.ui.model.ResultData
 
+import com.sidspace.stary.ui.enum.SortDirection
+import com.sidspace.stary.ui.enum.SortType
+import com.sidspace.stary.ui.enum.ViewMode
+import com.sidspace.stary.ui.model.MovieData
+import com.sidspace.stary.ui.model.ResultData
 
 
 data class FolderState(

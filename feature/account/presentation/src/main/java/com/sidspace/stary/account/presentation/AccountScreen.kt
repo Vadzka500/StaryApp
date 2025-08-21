@@ -52,15 +52,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.example.ui.model.MovieUiLight
 
-import com.example.ui.MovieCardHorizontal
-import com.example.ui.ShimmerMovies
-import com.example.ui.model.ResultData
-import com.example.ui.uikit.poppinsFort
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.common.api.ApiException
+import com.sidspace.stary.ui.MovieCardHorizontal
+import com.sidspace.stary.ui.ShimmerMovies
+import com.sidspace.stary.ui.model.MovieUiLight
+import com.sidspace.stary.ui.model.ResultData
+import com.sidspace.stary.ui.uikit.poppinsFort
 import kotlinx.coroutines.flow.collectLatest
 
 
@@ -265,7 +265,7 @@ fun SadHint(modifier: Modifier = Modifier) {
     ) {
         Image(
             modifier = Modifier.size(48.dp),
-            painter = painterResource(com.example.ui.R.drawable.empty_result),
+            painter = painterResource(com.sidspace.stary.ui.R.drawable.empty_result),
             contentDescription = "sad"
         )
 
@@ -300,7 +300,7 @@ fun ListOfCollectionBlock(
 
         Icon(
             painter = painterResource(
-                com.example.ui.R.drawable.ic_bookmark_fill
+                com.sidspace.stary.ui.R.drawable.ic_bookmark_fill
             ),
             contentDescription = null,
             modifier = Modifier
@@ -337,7 +337,7 @@ fun ListOfCollectionBlock(
 
         Icon(
             painter = painterResource(
-                com.example.ui.R.drawable.ic_visibility_fill
+                com.sidspace.stary.ui.R.drawable.ic_visibility_fill
             ),
             contentDescription = null,
             modifier = Modifier
@@ -373,7 +373,7 @@ fun ListOfCollectionBlock(
 
         Icon(
             painter = painterResource(
-                com.example.ui.R.drawable.ic_folder
+                com.sidspace.stary.ui.R.drawable.ic_folder
             ),
             contentDescription = null,
             modifier = Modifier
@@ -625,7 +625,7 @@ private fun GoogleButton(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(com.example.ui.R.drawable.google_ic),
+                painter = painterResource(com.sidspace.stary.ui.R.drawable.google_ic),
                 contentDescription = null,
                 modifier = Modifier
                     .width(64.dp)

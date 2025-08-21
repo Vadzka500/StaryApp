@@ -17,8 +17,8 @@ import com.example.domain.usecase.movie.UpdateMovieViewedUseCase
 
 import com.sidspace.stary.ui.mapper.toMovieData
 
-import com.example.ui.model.ResultData
 import com.sidspace.stary.movie.presentation.mapper.toLocalMovieUi
+import com.sidspace.stary.ui.model.ResultData
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow

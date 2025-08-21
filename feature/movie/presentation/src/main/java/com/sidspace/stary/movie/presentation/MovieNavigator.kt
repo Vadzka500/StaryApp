@@ -31,7 +31,7 @@ fun NavGraphBuilder.movieNavGraph(
             onSelectPerson = onSelectPerson, toErrorScreen = toErrorScreen,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(bottom = innerPadding.calculateBottomPadding())
         )
     }
 

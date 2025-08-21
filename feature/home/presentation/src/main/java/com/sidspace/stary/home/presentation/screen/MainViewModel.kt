@@ -9,8 +9,9 @@ import com.sidspace.stary.home.domain.usecase.GetListMoviesByCollectionUseCase
 import com.sidspace.stary.home.presentation.utils.MoviesCollections
 import com.sidspace.stary.ui.mapper.toCollectionUi
 import com.sidspace.stary.ui.mapper.toMovieUi
-import com.example.ui.model.MovieUi
-import com.example.ui.model.ResultData
+import com.sidspace.stary.ui.model.MovieUi
+import com.sidspace.stary.ui.model.ResultData
+
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow

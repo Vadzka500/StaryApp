@@ -35,10 +35,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.ui.model.CollectionUi
-import com.example.ui.model.ResultData
-import com.example.ui.shimmerEffect
-import com.example.ui.uikit.poppinsFort
+import com.sidspace.stary.ui.model.CollectionUi
+import com.sidspace.stary.ui.model.ResultData
+import com.sidspace.stary.ui.shimmerEffect
+import com.sidspace.stary.ui.uikit.poppinsFort
+
 
 import kotlinx.coroutines.flow.collectLatest
 

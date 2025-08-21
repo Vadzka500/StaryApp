@@ -79,18 +79,19 @@ import androidx.core.net.toUri
 
 
 import com.sidspace.stary.movie.presentation.util.TimeManager
-import com.example.ui.HorizontalList
 
-import com.example.ui.ShowCollectionList
 import com.sidspace.stary.ui.mapper.toMovieUi
-import com.example.ui.model.MovieData
-import com.example.ui.model.PersonUi
-import com.example.ui.model.ResultData
-import com.example.ui.shimmerEffect
-import com.example.ui.uikit.Purple40
-import com.example.ui.uikit.poppinsFort
-import com.example.ui.utils.ScoreManager
+
 import com.sidspace.stary.movie.presentation.R
+import com.sidspace.stary.ui.HorizontalList
+import com.sidspace.stary.ui.ShowCollectionList
+import com.sidspace.stary.ui.model.MovieData
+import com.sidspace.stary.ui.model.PersonUi
+import com.sidspace.stary.ui.model.ResultData
+import com.sidspace.stary.ui.shimmerEffect
+import com.sidspace.stary.ui.uikit.Purple40
+import com.sidspace.stary.ui.uikit.poppinsFort
+import com.sidspace.stary.ui.utils.ScoreManager
 
 
 import kotlinx.coroutines.flow.collectLatest
@@ -354,7 +355,7 @@ fun InitMovie(
                     )
                     .shimmerEffect(),
                 contentScale = scale,
-                error = painterResource(com.example.ui.R.drawable.ic_placeholder_4)
+                error = painterResource(com.sidspace.stary.ui.R.drawable.ic_placeholder_4)
             )
         }
 

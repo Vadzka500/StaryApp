@@ -1,8 +1,9 @@
 package com.sidspace.stary.account.presentation
 
-import com.example.ui.model.MovieUiLight
-import com.example.ui.model.ResultData
+
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.sidspace.stary.ui.model.MovieUiLight
+import com.sidspace.stary.ui.model.ResultData
 
 
 data class AccountState (

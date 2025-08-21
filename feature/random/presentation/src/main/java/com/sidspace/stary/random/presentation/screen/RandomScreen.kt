@@ -81,11 +81,12 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.sidspace.stary.random.presentation.FiltersPopup
 
-import com.example.ui.model.MovieUi
-import com.example.ui.model.ResultData
-import com.example.ui.uikit.Purple40
-import com.example.ui.uikit.poppinsFort
+
 import com.sidspace.stary.random.presentation.R
+import com.sidspace.stary.ui.model.MovieUi
+import com.sidspace.stary.ui.model.ResultData
+import com.sidspace.stary.ui.uikit.Purple40
+import com.sidspace.stary.ui.uikit.poppinsFort
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -382,7 +383,7 @@ fun InitView(
                     modifier = Modifier
                         .size(25.dp)
                         .align(Alignment.Center),
-                    painter = painterResource(com.example.ui.R.drawable.settings),
+                    painter = painterResource(com.sidspace.stary.ui.R.drawable.settings),
 
                     contentDescription = null
 
@@ -564,7 +565,7 @@ fun PagerCardImage(
                 ) {
                     Icon(
                         modifier = Modifier.size(140.dp),
-                        painter = painterResource(com.example.ui.R.drawable.empty_result),
+                        painter = painterResource(com.sidspace.stary.ui.R.drawable.empty_result),
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.height(30.dp))

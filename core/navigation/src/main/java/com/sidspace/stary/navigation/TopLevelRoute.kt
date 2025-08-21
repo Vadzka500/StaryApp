@@ -10,12 +10,12 @@ import androidx.compose.material.icons.outlined.Movie
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.ui.graphics.vector.ImageVector
-
-
+import com.sidspace.stary.account.presentation.Account
+import com.sidspace.stary.home.presentation.Home
 
 
 import com.sidspace.stary.navigation.model.Error
-import com.example.presentation.Home
+
 import com.sidspace.stary.random.presentation.Random
 import com.sidspace.stary.search.presentation.Search
 
@@ -30,7 +30,7 @@ val listOfScreens = listOf(
     TopLevelRoute("Home", Home, Icons.Default.Home, Icons.Outlined.Home),
     TopLevelRoute("Search", Search, Icons.Default.Search, Icons.Outlined.Search),
     TopLevelRoute("Random", Random, Icons.Default.Movie, Icons.Outlined.Movie),
-    TopLevelRoute("Account", com.example.presentation.Account, Icons.Default.Person, Icons.Outlined.Person)
+    TopLevelRoute("Account", Account, Icons.Default.Person, Icons.Outlined.Person)
 )
 
 val listOfScreensAll = listOfScreens +  listOf(

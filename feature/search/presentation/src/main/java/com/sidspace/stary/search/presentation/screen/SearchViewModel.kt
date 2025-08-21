@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sidspace.stary.domain.model.Result
 import com.example.domain.usecase.movie.GetSearchedMoviesUseCase
-import com.example.ui.enum.ViewMode
+import com.sidspace.stary.ui.enum.ViewMode
+
 import com.sidspace.stary.ui.mapper.toMovieData
-import com.example.ui.model.ResultData
+import com.sidspace.stary.ui.model.ResultData
+
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

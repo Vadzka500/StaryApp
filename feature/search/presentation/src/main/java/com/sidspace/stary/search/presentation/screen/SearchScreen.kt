@@ -32,12 +32,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sidspace.stary.search.presentation.screen.SearchIntent.*
-import com.example.ui.FilterSection
-import com.example.ui.InitList
-import com.example.ui.R
-import com.example.ui.ShimmerGridList
-import com.example.ui.model.ResultData
-import com.example.ui.utils.getSystemBarHeight
+import com.sidspace.stary.ui.FilterSection
+import com.sidspace.stary.ui.InitList
+import com.sidspace.stary.ui.R
+import com.sidspace.stary.ui.ShimmerGridList
+import com.sidspace.stary.ui.model.ResultData
+import com.sidspace.stary.ui.utils.getSystemBarHeight
+
 
 import kotlinx.coroutines.flow.collectLatest
 

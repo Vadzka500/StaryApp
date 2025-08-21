@@ -6,8 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.sidspace.stary.domain.model.Folder
 import com.sidspace.stary.domain.model.Result
 import com.example.domain.usecase.folder.AddFolderUseCase
-import com.example.domain.usecase.folder.GetAllFoldersUseCase
-import com.example.ui.model.ResultData
+import com.sidspace.stary.folders.domain.usecase.GetAllFoldersUseCase
+import com.sidspace.stary.ui.model.ResultData
+
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow

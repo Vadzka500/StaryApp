@@ -6,7 +6,8 @@ import com.sidspace.stary.domain.model.Result
 
 import com.sidspace.stary.review.domain.usecase.GetReviewUseCase
 import com.sidspace.stary.review.presentation.mapper.toReviewUi
-import com.example.ui.model.ResultData
+import com.sidspace.stary.ui.model.ResultData
+
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow

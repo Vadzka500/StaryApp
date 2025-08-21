@@ -9,7 +9,8 @@ import com.example.domain.usecase.movie.GetRandomMovieUseCase
 import com.sidspace.stary.random.presentation.mapper.toCollectionRandomUi
 
 import com.sidspace.stary.ui.mapper.toMovieUi
-import com.example.ui.model.ResultData
+import com.sidspace.stary.ui.model.ResultData
+
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

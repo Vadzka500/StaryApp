@@ -30,8 +30,9 @@ import com.sidspace.stary.random.presentation.model.CollectionRandomUi
 
 import com.sidspace.stary.random.presentation.screen.RandomIntent
 import com.sidspace.stary.random.presentation.screen.RandomIntent.FilterIntent.*
-import com.example.ui.model.ResultData
-import com.example.ui.uikit.poppinsFort
+import com.sidspace.stary.ui.model.ResultData
+import com.sidspace.stary.ui.uikit.poppinsFort
+
 import java.util.Calendar
 import kotlin.math.roundToInt
 

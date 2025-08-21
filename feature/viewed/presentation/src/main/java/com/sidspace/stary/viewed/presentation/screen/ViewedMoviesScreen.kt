@@ -27,12 +27,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.ui.FilterSection
-import com.example.ui.InitList
-import com.example.ui.R
-import com.example.ui.ShimmerGridList
-import com.example.ui.model.ResultData
-import com.example.ui.uikit.poppinsFort
+import com.sidspace.stary.ui.FilterSection
+import com.sidspace.stary.ui.InitList
+import com.sidspace.stary.ui.R
+import com.sidspace.stary.ui.ShimmerGridList
+import com.sidspace.stary.ui.model.ResultData
+import com.sidspace.stary.ui.uikit.poppinsFort
+
 
 import kotlinx.coroutines.flow.collectLatest
 

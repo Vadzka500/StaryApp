@@ -1,7 +1,7 @@
 package com.sidspace.stary.home.data.utils
 
 import androidx.compose.ui.graphics.toArgb
-import com.sidspace.stary.core.data.model.database.FolderDBO
+import com.sidspace.stary.data.model.database.FolderDBO
 import com.sidspace.stary.home.data.uikit.Blue30
 import com.sidspace.stary.home.data.uikit.Gray30
 import com.sidspace.stary.home.data.uikit.Purple20

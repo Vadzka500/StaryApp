@@ -23,18 +23,18 @@ class FiltersUtil {
 
         val listOfImage = listOf(
             null,
-            com.example.ui.R.drawable.planet,
-            com.example.ui.R.drawable.venus,
-            com.example.ui.R.drawable.visual,
-            com.example.ui.R.drawable.img_planet_1,
-            com.example.ui.R.drawable.img_planet_2,
-            com.example.ui.R.drawable.img_planet_3,
-            com.example.ui.R.drawable.img_love,
-            com.example.ui.R.drawable.img_moon,
-            com.example.ui.R.drawable.img_ok,
-            com.example.ui.R.drawable.star,
-            com.example.ui.R.drawable.rotate,
-            com.example.ui.R.drawable.add
+            com.sidspace.stary.ui.R.drawable.planet,
+            com.sidspace.stary.ui.R.drawable.venus,
+            com.sidspace.stary.ui.R.drawable.visual,
+            com.sidspace.stary.ui.R.drawable.img_planet_1,
+            com.sidspace.stary.ui.R.drawable.img_planet_2,
+            com.sidspace.stary.ui.R.drawable.img_planet_3,
+            com.sidspace.stary.ui.R.drawable.img_love,
+            com.sidspace.stary.ui.R.drawable.img_moon,
+            com.sidspace.stary.ui.R.drawable.img_ok,
+            com.sidspace.stary.ui.R.drawable.star,
+            com.sidspace.stary.ui.R.drawable.rotate,
+            com.sidspace.stary.ui.R.drawable.add
         )
     }
 }

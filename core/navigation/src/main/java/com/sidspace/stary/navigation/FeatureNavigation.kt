@@ -52,9 +52,11 @@ import com.example.presentation.searchNavGraph
 import com.sidspace.stary.bookmark.presentation.Bookmark
 import com.sidspace.stary.collectionmovies.presentation.CollectionMovies
 import com.sidspace.stary.collections.presentation.Collections
+import com.sidspace.stary.folder.presentation.Folder
 import com.sidspace.stary.home.presentation.Home
 import com.sidspace.stary.home.presentation.homeNavGraph
 import com.sidspace.stary.movie.presentation.Profile
+import com.sidspace.stary.person.presentation.Person
 import com.sidspace.stary.random.presentation.randomNavGraph
 import com.sidspace.stary.review.presentation.reviewNavGraph
 import com.sidspace.stary.viewed.presentation.viewedNavGraph
@@ -187,7 +189,7 @@ fun AppNavHost(
                 navController.navigate(Error)
             },
             onSelectPerson = { id ->
-                navController.navigate(Profile(id))
+                navController.navigate(Person(id))
             }, onClickReview = { id ->
                 navController.navigate(Review(id))
             })
@@ -247,7 +249,9 @@ fun AppNavHost(
             navController.popBackStack()
         })
 
-        foldersNavGraph(navController, innerPaddingValues, onSelectFolder = {}, toErrorScreen = {
+        foldersNavGraph(navController, innerPaddingValues, onSelectFolder = {id ->
+            navController.navigate(Folder(id))
+        }, toErrorScreen = {
             navController.navigate(Error)
         }, onBack = {
             navController.popBackStack()

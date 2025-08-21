@@ -13,7 +13,8 @@ import com.example.domain.usecase.movie.GetBookmarkMoviesUseCase
 
 
 import com.sidspace.stary.ui.mapper.toMovieUiLight
-import com.example.ui.model.ResultData
+import com.sidspace.stary.ui.model.ResultData
+
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow

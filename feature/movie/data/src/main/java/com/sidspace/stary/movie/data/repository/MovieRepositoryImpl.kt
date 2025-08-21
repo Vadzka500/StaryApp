@@ -1,23 +1,23 @@
 package com.sidspace.stary.movie.data.repository
 
 
-import com.sidspace.stary.core.data.api.MovieApi
-import com.sidspace.stary.core.data.database.MovieDao
+import com.sidspace.stary.data.api.MovieApi
+import com.sidspace.stary.data.database.MovieDao
 
-import com.sidspace.stary.core.data.model.database.CollectionMovieDBO
-import com.sidspace.stary.core.data.model.database.FolderMovieRef
-import com.sidspace.stary.core.data.utils.safeCall
+import com.sidspace.stary.data.model.database.CollectionMovieDBO
+import com.sidspace.stary.data.model.database.FolderMovieRef
+import com.sidspace.stary.data.utils.safeCall
 import com.sidspace.stary.domain.model.Folder
 import com.sidspace.stary.domain.model.LocalMovie
 import com.sidspace.stary.domain.model.LocalResult
 import com.sidspace.stary.domain.model.Movie
 import com.sidspace.stary.domain.model.Result
 import com.sidspace.stary.movie.domain.repository.MovieRepository
-import com.sidspace.stary.core.data.mapper.toDomain
-import com.sidspace.stary.core.data.mapper.toDomainFromDB
-import com.sidspace.stary.core.data.mapper.toLocalMovie
-import com.sidspace.stary.core.data.mapper.toMovie
-import com.sidspace.stary.core.data.mapper.toMovieDBO
+import com.sidspace.stary.data.mapper.toDomain
+import com.sidspace.stary.data.mapper.toDomainFromDB
+import com.sidspace.stary.data.mapper.toLocalMovie
+import com.sidspace.stary.data.mapper.toMovie
+import com.sidspace.stary.data.mapper.toMovieDBO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject

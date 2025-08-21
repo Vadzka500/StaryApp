@@ -1,7 +1,7 @@
 package com.example.data
 
-import com.sidspace.stary.core.data.api.MovieApi
-import com.sidspace.stary.core.data.database.MovieDao
+import com.sidspace.stary.data.api.MovieApi
+import com.sidspace.stary.data.database.MovieDao
 import com.sidspace.stary.account.data.repository.AccountRepositoryImpl
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest

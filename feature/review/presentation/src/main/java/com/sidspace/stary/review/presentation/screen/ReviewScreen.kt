@@ -58,10 +58,10 @@ import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sidspace.stary.review.presentation.model.ReviewUi
 import com.sidspace.stary.review.presentation.util.toAnnotatedString
-import com.example.ui.R
-import com.example.ui.model.ResultData
-import com.example.ui.shimmerEffect
-import com.example.ui.uikit.poppinsFort
+import com.sidspace.stary.ui.R
+import com.sidspace.stary.ui.model.ResultData
+import com.sidspace.stary.ui.shimmerEffect
+import com.sidspace.stary.ui.uikit.poppinsFort
 
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate

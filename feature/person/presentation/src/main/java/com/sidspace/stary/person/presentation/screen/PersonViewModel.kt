@@ -7,7 +7,8 @@ import com.example.domain.usecase.movie.GetMoviesByPersonIdUseCase
 import com.example.domain.usecase.person.GetPersonByIdUseCase
 import com.sidspace.stary.ui.mapper.toMovieData
 import com.sidspace.stary.ui.mapper.toPersonUi
-import com.example.ui.model.ResultData
+import com.sidspace.stary.ui.model.ResultData
+
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -59,10 +59,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 
-import com.example.ui.ShowCollectionList
-import com.example.ui.model.ResultData
-import com.example.ui.uikit.poppinsFort
+
 import com.sidspace.stary.folders.presentation.FiltersUtil
+import com.sidspace.stary.ui.ShowCollectionList
+import com.sidspace.stary.ui.model.ResultData
+import com.sidspace.stary.ui.uikit.poppinsFort
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.collections.get
 

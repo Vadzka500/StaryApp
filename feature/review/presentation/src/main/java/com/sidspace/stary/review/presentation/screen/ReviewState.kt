@@ -1,9 +1,8 @@
 package com.sidspace.stary.review.presentation.screen
 
 import com.sidspace.stary.review.presentation.model.ReviewUi
-import com.example.ui.model.ResultData
 
-
+import com.sidspace.stary.ui.model.ResultData
 
 
 data class ReviewState(
