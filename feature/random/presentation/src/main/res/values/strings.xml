@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="text_random_none">Найди случайный фильм, фильтры на любой вкус</string>
+    <string name="empty_result_random">Похоже мы ничего не нашли по вашим запросам, проверьте фильтры</string>
+</resources>

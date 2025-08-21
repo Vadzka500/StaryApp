@@ -1,0 +1,15 @@
+package com.example.domain.usecase.collection
+
+
+import com.sidspace.stary.domain.model.Collection
+import com.sidspace.stary.domain.model.Result
+import com.sidspace.stary.collections.domain.repository.CollectionRepository
+import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
+
+
+class GetCollectionUseCase @Inject constructor(private val repository: CollectionRepository) {
+    operator fun invoke(): Flow<Result<List<Collection>>> {
+        return repository.getCollections()
+    }
+}

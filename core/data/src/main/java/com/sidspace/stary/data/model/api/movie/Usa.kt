@@ -1,0 +1,9 @@
+package com.sidspace.stary.data.model.api.movie
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class Usa(
+    val currency: String? = null,
+    val value: Int? = null
+)

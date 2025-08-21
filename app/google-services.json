@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "834062816652",
+    "project_id": "stary-466109",
+    "storage_bucket": "stary-466109.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:834062816652:android:56ae2db5b7c46a76fd72a9",
+        "android_client_info": {
+          "package_name": "com.sidspace.stary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "834062816652-rvmga95rm0js5tivp9hgg90belh06ri7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sidspace.stary",
+            "certificate_hash": "a90b0c70ad1d1d3b3f579efc0b55d128e121dfad"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6x8HCb_789no6CBjUF-U5cVixL3STK8w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

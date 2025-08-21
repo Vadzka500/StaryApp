@@ -1,0 +1,14 @@
+package com.example.domain.usecase.movie
+
+import com.sidspace.stary.domain.model.Movie
+import com.sidspace.stary.domain.model.Result
+import com.sidspace.stary.collectionmovies.domain.repository.CollectionMoviesRepository
+import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
+
+
+class GetListMoviesByCollectionUseCase @Inject constructor(private val repository: CollectionMoviesRepository) {
+    suspend operator fun invoke(slug: String, limit: Int) : Flow<Result<List<Movie>>> {
+        return repository.getMoviesByCollection(slug, limit)
+    }
+}

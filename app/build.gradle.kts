@@ -3,22 +3,22 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
-   //alias(libs.plugins.kotlin.jvm)
 
     alias(libs.plugins.kapt)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.crashlytics)
+    alias(libs.plugins.play.services)
 }
 
 android {
-    namespace = "com.example.navwithapinothing_2"
-    compileSdk = 35
+    namespace = "com.sidspace.stary"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.navwithapinothing_2"
-        minSdk = 30
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        applicationId = "com.sidspace.stary"
+        minSdk = 31
+        versionCode = 3
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -47,6 +47,7 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
         buildConfig = true
@@ -69,8 +70,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.room.common.jvm)
-    implementation(libs.androidx.room.runtime.android)
+    //implementation(libs.androidx.room.common.jvm)
+    //implementation(libs.androidx.room.runtime.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -79,26 +80,25 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation(libs.compose.navigation)
+
     implementation(libs.kotlin.serialization)
 
     implementation(libs.core.splash.screen)
 
 
-    implementation(libs.retrofit)
-    implementation (libs.converter.gson)
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-    implementation(libs.retrofit2.kotlinx.serialization.converter)
+
     implementation(libs.coil.compose)
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
 
-
+    implementation(libs.compose.navigation)
     implementation(libs.viewmodel.compose.navigatiom)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.icons)
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.com.android.google.auth)
@@ -106,12 +106,20 @@ dependencies {
     implementation(libs.androidx.webkit)
 
 
-    implementation(libs.icons)
 
-    kapt(libs.androidx.room.compiler.android)
+
     implementation(libs.androidx.browser)
 
     //implementation("androidx.compose.ui:ui-text-google-fonts:1.7.6")
     implementation(libs.androidx.profileinstaller) // последнюю
     implementation(libs.cloudy)
+    implementation(libs.play.services.auth.v2130)
+    implementation(libs.firebase.auth.ktx)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics.ndk)
+    implementation(libs.firebase.analytics)
+
+    implementation(libs.firebase.messaging)
+
+    implementation(project(":core:navigation"))
 }

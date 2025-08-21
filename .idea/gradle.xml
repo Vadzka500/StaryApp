@@ -11,9 +11,69 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/core/data" />
+            <option value="$PROJECT_DIR$/core/domain" />
+            <option value="$PROJECT_DIR$/core/navigation" />
+            <option value="$PROJECT_DIR$/core/presentation" />
+            <option value="$PROJECT_DIR$/core/ui" />
+            <option value="$PROJECT_DIR$/data" />
+            <option value="$PROJECT_DIR$/domain" />
+            <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/account" />
+            <option value="$PROJECT_DIR$/feature/account/data" />
+            <option value="$PROJECT_DIR$/feature/account/domain" />
+            <option value="$PROJECT_DIR$/feature/account/presentation" />
+            <option value="$PROJECT_DIR$/feature/bookmark" />
+            <option value="$PROJECT_DIR$/feature/bookmark/data" />
+            <option value="$PROJECT_DIR$/feature/bookmark/domain" />
+            <option value="$PROJECT_DIR$/feature/bookmark/presentation" />
+            <option value="$PROJECT_DIR$/feature/collectionmovies" />
+            <option value="$PROJECT_DIR$/feature/collectionmovies/data" />
+            <option value="$PROJECT_DIR$/feature/collectionmovies/domain" />
+            <option value="$PROJECT_DIR$/feature/collectionmovies/presentation" />
+            <option value="$PROJECT_DIR$/feature/collections" />
+            <option value="$PROJECT_DIR$/feature/collections/data" />
+            <option value="$PROJECT_DIR$/feature/collections/domain" />
+            <option value="$PROJECT_DIR$/feature/collections/presentation" />
+            <option value="$PROJECT_DIR$/feature/folder" />
+            <option value="$PROJECT_DIR$/feature/folder/data" />
+            <option value="$PROJECT_DIR$/feature/folder/domain" />
+            <option value="$PROJECT_DIR$/feature/folder/presentation" />
+            <option value="$PROJECT_DIR$/feature/folders" />
+            <option value="$PROJECT_DIR$/feature/folders/data" />
+            <option value="$PROJECT_DIR$/feature/folders/domain" />
+            <option value="$PROJECT_DIR$/feature/folders/presentation" />
+            <option value="$PROJECT_DIR$/feature/home" />
+            <option value="$PROJECT_DIR$/feature/home/data" />
+            <option value="$PROJECT_DIR$/feature/home/domain" />
+            <option value="$PROJECT_DIR$/feature/home/presentation" />
+            <option value="$PROJECT_DIR$/feature/movie" />
+            <option value="$PROJECT_DIR$/feature/movie/data" />
+            <option value="$PROJECT_DIR$/feature/movie/domain" />
+            <option value="$PROJECT_DIR$/feature/movie/presentation" />
+            <option value="$PROJECT_DIR$/feature/person" />
+            <option value="$PROJECT_DIR$/feature/person/data" />
+            <option value="$PROJECT_DIR$/feature/person/domain" />
+            <option value="$PROJECT_DIR$/feature/person/presentation" />
+            <option value="$PROJECT_DIR$/feature/random" />
+            <option value="$PROJECT_DIR$/feature/random/data" />
+            <option value="$PROJECT_DIR$/feature/random/domain" />
+            <option value="$PROJECT_DIR$/feature/random/presentation" />
+            <option value="$PROJECT_DIR$/feature/review" />
+            <option value="$PROJECT_DIR$/feature/review/data" />
+            <option value="$PROJECT_DIR$/feature/review/domain" />
+            <option value="$PROJECT_DIR$/feature/review/presentation" />
+            <option value="$PROJECT_DIR$/feature/search" />
+            <option value="$PROJECT_DIR$/feature/search/data" />
+            <option value="$PROJECT_DIR$/feature/search/domain" />
+            <option value="$PROJECT_DIR$/feature/search/presentation" />
+            <option value="$PROJECT_DIR$/feature/viewed" />
+            <option value="$PROJECT_DIR$/feature/viewed/data" />
+            <option value="$PROJECT_DIR$/feature/viewed/domain" />
+            <option value="$PROJECT_DIR$/feature/viewed/presentation" />
           </set>
         </option>
-        <option name="resolveExternalAnnotations" value="false" />
       </GradleProjectSettings>
     </option>
   </component>

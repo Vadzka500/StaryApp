@@ -1,8 +1,0 @@
-package com.example.moviesapi.models.movie
-
-import kotlinx.serialization.Serializable
-
-@Serializable
-data class Genre(
-    val name: String? = null
-)

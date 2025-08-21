@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="21" />
+    <bytecodeTargetLevel target="1.8">
+      <module name="NavWithApiNothing_2.data.main" target="11" />
+      <module name="NavWithApiNothing_2.data.test" target="11" />
+      <module name="NavWithApiNothing_2.domain.main" target="11" />
+      <module name="NavWithApiNothing_2.domain.test" target="11" />
+      <module name="StaryApp.app" target="21" />
+      <module name="StaryApp.database" target="21" />
+      <module name="StaryApp.features.movie-main" target="21" />
+      <module name="StaryApp.movies-data" target="21" />
+    </bytecodeTargetLevel>
   </component>
 </project>
