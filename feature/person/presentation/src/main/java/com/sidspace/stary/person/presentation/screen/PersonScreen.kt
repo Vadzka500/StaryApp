@@ -32,9 +32,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.sidspace.stary.ui.ListView
+import com.sidspace.stary.ui.HorizontalList
 import com.sidspace.stary.ui.ShimmerMovies
-import com.sidspace.stary.ui.model.MovieData
+import com.sidspace.stary.ui.mapper.toMovieUi
+import com.sidspace.stary.ui.model.MovieUi
 import com.sidspace.stary.ui.model.PersonUi
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.shimmerEffect
@@ -215,9 +216,11 @@ fun InitPersonScreen(modifier: Modifier = Modifier, person: PersonUi) {
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+
                 if (!person.profession.isNullOrEmpty())
                     Text(
-                        text = person.profession?:"",
+                        text = person.profession!!.joinToString(
+                            ", ", transform = {it}),
                         modifier
                             .fillMaxWidth()
                             .padding(top = 4.dp),
@@ -285,7 +288,7 @@ fun InitPersonScreen(modifier: Modifier = Modifier, person: PersonUi) {
 
 fun ShowMovies(
     title: String,
-    list: List<MovieData>,
+    list: List<MovieUi>,
     modifier: Modifier = Modifier,
     onSelectMovie: (Long) -> Unit
 ) {
@@ -294,8 +297,9 @@ fun ShowMovies(
     if (list.isNotEmpty()) MovieRow(
         list = list,
         text = "$title ${list.size}",
-        modifier = Modifier.padding(top = 16.dp),
-        onSelectMovie = onSelectMovie
+        modifier = Modifier.padding(top = 8.dp),
+        onSelectMovie = onSelectMovie,
+
     )
 
 
@@ -304,22 +308,23 @@ fun ShowMovies(
 @Composable
 fun MovieRow(
     modifier: Modifier = Modifier,
-    list: List<MovieData>,
+    list: List<MovieUi>,
     text: String,
     onSelectMovie: (Long) -> Unit
 ) {
     Column(modifier = modifier) {
-        Text(
+        /*Text(
             text = text,
             fontFamily = poppinsFort,
             fontWeight = FontWeight.SemiBold,
             fontSize = 18.sp,
             modifier = Modifier.padding(start = 16.dp)
-        )
-        ListView(
-            list = list,
-            onClick = onSelectMovie,
-            modifier = Modifier.padding(top = 16.dp)
+        )*/
+        HorizontalList(
+            label = text,
+            list = list.map{it.toMovieUi()},
+            onSelectMovie = onSelectMovie,
+            modifier = modifier
         )
     }
 

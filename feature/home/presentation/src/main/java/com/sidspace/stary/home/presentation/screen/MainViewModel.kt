@@ -9,7 +9,7 @@ import com.sidspace.stary.home.domain.usecase.GetListMoviesByCollectionUseCase
 import com.sidspace.stary.home.presentation.utils.MoviesCollections
 import com.sidspace.stary.ui.mapper.toCollectionUi
 import com.sidspace.stary.ui.mapper.toMovieUi
-import com.sidspace.stary.ui.model.MovieUi
+import com.sidspace.stary.ui.model.MoviePreviewUi
 import com.sidspace.stary.ui.model.ResultData
 
 
@@ -42,7 +42,7 @@ class MainViewModel @Inject constructor(
     private val _effect = MutableSharedFlow<MainEffect>()
     val effect = _effect.asSharedFlow()
 
-    private var result = mutableMapOf<Pair<String, String>, ResultData<List<MovieUi>>?>()
+    private var result = mutableMapOf<Pair<String, String>, ResultData<List<MoviePreviewUi>>?>()
 
 
     init {
@@ -98,7 +98,7 @@ class MainViewModel @Inject constructor(
 
     fun getHomeData() {
 
-        MoviesCollections.Companion.listOfFavoriteCollections.shuffled().take(4).forEach {
+        MoviesCollections.Companion.listOfFavoriteCollections.shuffled().take(5).forEach {
             result[it] = null
         }
 
@@ -138,11 +138,12 @@ class MainViewModel @Inject constructor(
                     getListMoviesByCollectionUseCase(result.keys.elementAt(0).second, limit = 10),
                     getListMoviesByCollectionUseCase(result.keys.elementAt(1).second, limit = 10),
                     getListMoviesByCollectionUseCase(result.keys.elementAt(2).second, limit = 10),
-                    getListMoviesByCollectionUseCase(result.keys.elementAt(3).second, limit = 10)
+                    getListMoviesByCollectionUseCase(result.keys.elementAt(3).second, limit = 10),
+                    getListMoviesByCollectionUseCase(result.keys.elementAt(4).second, limit = 10)
                 )
-                { list1, list2, list3, list4 ->
+                { list1, list2, list3, list4, list5 ->
 
-                    listOf(list1, list2, list3, list4)
+                    listOf(list1, list2, list3, list4, list5)
 
 
                 }.collect { data ->

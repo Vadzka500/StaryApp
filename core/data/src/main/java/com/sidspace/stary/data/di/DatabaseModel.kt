@@ -20,6 +20,7 @@ object DatabaseModel {
     @Provides
     fun provideAppDatabase(@ApplicationContext context: Context): MovieDatabase {
 
+
         return Room.databaseBuilder(
             context,
             MovieDatabase::class.java,

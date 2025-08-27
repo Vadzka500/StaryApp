@@ -2,13 +2,13 @@ package com.sidspace.stary.account.presentation
 
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.sidspace.stary.ui.model.MovieUiLight
+import com.sidspace.stary.ui.model.MovieLightUi
 import com.sidspace.stary.ui.model.ResultData
 
 
 data class AccountState (
-    val resultAccountViewed : ResultData<List<MovieUiLight>> = ResultData.None,
-    val resultAccountBookmark : ResultData<List<MovieUiLight>> = ResultData.None,
+    val resultAccountViewed : ResultData<List<MovieLightUi>> = ResultData.Loading,
+    val resultAccountBookmark : ResultData<List<MovieLightUi>> = ResultData.Loading,
     val countViewed: Int = 0,
     val countBookmark: Int = 0,
     val countFolders: Long = 0,

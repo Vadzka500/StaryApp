@@ -26,7 +26,7 @@ data class MovieDTO(
     val name: String? = null,
     val names: List<Name>? = null,
     val networks: Networks? = null,
-    val persons: List<PersonDTO>? = null,
+    val persons: List<PersonOfMovieDTO>? = null,
     val poster: Poster? = null,
     val premiere: Premiere? = null,
     val rating: Rating? = null,

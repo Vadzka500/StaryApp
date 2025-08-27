@@ -8,6 +8,6 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 
-class GetFolderUseCase @Inject constructor(private val repository: FolderRepository) {
-    suspend operator fun invoke(id: Long) : Flow<Result<Folder>> = repository.getFolder(id)
+class GetFolderFromApiUseCase @Inject constructor(private val repository: FolderRepository) {
+    suspend operator fun invoke(folder: Folder) : Flow<Result<Folder>> = repository.getFolderFromApi(folder)
 }

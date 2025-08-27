@@ -12,10 +12,13 @@ import com.sidspace.stary.domain.model.SeasonsInfo
 import com.sidspace.stary.data.model.api.collection.CollectionMovie
 import com.sidspace.stary.data.model.api.movie.MovieDTO
 import com.sidspace.stary.data.model.api.movie.PersonDTO
+import com.sidspace.stary.data.model.api.movie.PersonOfMovieDTO
 import com.sidspace.stary.data.model.database.FolderWithMoviesDBO
 import com.sidspace.stary.data.model.database.MovieDBO
 import com.sidspace.stary.data.utils.ResultRemote
 import com.sidspace.stary.domain.model.Result
+import com.sidspace.stary.domain.model.Trailer
+
 
 suspend fun <T, R> ResultRemote<T>.toDomain(transform: suspend (T) -> R): Result<R> {
     return when (this) {
@@ -71,7 +74,7 @@ fun MovieDTO.toMovie(): Movie {
         sequelsAndPrequels = sequelsAndPrequels?.map { it.toMovie() },
         similarMovies = similarMovies?.map { it.toMovie() },
         status = status,
-        trailersUrl = videos?.trailers?.map { it.url!! },
+        trailersUrl = videos?.trailers?.map { Trailer(it.name, it.url!!) },
         listOfCollection = lists,
         listOfPerson = persons?.map{it.toPerson()}
     )
@@ -87,6 +90,15 @@ fun PersonDTO.toPerson(): Person{
         birthday = birthday,
         age = age,
         moviesIds = movies?.map { it.id }
+    )
+}
+
+fun PersonOfMovieDTO.toPerson(): Person{
+    return Person(
+        id = id,
+        name = name,
+        photo = photo,
+        profession = profession?.let { listOf(it) },
     )
 }
 

@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.AlertDialog
@@ -29,6 +31,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -102,7 +106,7 @@ fun UserCollectionScreen(
                 }
 
                 ResultData.Loading -> {
-                    ShimmerGridList(modifier = Modifier.padding(top = 60.dp))
+                    ShimmerGridList(modifier = Modifier.padding(top = 60.dp), state.value.countMovies)
                 }
 
                 is ResultData.Success -> {
@@ -146,7 +150,7 @@ fun UserCollectionScreen(
                     }
                     .padding(8.dp))
 
-            Row(modifier = Modifier.weight(1f)  .padding(end = 64.dp)) {
+            Row(modifier = Modifier.weight(1f)  .padding(end = 42.dp), verticalAlignment = Alignment.CenterVertically) {
 
 
                 Text(
@@ -154,6 +158,8 @@ fun UserCollectionScreen(
                     modifier = Modifier
                         .padding(start = 16.dp),
                     fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     fontFamily = poppinsFort,
                     fontSize = 24.sp,
                 )
@@ -168,9 +174,10 @@ fun UserCollectionScreen(
             }
 
             Icon(
-                painter = painterResource(R.drawable.settings),
+                imageVector = Icons.AutoMirrored.Default.Notes,
                 contentDescription = "",
                 modifier = Modifier
+                    .padding(end = 8.dp)
                     .size(40.dp)
                     .clip(
                         CircleShape

@@ -5,8 +5,9 @@ import androidx.lifecycle.viewModelScope
 
 import com.sidspace.stary.domain.model.Folder
 import com.sidspace.stary.domain.model.Result
-import com.example.domain.usecase.folder.GetFolderUseCase
+import com.example.domain.usecase.folder.GetFolderFromApiUseCase
 import com.example.domain.usecase.folder.RemoveFolderUseCase
+import com.sidspace.stary.folder.domain.usecase.GetFolderFromDbUseCase
 import com.sidspace.stary.ui.enum.ViewMode
 import com.sidspace.stary.ui.enum.toggle
 
@@ -27,7 +28,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FolderViewModel @Inject constructor(
-    private val getFolderUseCase: GetFolderUseCase,
+    private val getFolderUseCase: GetFolderFromApiUseCase,
+    private val getFolderFromDbUseCase: GetFolderFromDbUseCase,
     private val removeFolderUseCase: RemoveFolderUseCase
 ) : ViewModel() {
 
@@ -115,28 +117,59 @@ class FolderViewModel @Inject constructor(
     fun getFolder(id: Long) {
         viewModelScope.launch {
 
-            getFolderUseCase(id).collect {
+            getFolderFromDbUseCase(id).collect {
+
                 when (val data = it) {
                     Result.Error -> {
-                        _state.update { it.copy(list = ResultData.Error) }
+                        data
                     }
 
                     Result.Loading -> {
                         data
                     }
 
-                    is Result.Success<Folder> -> {
+                    is Result.Success -> {
+
                         _state.update { it.copy(folder = data.data) }
                         val count = data.data.listOfMovies!!.size
                         _state.update { it.copy(countMovies = count) }
+
                         if (count > 0) {
-                            _state.update { it.copy(list = ResultData.Success(data.data.listOfMovies!!.map { it.toMovieData() })) }
-                        } else {
+                            getFolderUseCase(data.data).collect {
+                                when (val data = it) {
+                                    Result.Error -> {
+                                        _state.update { it.copy(list = ResultData.Error) }
+                                    }
+
+                                    Result.Loading -> {
+                                        data
+                                    }
+
+                                    is Result.Success<Folder> -> {
+                                        _state.update { it.copy(folder = data.data) }
+                                        val count = data.data.listOfMovies!!.size
+                                        _state.update { it.copy(countMovies = count) }
+                                        if (count > 0) {
+                                            _state.update { it.copy(list = ResultData.Success(data.data.listOfMovies!!.map { it.toMovieData() })) }
+                                        } else {
+                                            _state.update {
+                                                it.copy(
+                                                    list = ResultData.Success(
+                                                        emptyList()
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }else{
                             _state.update { it.copy(list = ResultData.Success(emptyList())) }
                         }
                     }
                 }
             }
+
 
         }
     }

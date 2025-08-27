@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun ShimmerGridList(modifier: Modifier = Modifier) {
+fun ShimmerGridList(modifier: Modifier = Modifier, count: Int) {
     LazyVerticalGrid(
         modifier = modifier
             .padding(horizontal = 16.dp),
@@ -41,7 +41,7 @@ fun ShimmerGridList(modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        items(16) {
+        items(if(count > 10) 10 else count) {
             MovieCardGridShimmer()
         }
     }
@@ -52,7 +52,7 @@ fun ShimmerGridList(modifier: Modifier = Modifier) {
 fun MovieCardGridShimmer(
     modifier: Modifier = Modifier
 ) {
-   /* //println("name = " + item.name)
+    //println("name = " + item.name)
 
     val configuration = LocalConfiguration.current
     val width = configuration.screenWidthDp / 2 - 22
@@ -61,10 +61,10 @@ fun MovieCardGridShimmer(
 
     Column(
         modifier = Modifier
-            *//*.then(
+           /* .then(
                 if (index == 0) Modifier.padding(start = 16.dp)
                 else Modifier
-            )*//*
+            )*/
             .fillMaxWidth()
             .height(boxHeight.dp)
             .width(width.dp),
@@ -87,7 +87,7 @@ fun MovieCardGridShimmer(
                 )
                 .shimmerEffect(),
         )
-    }*/
+    }
 }
 
 @Composable

@@ -13,6 +13,8 @@ import com.sidspace.stary.home.domain.repository.HomeRepository
 import com.sidspace.stary.data.mapper.toCollection
 import com.sidspace.stary.data.mapper.toDomain
 import com.sidspace.stary.data.mapper.toMovie
+import com.sidspace.stary.domain.Logger
+
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -20,7 +22,8 @@ import javax.inject.Inject
 
 class HomeRepositoryImpl @Inject constructor(
     private val movieApi: MovieApi,
-    private val movieDao: MovieDao
+    private val movieDao: MovieDao,
+    private val logger: Logger
 ) : HomeRepository {
     override fun getCollections(): Flow<Result<List<Collection>>> = flow {
         emit(safeCall { movieApi.getCollections() }.mapSuccess { it.docs }.toDomain {

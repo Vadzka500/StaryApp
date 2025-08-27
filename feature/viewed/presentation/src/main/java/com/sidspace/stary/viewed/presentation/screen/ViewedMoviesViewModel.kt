@@ -11,6 +11,7 @@ import com.sidspace.stary.viewed.domain.usecase.GetViewedMoviesUseCase
 import com.sidspace.stary.ui.mapper.toMovieData
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.sort.sortListMovies
+import com.sidspace.stary.viewed.domain.usecase.GetViewedMoviesFromDbUseCase
 
 
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +26,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ViewedMoviesViewModel @Inject constructor(
-    private val getViewedMoviesUseCase: GetViewedMoviesUseCase
+    private val getViewedMoviesUseCase: GetViewedMoviesUseCase,
+    private val getViewedMoviesFromDb: GetViewedMoviesFromDbUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ViewedMovieState())
@@ -44,6 +46,7 @@ class ViewedMoviesViewModel @Inject constructor(
             ViewedMovieIntent.OnBack -> {
                 onBack()
             }
+
             is ViewedMovieIntent.OnSelectMovie -> {
                 onSelectMovie(intent.id)
             }
@@ -51,18 +54,23 @@ class ViewedMoviesViewModel @Inject constructor(
             is ViewedMovieIntent.IsShowFilters -> {
                 _state.update { it.copy(isShowFilter = intent.isShow) }
             }
+
             ViewedMovieIntent.SetGridView -> {
                 _state.update { it.copy(viewMode = ViewMode.GRID) }
             }
+
             ViewedMovieIntent.SetListView -> {
                 _state.update { it.copy(viewMode = ViewMode.LIST) }
             }
+
             is ViewedMovieIntent.SetSortType -> {
                 _state.update { it.copy(sortType = intent.sort) }
             }
+
             ViewedMovieIntent.SortMovies -> {
                 sortMovies()
             }
+
             ViewedMovieIntent.ToggleSortDirection -> {
                 _state.update { it.copy(sortDirection = _state.value.sortDirection.toggle()) }
             }
@@ -75,40 +83,36 @@ class ViewedMoviesViewModel @Inject constructor(
 
     fun getViewedMovies() {
         viewModelScope.launch {
-            getViewedMoviesUseCase().collect { result ->
 
-                if(result is Result.Success){
-                    _state.update { it.copy(countMovies = result.data.size) }
-                    _state.update { it.copy(list = ResultData.Success(result.data.map{ it.toMovieData()})) }
+            getViewedMoviesFromDb().collect { resultDb ->
 
-                }else if(result is Result.Error){
+                if (resultDb is Result.Success) {
+                    _state.update { it.copy(countMovies = resultDb.data.size) }
+
+                    if (resultDb.data.isNotEmpty()) {
+                        getViewedMoviesUseCase(resultDb.data).collect { result ->
+
+                            if (result is Result.Success) {
+
+                                _state.update { it.copy(list = ResultData.Success(result.data.map { it.toMovieData() })) }
+
+                            } else if (result is Result.Error) {
+                                _state.update { it.copy(list = ResultData.Error) }
+                            }
+
+                        }
+                    }else{
+                        _state.update { it.copy(list = ResultData.Success(emptyList())) }
+                    }
+
+                } else if (resultDb is Result.Error) {
                     _state.update { it.copy(list = ResultData.Error) }
                 }
-
             }
+
         }
     }
 
-    /*suspend fun getViewedMoviesApi(list: List<Long>) {
-
-        if(list.isNotEmpty()) {
-            _state.update { it.copy(list = ListMoviesResult.Loading) }
-            getMovieByIdsUseCase(list).collect { result ->
-                if (result is Result.Success<*>) {
-                    val sorted =
-                        list.mapNotNull { id -> (result.data as List<MovieDTO>).find { item -> item.id == id } }
-
-                    _state.update { it.copy(list = ListMoviesResult.Success(sorted)) }
-
-                } else if (result is Result.Error<*>) {
-                    _state.update { it.copy(list = ListMoviesResult.Error) }
-                }
-
-            }
-        }else{
-            _state.update { it.copy(list = ListMoviesResult.Success(emptyList())) }
-        }
-    }*/
 
     fun sortMovies() {
 
@@ -126,19 +130,19 @@ class ViewedMoviesViewModel @Inject constructor(
 
     }
 
-    fun onSelectMovie(id: Long){
+    fun onSelectMovie(id: Long) {
         viewModelScope.launch {
             _effect.emit(ViewedMovieEffect.OnSelectMovie(id))
         }
     }
 
-    private fun toErrorScreen(){
+    private fun toErrorScreen() {
         viewModelScope.launch {
             _effect.emit(ViewedMovieEffect.ToErrorScreen)
         }
     }
 
-    fun onBack(){
+    fun onBack() {
         viewModelScope.launch {
             _effect.emit(ViewedMovieEffect.OnBack)
         }

@@ -1,5 +1,6 @@
 package com.sidspace.stary.data.di
 
+import com.sidspace.stary.data.BuildConfig
 import com.sidspace.stary.data.api.MovieApi
 
 
@@ -22,6 +23,7 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
+
         return OkHttpClient.Builder().connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(15, TimeUnit.SECONDS)
             .writeTimeout(15, TimeUnit.SECONDS)
@@ -31,23 +33,9 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit {
-
-        val json = Json {
-           /* *//*  coerceInputValues = true
-              isLenient = true
-              encodeDefaults = true*/
-            explicitNulls = true
-
-            ignoreUnknownKeys = true
-        }
-
-
-
-
         return Retrofit.Builder()
-            .baseUrl("https://api.kinopoisk.dev/v1.4/")
+            .baseUrl(BuildConfig.MOVIES_API_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-            //.addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .client(provideOkHttpClient())
             .build()
     }

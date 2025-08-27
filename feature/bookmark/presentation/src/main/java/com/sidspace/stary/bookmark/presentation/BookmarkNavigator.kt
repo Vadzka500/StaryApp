@@ -11,7 +11,6 @@ import com.sidspace.stary.bookmark.presentation.screen.BookmarkMoviesScreen
 
 
 fun NavGraphBuilder.bookmarkNavGraph(
-    navController: NavController,
     paddingValues: PaddingValues,
     onSelectMovie:(Long) -> Unit,
     toErrorScreen:() -> Unit,

@@ -8,5 +8,5 @@ import javax.inject.Inject
 
 class GetBookmarkMoviesUseCase @Inject constructor(private val repository: BookmarkRepository) {
 
-    suspend operator fun invoke(): Flow<Result<List<Movie>>> = repository.getBookmarkMovies()
+    operator fun invoke(list: List<Movie>): Flow<Result<List<Movie>>> = repository.getBookmarkMovies(list)
 }

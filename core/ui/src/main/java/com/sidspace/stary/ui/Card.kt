@@ -64,8 +64,8 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.sidspace.stary.domain.model.Folder
 import com.sidspace.stary.ui.enum.ViewMode
-import com.sidspace.stary.ui.model.MovieData
 import com.sidspace.stary.ui.model.MovieUi
+import com.sidspace.stary.ui.model.MoviePreviewUi
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.uikit.Purple40
 import com.sidspace.stary.ui.uikit.poppinsFort
@@ -75,7 +75,7 @@ import com.sidspace.stary.ui.utils.ScoreManager
 @Composable
 fun InitList(
     modifier: Modifier = Modifier,
-    list: List<MovieData>,
+    list: List<MovieUi>,
     onClick: (Long) -> Unit,
     viewType: ViewMode
 ) {
@@ -102,7 +102,7 @@ fun InitList(
 }
 
 @Composable
-fun ListView(modifier: Modifier = Modifier, list: List<MovieData>, onClick: (Long) -> Unit) {
+fun ListView(modifier: Modifier = Modifier, list: List<MovieUi>, onClick: (Long) -> Unit) {
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -119,7 +119,7 @@ fun ListView(modifier: Modifier = Modifier, list: List<MovieData>, onClick: (Lon
 }
 
 @Composable
-fun GridView(modifier: Modifier = Modifier, list: List<MovieData>, onClick: (Long) -> Unit) {
+fun GridView(modifier: Modifier = Modifier, list: List<MovieUi>, onClick: (Long) -> Unit) {
 
     LazyVerticalGrid(
         modifier = modifier
@@ -140,7 +140,7 @@ fun GridView(modifier: Modifier = Modifier, list: List<MovieData>, onClick: (Lon
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun MovieCardGrid(
-    item: MovieData,
+    item: MovieUi,
     onSelectMovie: (Long) -> Unit
 ) {
 
@@ -209,7 +209,7 @@ fun MovieCardGrid(
 @Composable
 fun CardList(
     modifier: Modifier = Modifier,
-    movie: MovieData,
+    movie: MovieUi,
     index: Int,
     onSelectMovie: (Long) -> Unit
 ) {
@@ -397,7 +397,7 @@ fun InitRow(modifier: Modifier = Modifier, label: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun HorizontalList(list: List<MovieUi>, label: String, onSelectMovie: (Long) -> Unit, modifier: Modifier = Modifier){
+fun HorizontalList(list: List<MoviePreviewUi>, label: String, onSelectMovie: (Long) -> Unit, modifier: Modifier = Modifier){
 
     Spacer(modifier = Modifier.height(16.dp))
     Text(
@@ -416,7 +416,7 @@ fun HorizontalList(list: List<MovieUi>, label: String, onSelectMovie: (Long) -> 
     ) {
 
         itemsIndexed(
-            list .take(10),
+            list,
             key = { _, item -> item.id }) { index, item ->
 
             MovieCardHorizontal(
@@ -434,7 +434,7 @@ fun HorizontalList(list: List<MovieUi>, label: String, onSelectMovie: (Long) -> 
 }
 
 @Composable
-fun HorizontalHomeList(list: List<MovieUi>, label: String, onClickHeader:() -> Unit, onSelectMovie: (Long) -> Unit){
+fun HorizontalHomeList(list: List<MoviePreviewUi>, label: String, onClickHeader:() -> Unit, onSelectMovie: (Long) -> Unit){
     InitRow(label = label, onClick = onClickHeader)
     LazyRow(
         modifier = Modifier.padding(top = 10.dp),

@@ -122,4 +122,5 @@ dependencies {
     implementation(libs.firebase.messaging)
 
     implementation(project(":core:navigation"))
+    implementation(project(":core:logger"))
 }

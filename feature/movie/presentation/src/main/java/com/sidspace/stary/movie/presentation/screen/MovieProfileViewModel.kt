@@ -12,8 +12,8 @@ import com.example.domain.usecase.movie.AddMovieUseCase
 import com.example.domain.usecase.movie.CheckMovieUseCase
 import com.example.domain.usecase.movie.GetMovieByIdUseCase
 import com.example.domain.usecase.movie.RemoveMovieFromFolderUseCase
-import com.example.domain.usecase.movie.UpdateMovieBookmarkUseCase
-import com.example.domain.usecase.movie.UpdateMovieViewedUseCase
+import com.sidspace.stary.movie.domain.usecase.UpdateMovieBookmarkUseCase
+import com.sidspace.stary.movie.domain.usecase.UpdateMovieViewedUseCase
 
 import com.sidspace.stary.ui.mapper.toMovieData
 

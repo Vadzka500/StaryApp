@@ -57,6 +57,7 @@ dependencies {
     implementation(project(":feature:person:presentation"))
     implementation(project(":feature:review:presentation"))
     implementation(project(":feature:viewed:presentation"))
+    implementation(project(":feature:error:presentation"))
     //implementation(project(":feature:home:data"))
 
     implementation(libs.compose.navigation)

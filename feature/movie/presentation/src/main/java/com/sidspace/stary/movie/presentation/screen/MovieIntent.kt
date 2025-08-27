@@ -1,6 +1,6 @@
 package com.sidspace.stary.movie.presentation.screen
 
-import com.sidspace.stary.ui.model.MovieData
+import com.sidspace.stary.ui.model.MovieUi
 
 
 sealed interface MovieIntent {
@@ -11,7 +11,7 @@ sealed interface MovieIntent {
     data class PlayTrailer(val url: String): MovieIntent
     data class ViewedToMovie(val id:Long,val collections: List<String>?,val isViewed: Boolean): MovieIntent
     data class BookmarkToMovie(val id:Long,val collections: List<String>?,val isBookmark: Boolean): MovieIntent
-    data class OnSelectFolder(val id: Long, val movie: MovieData): MovieIntent
+    data class OnSelectFolder(val id: Long, val movie: MovieUi): MovieIntent
     object ShowFoldersSheet: MovieIntent
     object HideFoldersSheet: MovieIntent
     object ShowTrailerSheet: MovieIntent

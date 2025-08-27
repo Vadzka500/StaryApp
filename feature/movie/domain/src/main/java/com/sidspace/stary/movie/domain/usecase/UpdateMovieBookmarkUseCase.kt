@@ -1,4 +1,4 @@
-package com.example.domain.usecase.movie
+package com.sidspace.stary.movie.domain.usecase
 
 
 import com.sidspace.stary.domain.model.Result

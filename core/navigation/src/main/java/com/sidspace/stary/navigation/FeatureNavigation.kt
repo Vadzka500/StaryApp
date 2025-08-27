@@ -52,6 +52,7 @@ import com.example.presentation.searchNavGraph
 import com.sidspace.stary.bookmark.presentation.Bookmark
 import com.sidspace.stary.collectionmovies.presentation.CollectionMovies
 import com.sidspace.stary.collections.presentation.Collections
+import com.sidspace.stary.error.presentation.navigation.errorNavGraph
 import com.sidspace.stary.folder.presentation.Folder
 import com.sidspace.stary.home.presentation.Home
 import com.sidspace.stary.home.presentation.homeNavGraph
@@ -113,7 +114,7 @@ fun NavigationBottomBar(modifier: Modifier = Modifier, navController: NavControl
 
                         if (indexSelected == index) {
                             navController.popBackStack(
-                                item.route, inclusive = false, saveState = false
+                                item.route, inclusive = false, saveState = true
                             )
                         } else {
                             navController.navigate(item.route) {
@@ -216,7 +217,6 @@ fun AppNavHost(
         })
 
         bookmarkNavGraph(
-            navController = navController,
             paddingValues = innerPaddingValues,
             onSelectMovie = { id ->
                 navController.navigate(Profile(id))
@@ -227,6 +227,14 @@ fun AppNavHost(
             onBack = {
                 navController.popBackStack()
             })
+
+        viewedNavGraph(innerPaddingValues, onSelectMovie = { id ->
+            navController.navigate(Profile(id))
+        }, toErrorScreen = {
+            navController.navigate(Error)
+        }, onBack = {
+            navController.popBackStack()
+        })
 
         collectionsNavGraph(
             navController,
@@ -249,7 +257,7 @@ fun AppNavHost(
             navController.popBackStack()
         })
 
-        foldersNavGraph(navController, innerPaddingValues, onSelectFolder = {id ->
+        foldersNavGraph(navController, innerPaddingValues, onSelectFolder = { id ->
             navController.navigate(Folder(id))
         }, toErrorScreen = {
             navController.navigate(Error)
@@ -269,13 +277,8 @@ fun AppNavHost(
             navController.popBackStack()
         })
 
-        viewedNavGraph(navController, innerPaddingValues, onSelectMovie = { id ->
-            navController.navigate(Profile(id))
-        }, toErrorScreen = {
-            navController.navigate(Error)
-        }, onBack = {
-            navController.popBackStack()
-        })
+        errorNavGraph()
+
 
     }
 }

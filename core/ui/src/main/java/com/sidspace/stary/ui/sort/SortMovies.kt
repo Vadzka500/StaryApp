@@ -1,14 +1,18 @@
 package com.sidspace.stary.ui.sort
 
+import com.sidspace.stary.ui.enum.SortDirection
+import com.sidspace.stary.ui.enum.SortType
+import com.sidspace.stary.ui.model.MovieUi
+
 
 fun sortListMovies(
-    list: List<com.sidspace.stary.ui.model.MovieData>,
-    sortType: com.sidspace.stary.ui.enum.SortType,
-    sortDirection: com.sidspace.stary.ui.enum.SortDirection
-): List<com.sidspace.stary.ui.model.MovieData> {
+    list: List<MovieUi>,
+    sortType: SortType,
+    sortDirection: SortDirection
+): List<MovieUi> {
     return when (sortType) {
-        _root_ide_package_.com.sidspace.stary.ui.enum.SortType.DATE -> {
-            if (sortDirection == _root_ide_package_.com.sidspace.stary.ui.enum.SortDirection.DESCENDING) {
+        SortType.DATE -> {
+            if (sortDirection == SortDirection.DESCENDING) {
 
                 list.sortedBy { if (!it.isSeries) it.year else it.releaseStart }
                     .reversed()
@@ -20,9 +24,9 @@ fun sortListMovies(
             }
         }
 
-        _root_ide_package_.com.sidspace.stary.ui.enum.SortType.NAME -> {
+        SortType.NAME -> {
 
-            if (sortDirection == _root_ide_package_.com.sidspace.stary.ui.enum.SortDirection.DESCENDING)
+            if (sortDirection == SortDirection.DESCENDING)
                 list.sortedBy { it.name }
                     .reversed()
             else {
@@ -33,8 +37,8 @@ fun sortListMovies(
 
         }
 
-        _root_ide_package_.com.sidspace.stary.ui.enum.SortType.RATING -> {
-            if (sortDirection == _root_ide_package_.com.sidspace.stary.ui.enum.SortDirection.DESCENDING) {
+        com.sidspace.stary.ui.enum.SortType.RATING -> {
+            if (sortDirection == com.sidspace.stary.ui.enum.SortDirection.DESCENDING) {
 
                 list.sortedBy { it.scoreKp }
                     .reversed()
@@ -46,7 +50,7 @@ fun sortListMovies(
             }
         }
 
-        _root_ide_package_.com.sidspace.stary.ui.enum.SortType.NONE -> {
+        com.sidspace.stary.ui.enum.SortType.NONE -> {
             list
         }
     }

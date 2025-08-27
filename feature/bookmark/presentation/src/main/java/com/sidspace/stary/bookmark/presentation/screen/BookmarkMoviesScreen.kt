@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -68,57 +69,7 @@ fun BookmarkMoviesScreen(
 
     Box(modifier = modifier.padding(top = 5.dp)) {
 
-        when (val data = state.value.list) {
 
-            is ResultData.Error -> {
-                bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.ToErrorScreen)
-            }
-
-            ResultData.Loading -> {
-                ShimmerGridList(modifier = Modifier.padding(top = 60.dp))
-            }
-
-            is ResultData.Success -> {
-                if (data.data.isNotEmpty()) {
-                    InitList(
-                        modifier = Modifier.padding(top = 60.dp),
-                        list = data.data,
-                        onClick = { id ->
-                            bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.OnSelectMovie(id))
-
-                        },
-                        viewType = state.value.viewMode
-                    )
-                } else {
-                    Box(modifier = Modifier.fillMaxSize().padding(top = 60.dp), contentAlignment = Alignment.Center) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Image(
-                                modifier = Modifier.size(48.dp),
-                                painter = painterResource(R.drawable.empty_result),
-                                contentDescription = ""
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Text(
-                                "Вы еще не отметили ни один фильм",
-                                fontWeight = FontWeight.SemiBold,
-                                fontFamily = poppinsFort,
-                                fontSize = 16.sp,
-                            )
-                        }
-                    }
-                }
-            }
-
-            ResultData.None -> {
-
-            }
-        }
 
         val topHeight = 50.dp
 
@@ -164,7 +115,7 @@ fun BookmarkMoviesScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             Icon(
-                painter = painterResource(R.drawable.settings),
+                imageVector = Icons.AutoMirrored.Default.Notes,
                 contentDescription = "",
                 modifier = Modifier
                     .size(40.dp)
@@ -176,6 +127,59 @@ fun BookmarkMoviesScreen(
                     }
                     .padding(8.dp))
 
+        }
+
+
+        when (val data = state.value.list) {
+
+            is ResultData.Error -> {
+                bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.ToErrorScreen)
+            }
+
+            ResultData.Loading -> {
+                ShimmerGridList(modifier = Modifier.padding(top = 60.dp), state.value.countMovies)
+            }
+
+            is ResultData.Success -> {
+                if (data.data.isNotEmpty()) {
+                    InitList(
+                        modifier = Modifier.padding(top = 60.dp),
+                        list = data.data,
+                        onClick = { id ->
+                            bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.OnSelectMovie(id))
+
+                        },
+                        viewType = state.value.viewMode
+                    )
+                } else {
+                    Box(modifier = Modifier.fillMaxSize().padding(top = 60.dp), contentAlignment = Alignment.Center) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Image(
+                                modifier = Modifier.size(48.dp),
+                                painter = painterResource(R.drawable.empty_result),
+                                contentDescription = ""
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                "Вы еще не отметили ни один фильм",
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = poppinsFort,
+                                fontSize = 16.sp,
+                            )
+                        }
+                    }
+                }
+            }
+
+            ResultData.None -> {
+
+            }
         }
 
         FilterSection(

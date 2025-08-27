@@ -7,21 +7,19 @@ import androidx.activity.enableEdgeToEdge
 
 import com.sidspace.stary.features.screen.MainScreen
 
-import com.sidspace.stary.theme.NavWithApiNothing_2Theme
+
+import com.sidspace.stary.theme.StaryTheme
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         setContent {
-            NavWithApiNothing_2Theme {
+            StaryTheme {
                 MainScreen()
             }
         }

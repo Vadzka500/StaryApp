@@ -2,8 +2,8 @@ package com.sidspace.stary.bookmark.presentation.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sidspace.stary.bookmark.domain.usecase.GetBookmarkMoviesFromDbUseCase
 import com.sidspace.stary.domain.model.Result
-
 
 
 import com.sidspace.stary.ui.mapper.toMovieData
@@ -25,7 +25,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookmarkMoviesViewModel @Inject constructor(
-    private val getBookmarkMoviesUseCase: GetBookmarkMoviesUseCase
+    private val getBookmarkMoviesUseCase: GetBookmarkMoviesUseCase,
+    private val getBookmarkMoviesFromDbUseCase: GetBookmarkMoviesFromDbUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(BookmarkMoviesState())
@@ -80,21 +81,36 @@ class BookmarkMoviesViewModel @Inject constructor(
 
     fun getBookmarkMovies() {
         viewModelScope.launch {
-            getBookmarkMoviesUseCase().collect { result ->
+
+            getBookmarkMoviesFromDbUseCase().collect { result ->
+
+                println("get bookmark 2")
 
                 if (result is Result.Success) {
                     _state.update { it.copy(countMovies = result.data.size) }
 
-                    /* val sorted =
-                         result.data.mapNotNull { id -> (result.data as List<MovieUi>).find { item -> item.id == id } }*/
+                    if(result.data.isNotEmpty()) {
+                        getBookmarkMoviesUseCase(result.data).collect { result ->
 
-                    _state.update { it.copy(list = ResultData.Success(result.data.map { it.toMovieData() })) }
+                            if (result is Result.Success) {
+
+                                _state.update { it.copy(list = ResultData.Success(result.data.map { it.toMovieData() })) }
+
+                            } else if (result is Result.Error) {
+                                _state.update { it.copy(list = ResultData.Error) }
+                            }
+
+                        }
+                    }else{
+                        _state.update { it.copy(list = ResultData.Success(emptyList())) }
+                    }
 
                 } else if (result is Result.Error) {
                     _state.update { it.copy(list = ResultData.Error) }
                 }
-
             }
+
+
         }
     }
 

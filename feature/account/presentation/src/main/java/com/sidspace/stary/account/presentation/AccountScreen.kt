@@ -58,7 +58,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.common.api.ApiException
 import com.sidspace.stary.ui.MovieCardHorizontal
 import com.sidspace.stary.ui.ShimmerMovies
-import com.sidspace.stary.ui.model.MovieUiLight
+import com.sidspace.stary.ui.model.MovieLightUi
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.uikit.poppinsFort
 import kotlinx.coroutines.flow.collectLatest
@@ -405,7 +405,7 @@ fun ListOfCollectionBlock(
 @Composable
 fun LatestViewedBlock(
     modifier: Modifier = Modifier,
-    list: List<MovieUiLight>,
+    list: List<MovieLightUi>,
     accountViewModel: AccountViewModel = hiltViewModel(),
     state: State<AccountState>
 ) {
@@ -417,7 +417,6 @@ fun LatestViewedBlock(
                 .fillMaxWidth()
                 .padding(end = 16.dp)
                 .padding(start = 16.dp)
-                .padding(vertical = 10.dp)
                 .padding(top = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -477,7 +476,7 @@ fun LatestViewedBlock(
 @Composable
 fun LatestBookmarkBlock(
     modifier: Modifier = Modifier,
-    list: List<MovieUiLight>,
+    list: List<MovieLightUi>,
     accountViewModel: AccountViewModel = hiltViewModel(),
     state: ScrollState
 ) {
@@ -489,7 +488,6 @@ fun LatestBookmarkBlock(
                 .fillMaxWidth()
                 .padding(end = 16.dp)
                 .padding(start = 16.dp)
-                .padding(vertical = 10.dp)
                 .padding(top = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {

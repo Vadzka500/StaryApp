@@ -77,7 +77,6 @@ import kotlin.math.PI
 import kotlin.math.sin
 import androidx.core.net.toUri
 
-
 import com.sidspace.stary.movie.presentation.util.TimeManager
 
 import com.sidspace.stary.ui.mapper.toMovieUi
@@ -85,9 +84,10 @@ import com.sidspace.stary.ui.mapper.toMovieUi
 import com.sidspace.stary.movie.presentation.R
 import com.sidspace.stary.ui.HorizontalList
 import com.sidspace.stary.ui.ShowCollectionList
-import com.sidspace.stary.ui.model.MovieData
+import com.sidspace.stary.ui.model.MovieUi
 import com.sidspace.stary.ui.model.PersonUi
 import com.sidspace.stary.ui.model.ResultData
+import com.sidspace.stary.ui.model.TrailerUi
 import com.sidspace.stary.ui.shimmerEffect
 import com.sidspace.stary.ui.uikit.Purple40
 import com.sidspace.stary.ui.uikit.poppinsFort
@@ -419,7 +419,7 @@ fun InitMovie(
 
             RowActors(
                 modifier = Modifier,
-                persons = movie.persons!!.filter { (it.profession?.equals("актеры"))?.and(it.name != null) == true }
+                persons = movie.persons!!.filter { (it.profession?.contains("актеры"))?.and(it.name != null) == true }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -437,12 +437,12 @@ fun InitMovie(
             RowCreators(
                 modifier = Modifier,
                 persons = movie.persons!!.filter {
-                    (it.profession?.equals("актеры") == false && !it.profession!!.equals("актеры дубляжа")).and(
+                    (it.profession?.contains("актеры") == false && !it.profession!!.contains("актеры дубляжа")).and(
                         it.name != null
                     )
                 }.sortedWith(
-                    compareByDescending<PersonUi> {
-                        it.profession?.equals(
+                    compareByDescending {
+                        it.profession?.contains(
                             "режиссеры"
                         )
                     }
@@ -566,7 +566,7 @@ fun InitMovie(
 
 
 @Composable
-fun RowDescription(modifier: Modifier = Modifier, movie: MovieData) {
+fun RowDescription(modifier: Modifier = Modifier, movie: MovieUi) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
 
         Text(
@@ -606,7 +606,7 @@ fun RowDescription(modifier: Modifier = Modifier, movie: MovieData) {
 @Composable
 fun TrailersBottomSheet(
     modifier: Modifier = Modifier,
-    listOfTrailers: List<String>,
+    listOfTrailers: List<TrailerUi>,
     movieProfileViewModel: MovieProfileViewModel = hiltViewModel()
 ) {
 
@@ -626,7 +626,7 @@ fun TrailersBottomSheet(
 }
 
 @Composable
-fun TrailersList(modifier: Modifier = Modifier, listOfTrailers: List<String>) {
+fun TrailersList(modifier: Modifier = Modifier, listOfTrailers: List<TrailerUi>) {
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
 
         items(listOfTrailers) { item ->
@@ -645,13 +645,13 @@ fun openCustomTab(context: Context, url: String) {
 }
 
 @Composable
-fun TrailerItem(modifier: Modifier = Modifier, trailer: String) {
+fun TrailerItem(modifier: Modifier = Modifier, trailer: TrailerUi) {
     val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                openCustomTab(context, trailer)
+                openCustomTab(context, trailer.url!!)
             }
             .height(64.dp)
             .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -662,7 +662,7 @@ fun TrailerItem(modifier: Modifier = Modifier, trailer: String) {
         )
 
         Text(
-            text = trailer ?: "Трейлер", fontWeight = FontWeight.Medium,
+            text = trailer.name ?: "Трейлер", fontWeight = FontWeight.Medium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             fontFamily = poppinsFort,
@@ -676,7 +676,7 @@ fun TrailerItem(modifier: Modifier = Modifier, trailer: String) {
 @Composable
 fun RowButtons(
     modifier: Modifier = Modifier,
-    movie: MovieData,
+    movie: MovieUi,
     state: State<MovieState>,
     movieProfileViewModel: MovieProfileViewModel = hiltViewModel()
 ) {
@@ -726,7 +726,7 @@ fun RowButtons(
                         .clickable {
 
                             if (movie.trailers!!.size == 1) {
-                                movieProfileViewModel.onIntent(MovieIntent.PlayTrailer(movie.trailers!![0]))
+                                movieProfileViewModel.onIntent(MovieIntent.PlayTrailer(movie.trailers!![0].url!!))
 
                             } else
                                 movieProfileViewModel.onIntent(MovieIntent.ShowTrailerSheet)
@@ -926,7 +926,7 @@ fun RowButtons(
 @Composable
 fun CollectionBottomSheet(
     modifier: Modifier = Modifier,
-    movie: MovieData,
+    movie: MovieUi,
     movieProfileViewModel: MovieProfileViewModel = hiltViewModel()
 ) {
     val sheetState = rememberModalBottomSheetState(
@@ -1084,7 +1084,7 @@ fun CardCreator(
         Text(
             modifier = Modifier.fillMaxWidth(),
             lineHeight = 13.sp,
-            text = person.profession?.dropLast(1)?.replaceFirstChar { it.uppercase() }?:"",
+            text = person.profession?.firstOrNull()?.dropLast(1)?.replaceFirstChar { it.uppercase() }?:"",
             fontWeight = FontWeight.Light,
             fontFamily = poppinsFort,
             fontSize = 11.sp,
@@ -1095,7 +1095,7 @@ fun CardCreator(
 }
 
 @Composable
-fun RowScore(modifier: Modifier = Modifier, movie: MovieData) {
+fun RowScore(modifier: Modifier = Modifier, movie: MovieUi) {
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         if (movie.scoreImdb != null && movie.scoreImdb != 0.0) {
             Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
@@ -1135,7 +1135,7 @@ fun RowScore(modifier: Modifier = Modifier, movie: MovieData) {
 }
 
 @Composable
-fun RowGenres(modifier: Modifier = Modifier, movie: MovieData) {
+fun RowGenres(modifier: Modifier = Modifier, movie: MovieUi) {
     Row(
         modifier = modifier, horizontalArrangement = Arrangement.spacedBy(5.dp)
     ) {
@@ -1163,7 +1163,7 @@ fun RowGenres(modifier: Modifier = Modifier, movie: MovieData) {
 }
 
 @Composable
-fun RowPrimaryData(modifier: Modifier = Modifier, movie: MovieData) {
+fun RowPrimaryData(modifier: Modifier = Modifier, movie: MovieUi) {
     Row(
         modifier = modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {

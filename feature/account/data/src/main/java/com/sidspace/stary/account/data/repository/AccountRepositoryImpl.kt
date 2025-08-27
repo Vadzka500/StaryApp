@@ -24,8 +24,16 @@ class AccountRepositoryImpl @Inject constructor(
 
         movieDatabase.getBookmarkMovies().collect {
 
-            emit(safeCall { movieApiService.getMoviesByIds(it.map { it.movieId }) }.mapSuccess { it.docs }
-                .toDomain { it -> it.map { it.toMovie() } })
+            if (it.isNotEmpty()) {
+                emit(safeCall { movieApiService.getMoviesByIds(it.map { it.movieId }) }.mapSuccess { it.docs }
+                    .toDomain { listResult ->
+                        it.map { item ->
+                            listResult.find { it.id == item.movieId }!!.toMovie()
+                        }
+                    })
+            } else {
+                emit(Result.Success(emptyList()))
+            }
 
         }
     }
@@ -34,12 +42,20 @@ class AccountRepositoryImpl @Inject constructor(
         emit(Result.Loading)
 
         movieDatabase.getViewedMovies().collect {
-            emit(safeCall { movieApiService.getMoviesByIds(it.map { it.movieId }) }.mapSuccess { it.docs }
-                .toDomain { it.map { it.toMovie() } })
+            if (it.isNotEmpty()) {
+                emit(safeCall { movieApiService.getMoviesByIds(it.map { it.movieId }) }.mapSuccess { it.docs }
+                    .toDomain { listResult ->
+                        it.map { item ->
+                            listResult.find { it.id == item.movieId }!!.toMovie()
+                        }
+                    })
+            } else {
+                emit(Result.Success(emptyList()))
+            }
         }
     }
 
-    override suspend fun getFoldersCount(): Flow<Result<Long>>  = flow {
+    override suspend fun getFoldersCount(): Flow<Result<Long>> = flow {
         emit(Result.Loading)
 
         movieDatabase.getCountFolders().collect {

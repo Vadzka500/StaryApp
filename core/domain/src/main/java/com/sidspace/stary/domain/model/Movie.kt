@@ -20,12 +20,17 @@ data class Movie(
     val sequelsAndPrequels: List<Movie>? = null,
     val similarMovies: List<Movie>? = null,
     val status: String? = null,
-    val trailersUrl: List<String>? = null,
+    val trailersUrl: List<Trailer>? = null,
     val year: Int? = null,
 
 
     val listOfCollection: List<String>? = null,
     val listOfPerson: List<Person>? = null,
+)
+
+data class Trailer(
+    val name: String? = null,
+    val url: String
 )
 
 data class ReleaseYear(

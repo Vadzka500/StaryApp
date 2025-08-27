@@ -12,6 +12,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Note
+import androidx.compose.material.icons.automirrored.filled.Notes
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -112,7 +116,7 @@ fun SearchScreen(
                     placeholder = { Text(text = "Фильмы, сериалы") })
 
                 Icon(
-                    painter = painterResource(R.drawable.settings),
+                    imageVector = Icons.AutoMirrored.Default.Notes ,
                     contentDescription = "",
                     modifier = Modifier
                         .padding(end = 16.dp)
@@ -138,7 +142,7 @@ fun SearchScreen(
                 }
 
                 ResultData.Loading -> {
-                    ShimmerGridList()
+                    ShimmerGridList(count = 16)
                 }
 
                 is ResultData.Success -> {

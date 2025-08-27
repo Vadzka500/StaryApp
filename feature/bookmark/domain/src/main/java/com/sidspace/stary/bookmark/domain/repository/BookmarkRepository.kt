@@ -6,5 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface BookmarkRepository {
 
-    suspend fun getBookmarkMovies(): Flow<Result<List<Movie>>>
+    fun getBookmarkFromDb(): Flow<Result<List<Movie>>>
+
+    fun getBookmarkMovies(list: List<Movie>): Flow<Result<List<Movie>>>
 }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 
 import androidx.compose.material3.Icon
@@ -145,7 +146,7 @@ fun AllMoviesScreen(
                     .align(Alignment.CenterStart))
 
             Icon(
-                painter = painterResource(R.drawable.settings),
+                imageVector = Icons.AutoMirrored.Default.Notes,
                 contentDescription = "",
                 modifier = Modifier
                     .size(40.dp)

@@ -14,6 +14,7 @@
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/core/data" />
             <option value="$PROJECT_DIR$/core/domain" />
+            <option value="$PROJECT_DIR$/core/logger" />
             <option value="$PROJECT_DIR$/core/navigation" />
             <option value="$PROJECT_DIR$/core/presentation" />
             <option value="$PROJECT_DIR$/core/ui" />
@@ -36,6 +37,8 @@
             <option value="$PROJECT_DIR$/feature/collections/data" />
             <option value="$PROJECT_DIR$/feature/collections/domain" />
             <option value="$PROJECT_DIR$/feature/collections/presentation" />
+            <option value="$PROJECT_DIR$/feature/error" />
+            <option value="$PROJECT_DIR$/feature/error/presentation" />
             <option value="$PROJECT_DIR$/feature/folder" />
             <option value="$PROJECT_DIR$/feature/folder/data" />
             <option value="$PROJECT_DIR$/feature/folder/domain" />

@@ -32,7 +32,3 @@ val listOfScreens = listOf(
     TopLevelRoute("Random", Random, Icons.Default.Movie, Icons.Outlined.Movie),
     TopLevelRoute("Account", Account, Icons.Default.Person, Icons.Outlined.Person)
 )
-
-val listOfScreensAll = listOfScreens +  listOf(
-    TopLevelRoute("Error", Error, Icons.Default.Home, Icons.Outlined.Home),
-)

@@ -18,22 +18,28 @@ import javax.inject.Inject
 class ViewedRepositoryImpl @Inject constructor(
     private val movieApi: MovieApi,
     private val movieDatabase: MovieDao
-): ViewedRepository  {
-    override suspend fun getViewedMovies(): Flow<Result<List<Movie>>>  = flow{
+) : ViewedRepository {
+    override fun getViewedMoviesFromDb(): Flow<Result<List<Movie>>> = flow {
+        try {
+            movieDatabase.getViewedMovies().collect {
+                emit(Result.Success(it.map { it.toMovie() }))
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emit(Result.Error)
+        }
+    }
+
+    override fun getViewedMovies(list: List<Movie>): Flow<Result<List<Movie>>> = flow {
         emit(Result.Loading)
 
-        //val sorted = list.mapNotNull { id -> (result.data as List<MovieUi>).find { item -> item.id == id } }
-
-        movieDatabase.getViewedMovies().collect { result ->
-
-            /*val list = safeCall { movieApi.getMoviesByIds(result.map { it.movieId }) }.mapSuccess { it.docs }
-                .toDomain( { it.map { it.toMovie() }} )*/
-
-
-            emit(safeCall { movieApi.getMoviesByIds(result.map { it.movieId }) }.mapSuccess { it.docs }
-                .toDomain { it.map { it.toMovie() } })
+        emit(safeCall { movieApi.getMoviesByIds(list.map { it.id }) }.mapSuccess { it.docs }
+            .toDomain { listResult ->
+                list.map { item ->
+                    listResult.find { it.id == item.id }!!.toMovie()
+                }
+            })
 
 
-        }
     }
 }

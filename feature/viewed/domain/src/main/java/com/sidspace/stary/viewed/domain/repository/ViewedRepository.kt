@@ -7,5 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ViewedRepository {
 
-    suspend fun getViewedMovies(): Flow<Result<List<Movie>>>
+    fun getViewedMoviesFromDb(): Flow<Result<List<Movie>>>
+
+    fun getViewedMovies(list: List<Movie>): Flow<Result<List<Movie>>>
 }

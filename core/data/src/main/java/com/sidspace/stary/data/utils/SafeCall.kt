@@ -17,7 +17,6 @@ suspend fun <T> safeCall(fund: suspend () -> Response<T>): ResultRemote<T> {
             ResultRemote.Error(response.code())
         }
     } catch (e: Exception) {
-
         e.printStackTrace()
         ResultRemote.Error(e.message)
     }

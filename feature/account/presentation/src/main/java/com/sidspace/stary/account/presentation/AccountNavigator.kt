@@ -17,7 +17,10 @@ fun NavGraphBuilder.accountNavGraph(
     toBookmarkScreen: () -> Unit
 ) {
 
-    composable<Account> {
+    composable<Account>() {
+
+        
+
         AccountScreen(
             onSelectMovie = onSelectMovie,
             onClickFolders = onClickFolders,

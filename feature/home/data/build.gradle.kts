@@ -39,6 +39,7 @@ dependencies {
     implementation(project(":feature:home:domain"))
     implementation(project(":core:domain"))
     implementation(project(":core:data"))
+    //implementation(project(":core:logger"))
 
 
     implementation(libs.hilt.android)

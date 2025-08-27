@@ -9,7 +9,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 
 import com.sidspace.stary.account.domain.usecase.GetViewedMoviesUseCase
 import com.sidspace.stary.account.domain.usecase.GetFoldersCountUseCase
-import com.example.domain.usecase.movie.GetBookmarkMoviesUseCase
+import com.sidspace.stary.account.domain.usecase.GetBookmarkMoviesUseCase
 
 
 import com.sidspace.stary.ui.mapper.toMovieUiLight
@@ -57,6 +57,9 @@ class AccountViewModel @Inject constructor(
     }
 
     fun getViewedAndBookmarkMovies() {
+
+
+
         viewModelScope.launch {
 
             combine(
@@ -72,6 +75,7 @@ class AccountViewModel @Inject constructor(
             }.collect { (viewed, bookmark, folders) ->
 
                 if (viewed is Result.Success) {
+                    println("update viewed")
                     _state.update {
                         it.copy(
                             countViewed = viewed.data.size,

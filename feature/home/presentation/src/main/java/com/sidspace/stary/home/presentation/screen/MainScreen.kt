@@ -63,7 +63,7 @@ import com.sidspace.stary.ui.HorizontalHomeList
 import com.sidspace.stary.ui.R
 import com.sidspace.stary.ui.ShimmerMovies
 import com.sidspace.stary.ui.model.CollectionUi
-import com.sidspace.stary.ui.model.MovieUi
+import com.sidspace.stary.ui.model.MoviePreviewUi
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.shimmerEffect
 import com.sidspace.stary.ui.uikit.Purple40
@@ -275,6 +275,7 @@ fun MainListMovies(
 
             ResultData.Loading -> {
                 Column {
+                    ShimmerMovies()
                     ShimmerMovies()
                     ShimmerMovies()
                     ShimmerMovies()
@@ -566,7 +567,7 @@ fun ShowCollection(
 }
 
 @Composable
-fun ListMovies(modifier: Modifier = Modifier, list: List<MovieUi>, onSelectMovie: (Long) -> Unit) {
+fun ListMovies(modifier: Modifier = Modifier, list: List<MoviePreviewUi>, onSelectMovie: (Long) -> Unit) {
     LazyRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -596,7 +597,7 @@ fun InitPagerCard(
     modifier: Modifier = Modifier,
     index: Int,
     pagerState: PagerState,
-    item: MovieUi,
+    item: MoviePreviewUi,
     onSelectMovie: (Long) -> Unit
 ) {
     val pageOffSet = (pagerState.currentPage - index) + pagerState.currentPageOffsetFraction

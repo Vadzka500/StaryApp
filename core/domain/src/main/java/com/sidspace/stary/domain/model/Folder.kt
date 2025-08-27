@@ -6,5 +6,5 @@ data class Folder(
     val name: String,
     val color:Int,
     val imageResName: String?,
-    val listOfMovies: List<Movie>? = null
+    var listOfMovies: List<Movie>? = null
 )

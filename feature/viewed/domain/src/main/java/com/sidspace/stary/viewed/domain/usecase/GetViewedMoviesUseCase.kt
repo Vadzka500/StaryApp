@@ -9,5 +9,5 @@ import javax.inject.Inject
 
 
 class GetViewedMoviesUseCase @Inject constructor(private val repository: ViewedRepository) {
-    suspend operator fun invoke(): Flow<Result<List<Movie>>> = repository.getViewedMovies()
+    suspend operator fun invoke(list: List<Movie>): Flow<Result<List<Movie>>> = repository.getViewedMovies(list)
 }

@@ -10,7 +10,6 @@ import androidx.navigation.compose.composable
 import com.sidspace.stary.viewed.presentation.screen.ViewedMoviesScreen
 
 fun NavGraphBuilder.viewedNavGraph(
-    navController: NavController,
     paddingValues: PaddingValues,
     onSelectMovie: (Long) -> Unit,
     toErrorScreen: () -> Unit,

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -115,7 +116,7 @@ fun ViewedMoviesScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             Icon(
-                painter = painterResource(R.drawable.settings),
+                imageVector = Icons.AutoMirrored.Default.Notes,
                 contentDescription = "",
                 modifier = Modifier
                     .size(40.dp)
@@ -136,7 +137,7 @@ fun ViewedMoviesScreen(
             }
 
             ResultData.Loading -> {
-                ShimmerGridList(modifier = Modifier.padding(top = 60.dp))
+                ShimmerGridList(modifier = Modifier.padding(top = 60.dp), state.value.countMovies)
             }
 
             is ResultData.Success -> {

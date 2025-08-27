@@ -1,7 +1,6 @@
 package com.sidspace.stary.random.presentation.screen
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.EaseInOutCirc
 import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.Easing
@@ -83,7 +82,7 @@ import com.sidspace.stary.random.presentation.FiltersPopup
 
 
 import com.sidspace.stary.random.presentation.R
-import com.sidspace.stary.ui.model.MovieUi
+import com.sidspace.stary.ui.model.MoviePreviewUi
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.uikit.Purple40
 import com.sidspace.stary.ui.uikit.poppinsFort
@@ -192,7 +191,7 @@ fun InitView(
     setSearch: (Boolean) -> Unit,
     setShowFilters: (Boolean) -> Unit,
     updateCurrentPage: (Int, Float) -> Unit,
-    status: State<ResultData<MovieUi>>,
+    status: State<ResultData<MoviePreviewUi>>,
     initialPage: Int,
     isSearch: Boolean,
     isBadgeShown: Boolean,
@@ -411,7 +410,7 @@ private fun RandomCardPager(
     painter: AsyncImagePainter,
     posterUrl: String,
     onSelectMovie: (Long) -> Unit,
-    status: State<ResultData<MovieUi>>,
+    status: State<ResultData<MoviePreviewUi>>,
     movieId: Long
 ) {
     val configuration = LocalConfiguration.current
@@ -457,7 +456,7 @@ fun anim(
     pagerState: PagerState,
     targetPage: MutableState<Int>,
     random: () -> Unit,
-    randomStatus: State<ResultData<MovieUi>>,
+    randomStatus: State<ResultData<MoviePreviewUi>>,
     widthItem: Int,
     easy: Easing,
 ) {
@@ -514,7 +513,7 @@ fun PagerCardImage(
     pagesState: PagerState,
     index: Int,
     painter: Painter? = null,
-    status: ResultData<MovieUi>,
+    status: ResultData<MoviePreviewUi>,
     onSelectMovie: (Long) -> Unit,
     movieId: Long = -1
 ) {

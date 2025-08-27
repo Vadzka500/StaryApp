@@ -19,7 +19,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "NavWithApiNothing_2"
+rootProject.name = "Stary"
 include(":app")
 
 include(":feature")
@@ -85,3 +85,6 @@ include(":feature:collections:data")
 include(":feature:collections:domain")
 include(":feature:collections:presentation")
 include(":core:navigation")
+include(":core:logger")
+include(":feature:error")
+include(":feature:error:presentation")

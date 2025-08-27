@@ -19,22 +19,26 @@ class BookmarkRepositoryImpl @Inject constructor(
     private val movieApi: MovieApi,
     private val movieDatabase: MovieDao
 ) : BookmarkRepository {
-    override suspend fun getBookmarkMovies(): Flow<Result<List<Movie>>> = flow {
+    override fun getBookmarkFromDb(): Flow<Result<List<Movie>>> = flow {
+        try {
+            movieDatabase.getBookmarkMovies().collect {
+                emit(Result.Success(it.map { it.toMovie() }))
+            }
+        } catch (e: Exception) {
+            emit(Result.Error)
+        }
+    }
+
+    override fun getBookmarkMovies(list: List<Movie>): Flow<Result<List<Movie>>> = flow {
         emit(Result.Loading)
 
-        //val sorted = list.mapNotNull { id -> (result.data as List<MovieUi>).find { item -> item.id == id } }
+        emit(safeCall { movieApi.getMoviesByIds(list.map { it.id }) }.mapSuccess { it.docs }
+            .toDomain { listResult ->
+                list.map { item ->
+                    listResult.find { it.id == item.id }!!.toMovie()
+                }
+            })
 
-        movieDatabase.getBookmarkMovies().collect { result ->
-
-            /*val list = safeCall { movieApi.getMoviesByIds(result.map { it.movieId }) }.mapSuccess { it.docs }
-                .toDomain( { it.map { it.toMovie() }} )*/
-
-
-            emit(safeCall { movieApi.getMoviesByIds(result.map { it.movieId }) }.mapSuccess { it.docs }
-                .toDomain { it.map { it.toMovie() } })
-
-
-        }
 
     }
 
