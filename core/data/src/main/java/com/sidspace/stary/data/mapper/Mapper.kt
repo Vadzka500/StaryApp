@@ -36,22 +36,6 @@ suspend fun <T, R> ResultRemote<T>.toDomain(transform: suspend (T) -> R): Result
     }
 }
 
-/*inline fun <reified T> FolderWithMoviesDBO.toDomainFolder(list: List<T>): Folder {
-    return Folder(
-        id = folder.folderId,
-        name = folder.folderName,
-        color = folder.color,
-        imageResName = folder.imageResName,
-        listOfMovies = list.map {
-            when (it) {
-                is MovieDBO -> it.toMovie()
-                is MovieDTO -> it.toMovie()
-                else -> error("Unsupported type: ${it!!::class}")
-            }
-        }
-    )
-}*/
-
 fun MovieDTO.toMovie(): Movie {
     return Movie(
         id = id!!,
@@ -129,7 +113,7 @@ fun LocalMovie.toMovieDBO(): MovieDBO{
     )
 }
 
-fun FolderWithMoviesDBO.toDomainFromDB(list: List<MovieDBO>): Folder{
+fun FolderWithMoviesDBO.toFolderFromFolderDBO(list: List<MovieDBO>): Folder{
     return Folder(
         id = folder.folderId,
         name = folder.folderName,
@@ -138,17 +122,6 @@ fun FolderWithMoviesDBO.toDomainFromDB(list: List<MovieDBO>): Folder{
         listOfMovies = list.map { it.toMovie() }
     )
 }
-
-fun FolderWithMoviesDBO.toDomainFromDTO(list: List<MovieDTO>): Folder{
-    return Folder(
-        id = folder.folderId,
-        name = folder.folderName,
-        color = folder.color,
-        imageResName = folder.imageResName,
-        listOfMovies = list.map { it.toMovie() }
-    )
-}
-
 
 fun CollectionMovie.toCollection(): Collection{
     return Collection(

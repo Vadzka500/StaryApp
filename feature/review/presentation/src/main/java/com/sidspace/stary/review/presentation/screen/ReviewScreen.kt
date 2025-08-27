@@ -49,6 +49,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 
@@ -70,12 +71,11 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 
-
 @Composable
 fun ReviewScreen(
     id: Long,
-    onBack:() -> Unit,
-    toErrorScreen:() -> Unit,
+    onBack: () -> Unit,
+    toErrorScreen: () -> Unit,
     modifier: Modifier = Modifier,
     reviewViewModel: ReviewViewModel = hiltViewModel(),
 ) {
@@ -84,22 +84,17 @@ fun ReviewScreen(
 
     LaunchedEffect(Unit) {
         reviewViewModel.effect.collectLatest { effect ->
-            when(effect){
+            when (effect) {
                 ReviewEffect.OnBack -> {
                     onBack()
                 }
 
                 ReviewEffect.ToErrorScreen -> {
-                    toErrorScreen()                }
+                    toErrorScreen()
+                }
             }
         }
     }
-
-    var isLoad by remember {
-        mutableStateOf(true)
-    }
-
-
 
     LaunchedEffect(Unit) {
         reviewViewModel.onIntent(ReviewIntent.LoadReviews(id))
@@ -125,7 +120,7 @@ fun ReviewScreen(
                     .padding(8.dp))
 
             Text(
-                "Рецензии",
+                stringResource(com.sidspace.stary.review.presentation.R.string.reviews),
                 modifier = Modifier.padding(start = 16.dp),
                 fontWeight = FontWeight.Bold,
                 fontFamily = poppinsFort,
@@ -156,7 +151,6 @@ fun ReviewScreen(
                 }
 
                 is ResultData.Success -> {
-                    isLoad = false
                     if (data.data.isNotEmpty()) {
                         InitList(list = data.data)
                     } else {
@@ -190,7 +184,7 @@ fun EmptyList(modifier: Modifier = Modifier) {
 
             Text(
                 modifier = Modifier.padding(top = 16.dp),
-                text = "Не нашли ни одной рецензии",
+                text = stringResource(com.sidspace.stary.review.presentation.R.string.empty_reviews),
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = poppinsFort,
                 fontSize = 18.sp,
@@ -284,9 +278,9 @@ fun InitList(modifier: Modifier = Modifier, list: List<ReviewUi>) {
 
 @Composable
 fun InitReview(
-    modifier: Modifier = Modifier,
     item: ReviewUi,
     isExpanded: Boolean,
+    modifier: Modifier = Modifier,
     onToggleExpanded: () -> Unit
 ) {
 

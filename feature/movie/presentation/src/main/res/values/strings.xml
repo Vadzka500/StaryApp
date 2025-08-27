@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="actors">Актеры</string>
+    <string name="creators">Создатели</string>
+    <string name="review">Рецензии</string>
+    <string name="show_review">Show reviews</string>
+    <string name="related_movies">Связанные фильмы</string>
+    <string name="description">Описание</string>
+    <string name="trailer">Трейлер</string>
+    <string name="viewed">Просмотрен</string>
+    <string name="in_bookmark">В закладки</string>
+    <string name="in_collection">В коллекции</string>
+</resources>

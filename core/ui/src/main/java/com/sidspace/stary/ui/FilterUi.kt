@@ -31,25 +31,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sidspace.stary.ui.enum.SortDirection
+import com.sidspace.stary.ui.enum.SortType
+import com.sidspace.stary.ui.enum.ViewMode
+import com.sidspace.stary.ui.uikit.Purple40
+import com.sidspace.stary.ui.uikit.poppinsFort
 
 
 @Composable
 fun FilterSection(
-    modifier: Modifier = Modifier,
     isVisibleFilter: Boolean,
-    viewType: com.sidspace.stary.ui.enum.ViewMode,
+    viewType: ViewMode,
     isShowSort: Boolean,
+    modifier: Modifier = Modifier,
+    sortType: SortType = SortType.NONE,
+    sortDirection: SortDirection = SortDirection.DESCENDING,
+    toggleSortDirection: () -> Unit,
+    setSortType: (SortType) -> Unit,
+    sortList: () -> Unit,
     onHideFilter: () -> Unit,
     setGridView: () -> Unit,
     setListView: () -> Unit,
-    sortType: com.sidspace.stary.ui.enum.SortType = _root_ide_package_.com.sidspace.stary.ui.enum.SortType.NONE,
-    sortDirection: com.sidspace.stary.ui.enum.SortDirection = _root_ide_package_.com.sidspace.stary.ui.enum.SortDirection.DESCENDING,
-    toggleSortDirection:() -> Unit,
-    setSortType:(com.sidspace.stary.ui.enum.SortType) -> Unit,
-    sortList:() -> Unit
 ) {
 
     val alpha by animateFloatAsState(
@@ -70,7 +76,6 @@ fun FilterSection(
     ) {
 
     }
-
 
     AnimatedVisibility(
         visible = isVisibleFilter,
@@ -100,8 +105,8 @@ fun FilterSection(
             ) {
 
                 Text(
-                    "Вид:", fontWeight = FontWeight.Medium,
-                    fontFamily = _root_ide_package_.com.sidspace.stary.ui.uikit.poppinsFort,
+                    stringResource(R.string.view_str), fontWeight = FontWeight.Medium,
+                    fontFamily = poppinsFort,
                     fontSize = 16.sp,
                 )
 
@@ -119,19 +124,19 @@ fun FilterSection(
                         },
                         label = {
                             Text(
-                                "Таблица", fontWeight = FontWeight.Medium,
-                                fontFamily = _root_ide_package_.com.sidspace.stary.ui.uikit.poppinsFort,
+                                stringResource(R.string.view_mode_grid_str), fontWeight = FontWeight.Medium,
+                                fontFamily = poppinsFort,
                                 fontSize = 14.sp
                             )
                         },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.GridView,
-                                contentDescription = "",
-                                tint = _root_ide_package_.com.sidspace.stary.ui.uikit.Purple40
+                                contentDescription = null,
+                                tint = Purple40
                             )
                         },
-                        selected = viewType == _root_ide_package_.com.sidspace.stary.ui.enum.ViewMode.GRID,
+                        selected = viewType == ViewMode.GRID,
 
                         )
 
@@ -143,21 +148,27 @@ fun FilterSection(
 
                         },
                         label = {
-                            Text("Список")
+                            Text(stringResource(R.string.view_mode_list_str))
                         },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.ViewList,
-                                contentDescription = "",
-                                tint = _root_ide_package_.com.sidspace.stary.ui.uikit.Purple40
+                                contentDescription = null,
+                                tint = Purple40
                             )
                         },
-                        selected = viewType == _root_ide_package_.com.sidspace.stary.ui.enum.ViewMode.LIST,
+                        selected = viewType == ViewMode.LIST,
 
                         )
                 }
                 if (isShowSort) {
-                    FilterSort(sortType = sortType, sortDirection = sortDirection, setSortType = setSortType, toggleSortDirection = toggleSortDirection, sortList = sortList)
+                    FilterSort(
+                        sortType = sortType,
+                        sortDirection = sortDirection,
+                        setSortType = setSortType,
+                        toggleSortDirection = toggleSortDirection,
+                        sortList = sortList
+                    )
                 }
             }
         }
@@ -167,18 +178,18 @@ fun FilterSection(
 @Composable
 fun FilterSort(
     modifier: Modifier = Modifier,
-    sortType: com.sidspace.stary.ui.enum.SortType,
-    sortDirection: com.sidspace.stary.ui.enum.SortDirection,
-    toggleSortDirection:() -> Unit,
-    setSortType:(com.sidspace.stary.ui.enum.SortType) -> Unit,
-    sortList:() -> Unit
+    sortType: SortType,
+    sortDirection: SortDirection,
+    toggleSortDirection: () -> Unit,
+    setSortType: (SortType) -> Unit,
+    sortList: () -> Unit
 ) {
 
     Text(
-        "Сортировка:",
+        stringResource(R.string.sort_str),
         modifier = Modifier.padding(top = 12.dp),
         fontWeight = FontWeight.Medium,
-        fontFamily = _root_ide_package_.com.sidspace.stary.ui.uikit.poppinsFort,
+        fontFamily = poppinsFort,
         fontSize = 16.sp
     )
 
@@ -191,24 +202,24 @@ fun FilterSort(
             modifier = Modifier,
             shape = RoundedCornerShape(15.dp),
             onClick = {
-                if (sortType == _root_ide_package_.com.sidspace.stary.ui.enum.SortType.NAME) toggleSortDirection()
-                setSortType(_root_ide_package_.com.sidspace.stary.ui.enum.SortType.NAME)
+                if (sortType == SortType.NAME) toggleSortDirection()
+                setSortType(SortType.NAME)
 
 
                 sortList()
             },
             label = {
-                Text("Название")
+                Text(stringResource(R.string.sort_name_sortbyname_str))
             },
             leadingIcon = {
-                if (sortType == _root_ide_package_.com.sidspace.stary.ui.enum.SortType.NAME)
+                if (sortType == SortType.NAME)
                     Icon(
-                        imageVector = if (sortDirection == _root_ide_package_.com.sidspace.stary.ui.enum.SortDirection.ASCENDING) Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
-                        contentDescription = "",
-                        tint = _root_ide_package_.com.sidspace.stary.ui.uikit.Purple40
+                        imageVector = if (sortDirection == SortDirection.ASCENDING) Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
+                        contentDescription = null,
+                        tint = Purple40
                     )
             },
-            selected = sortType == _root_ide_package_.com.sidspace.stary.ui.enum.SortType.NAME,
+            selected = sortType == SortType.NAME,
 
             )
 
@@ -216,24 +227,24 @@ fun FilterSort(
             modifier = Modifier,
             shape = RoundedCornerShape(15.dp),
             onClick = {
-                if (sortType == _root_ide_package_.com.sidspace.stary.ui.enum.SortType.RATING) toggleSortDirection()
+                if (sortType == SortType.RATING) toggleSortDirection()
 
-                setSortType(_root_ide_package_.com.sidspace.stary.ui.enum.SortType.RATING)
+                setSortType(SortType.RATING)
 
                 sortList()
             },
             label = {
-                Text("Оценка")
+                Text(stringResource(R.string.sort_name_sortbyscore_str))
             },
             leadingIcon = {
-                if (sortType == _root_ide_package_.com.sidspace.stary.ui.enum.SortType.RATING)
+                if (sortType == SortType.RATING)
                     Icon(
-                        imageVector = if (sortDirection == _root_ide_package_.com.sidspace.stary.ui.enum.SortDirection.ASCENDING) Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
-                        contentDescription = "",
-                        tint = _root_ide_package_.com.sidspace.stary.ui.uikit.Purple40
+                        imageVector = if (sortDirection == SortDirection.ASCENDING) Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
+                        contentDescription = null,
+                        tint = Purple40
                     )
             },
-            selected = sortType == _root_ide_package_.com.sidspace.stary.ui.enum.SortType.RATING,
+            selected = sortType == SortType.RATING,
 
             )
 
@@ -241,22 +252,22 @@ fun FilterSort(
             modifier = Modifier,
             shape = RoundedCornerShape(15.dp),
             onClick = {
-                if (sortType == _root_ide_package_.com.sidspace.stary.ui.enum.SortType.DATE) toggleSortDirection()
-                setSortType(_root_ide_package_.com.sidspace.stary.ui.enum.SortType.DATE)
+                if (sortType == SortType.DATE) toggleSortDirection()
+                setSortType(SortType.DATE)
                 sortList()
             },
             label = {
-                Text("Дата выхода")
+                Text(stringResource(R.string.sort_name_sortbydate_str))
             },
             leadingIcon = {
-                if (sortType == _root_ide_package_.com.sidspace.stary.ui.enum.SortType.DATE)
+                if (sortType == SortType.DATE)
                     Icon(
-                        imageVector = if (sortDirection == _root_ide_package_.com.sidspace.stary.ui.enum.SortDirection.ASCENDING) Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
+                        imageVector = if (sortDirection == SortDirection.ASCENDING) Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
                         contentDescription = "",
-                        tint = _root_ide_package_.com.sidspace.stary.ui.uikit.Purple40
+                        tint = Purple40
                     )
             },
-            selected = sortType == _root_ide_package_.com.sidspace.stary.ui.enum.SortType.DATE,
+            selected = sortType == SortType.DATE,
 
             )
     }

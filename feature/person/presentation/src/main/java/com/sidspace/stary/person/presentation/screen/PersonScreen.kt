@@ -26,15 +26,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.sidspace.stary.person.presentation.R
 import com.sidspace.stary.ui.HorizontalList
 import com.sidspace.stary.ui.ShimmerMovies
-import com.sidspace.stary.ui.mapper.toMovieUi
+import com.sidspace.stary.ui.mapper.toMoviePreviewUi
 import com.sidspace.stary.ui.model.MovieUi
 import com.sidspace.stary.ui.model.PersonUi
 import com.sidspace.stary.ui.model.ResultData
@@ -52,9 +54,9 @@ import java.util.Locale
 fun PersonScreen(
     id: Long,
     onSelectMovie: (Long) -> Unit,
-    toErrorScreen: () -> Unit,
     modifier: Modifier = Modifier,
     personViewModel: PersonViewModel = hiltViewModel(),
+    toErrorScreen: () -> Unit
 ) {
     val state = personViewModel.state.collectAsState()
 
@@ -91,9 +93,9 @@ fun PersonScreen(
 @Composable
 fun InitScreen(
     state: State<PersonState>,
+    modifier: Modifier = Modifier,
     onSelectMovie: (Long) -> Unit,
     onError: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
 
 
@@ -131,7 +133,7 @@ fun InitScreen(
 
                 is ResultData.Success -> {
                     ShowMovies(
-                        title = "Фильмы",
+                        title = stringResource(R.string.movies),
                         list = result.data,
                         onSelectMovie = onSelectMovie
                     )
@@ -157,7 +159,7 @@ fun InitScreen(
 
                 is ResultData.Success -> {
                     ShowMovies(
-                        title = "Сериалы",
+                        title = stringResource(R.string.serials),
                         list = result.data,
                         onSelectMovie = onSelectMovie
                     )
@@ -199,8 +201,6 @@ fun InitPersonScreen(modifier: Modifier = Modifier, person: PersonUi) {
 
             )
 
-
-
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -220,7 +220,7 @@ fun InitPersonScreen(modifier: Modifier = Modifier, person: PersonUi) {
                 if (!person.profession.isNullOrEmpty())
                     Text(
                         text = person.profession!!.joinToString(
-                            ", ", transform = {it}),
+                            ", ", transform = { it }),
                         modifier
                             .fillMaxWidth()
                             .padding(top = 4.dp),
@@ -240,20 +240,17 @@ fun InitPersonScreen(modifier: Modifier = Modifier, person: PersonUi) {
 
                     Text(
                         text = textDate,
-                        //modifier = Modifier.padding(top = 4.dp),
                         fontFamily = poppinsFort,
                         fontWeight = FontWeight.Normal,
                         fontSize = 14.sp
                     )
                 }
 
-
-
-
                 Row() {
                     if (person.age != null) {
                         Text(
-                            text = person.age?.let { if (it % 10 == 1) "$it год" else if (it % 10 in 2..4) "$it года" else "$it лет" } ?: "0",
+                            text = person.age?.let { if (it % 10 == 1) "$it год" else if (it % 10 in 2..4) "$it года" else "$it лет" }
+                                ?: "0",
                             fontFamily = poppinsFort,
                             fontWeight = FontWeight.Normal,
                             fontSize = 14.sp
@@ -274,9 +271,7 @@ fun InitPersonScreen(modifier: Modifier = Modifier, person: PersonUi) {
                         )
                 }
 
-
             }
-
 
         }
     }
@@ -292,49 +287,35 @@ fun ShowMovies(
     modifier: Modifier = Modifier,
     onSelectMovie: (Long) -> Unit
 ) {
-
-
     if (list.isNotEmpty()) MovieRow(
         list = list,
         text = "$title ${list.size}",
-        modifier = Modifier.padding(top = 8.dp),
+        modifier = modifier.padding(top = 8.dp),
         onSelectMovie = onSelectMovie,
 
-    )
-
-
+        )
 }
 
 @Composable
 fun MovieRow(
-    modifier: Modifier = Modifier,
     list: List<MovieUi>,
     text: String,
+    modifier: Modifier = Modifier,
     onSelectMovie: (Long) -> Unit
 ) {
     Column(modifier = modifier) {
-        /*Text(
-            text = text,
-            fontFamily = poppinsFort,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 18.sp,
-            modifier = Modifier.padding(start = 16.dp)
-        )*/
         HorizontalList(
             label = text,
-            list = list.map{it.toMovieUi()},
+            list = list.map { it.toMoviePreviewUi() },
             onSelectMovie = onSelectMovie,
             modifier = modifier
         )
     }
-
-
 }
 
 
 @Composable
 fun LoadingScreen(modifier: Modifier = Modifier) {
-
 
     Column(
         modifier = Modifier
@@ -397,9 +378,6 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
                         .shimmerEffect()
                 )
             }
-
-
         }
     }
-
 }

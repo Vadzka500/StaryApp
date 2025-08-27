@@ -1,5 +1,6 @@
 package com.sidspace.stary.folders.presentation.screen
 
+
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -46,35 +47,33 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-
-
-import com.sidspace.stary.folders.presentation.FiltersUtil
+import com.sidspace.stary.folders.presentation.R
+import com.sidspace.stary.folders.presentation.util.FiltersUtil
 import com.sidspace.stary.ui.ShowCollectionList
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.uikit.poppinsFort
 import kotlinx.coroutines.flow.collectLatest
-import kotlin.collections.get
 
 
 @Composable
 fun UserCollectionsScreen(
+    modifier: Modifier = Modifier,
+    foldersViewModel: FoldersViewModel = hiltViewModel(),
     onSelectFolder: (id: Long) -> Unit,
     onBack: () -> Unit,
     toErrorScreen:() -> Unit,
-    modifier: Modifier = Modifier,
-    foldersViewModel: FoldersViewModel = hiltViewModel(),
 ) {
 
     val state = foldersViewModel.state.collectAsState()
@@ -124,7 +123,7 @@ fun UserCollectionsScreen(
 
                 Icon(
                     imageVector = Icons.Default.ArrowBackIosNew,
-                    contentDescription = "",
+                    contentDescription = null,
                     modifier = Modifier
                         .size(40.dp)
                         .clip(
@@ -137,7 +136,7 @@ fun UserCollectionsScreen(
 
 
                 Text(
-                    "Мои коллекции",
+                    stringResource(R.string.my_collection),
                     modifier = Modifier.padding(start = 16.dp),
                     fontWeight = FontWeight.Bold,
                     fontFamily = poppinsFort,
@@ -166,7 +165,7 @@ fun UserCollectionsScreen(
                 foldersViewModel.onIntent(FoldersIntent.ClickCreateFolder)
             },
         ) {
-            Icon(Icons.Filled.Add, "Add collection")
+            Icon(Icons.Filled.Add, stringResource(R.string.add_collection))
         }
     }
     if (state.value.isShowBottomSheet) {
@@ -198,8 +197,8 @@ fun ShowCreateFolderBottomSheet(
 
 @Composable
 fun CreateSheetData(
-    modifier: Modifier = Modifier,
     state: State<FoldersState>,
+    modifier: Modifier = Modifier,
     foldersViewModel: FoldersViewModel = hiltViewModel(),
 ) {
 
@@ -207,7 +206,7 @@ fun CreateSheetData(
     val scrollState = rememberScrollState()
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .verticalScroll(scrollState)
             .padding(horizontal = 16.dp)
@@ -223,7 +222,7 @@ fun CreateSheetData(
             onValueChange = { foldersViewModel.onIntent(FoldersIntent.UpdateNameFolder(it)) },
             label = {
                 Text(
-                    "Название коллекции", fontWeight = FontWeight.Normal,
+                    stringResource(R.string.name_collection), fontWeight = FontWeight.Normal,
                     fontFamily = poppinsFort,
                     fontSize = 16.sp
                 )
@@ -232,7 +231,7 @@ fun CreateSheetData(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            "Выберите цвет",
+            stringResource(R.string.choose_color),
             fontWeight = FontWeight.SemiBold,
             fontFamily = poppinsFort,
             fontSize = 16.sp
@@ -264,7 +263,7 @@ fun CreateSheetData(
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            "Выберите картинку",
+            stringResource(R.string.choose_picture),
             fontWeight = FontWeight.SemiBold,
             fontFamily = poppinsFort,
             fontSize = 16.sp
@@ -308,7 +307,7 @@ fun CreateSheetData(
 
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            "Предпросмотр",
+            stringResource(R.string.preview),
             fontWeight = FontWeight.SemiBold,
             fontFamily = poppinsFort,
             fontSize = 16.sp
@@ -381,7 +380,7 @@ fun CreateSheetData(
         }
 
         Button(modifier = Modifier.fillMaxWidth(), onClick = { foldersViewModel.onIntent(FoldersIntent.AddFolder) }) {
-            Text("Добавить коллекцию")
+            Text(stringResource(R.string.add_collection_rus))
         }
 
     }

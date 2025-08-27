@@ -84,8 +84,6 @@ class BookmarkMoviesViewModel @Inject constructor(
 
             getBookmarkMoviesFromDbUseCase().collect { result ->
 
-                println("get bookmark 2")
-
                 if (result is Result.Success) {
                     _state.update { it.copy(countMovies = result.data.size) }
 

@@ -70,19 +70,12 @@ class CollectionsViewModel @Inject constructor(
 
                     is Result.Success -> {
 
-                        //     println("list = " + (data.data as List<CollectionMovie>).size)
-
                         _state.update {
                             it.copy(
                                 countCollection = data.data.size,
                                 collectionResult = ResultData.Success(data.data.map { it.toCollectionUi() })
                             )
                         }
-
-
-                    }
-
-                    Result.Error -> {
 
                     }
                 }

@@ -8,7 +8,7 @@ import com.example.domain.usecase.collection.GetCollectionUseCase
 import com.example.domain.usecase.movie.GetRandomMovieUseCase
 import com.sidspace.stary.random.presentation.mapper.toCollectionRandomUi
 
-import com.sidspace.stary.ui.mapper.toMovieUi
+import com.sidspace.stary.ui.mapper.toMoviePreviewUi
 import com.sidspace.stary.ui.model.ResultData
 
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -166,7 +166,6 @@ class RandomViewModel @Inject constructor(
     }
 
     fun getRandom(filter: RandomFiltersOption? = null) {
-        println("rand")
         viewModelScope.launch {
 
 
@@ -183,7 +182,7 @@ class RandomViewModel @Inject constructor(
                     }
 
                     is Result.Success -> {
-                        _state.update { it.copy(randomMovie = ResultData.Success(data.data.toMovieUi())) }
+                        _state.update { it.copy(randomMovie = ResultData.Success(data.data.toMoviePreviewUi())) }
                     }
 
                 }

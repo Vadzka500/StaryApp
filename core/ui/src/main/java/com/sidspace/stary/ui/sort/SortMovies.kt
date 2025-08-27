@@ -37,7 +37,7 @@ fun sortListMovies(
 
         }
 
-        com.sidspace.stary.ui.enum.SortType.RATING -> {
+        SortType.RATING -> {
             if (sortDirection == com.sidspace.stary.ui.enum.SortDirection.DESCENDING) {
 
                 list.sortedBy { it.scoreKp }
@@ -50,7 +50,7 @@ fun sortListMovies(
             }
         }
 
-        com.sidspace.stary.ui.enum.SortType.NONE -> {
+        SortType.NONE -> {
             list
         }
     }

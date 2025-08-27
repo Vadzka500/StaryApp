@@ -3,11 +3,16 @@ package com.sidspace.stary.ui.mapper
 import com.sidspace.stary.domain.model.Collection
 import com.sidspace.stary.domain.model.Movie
 import com.sidspace.stary.domain.model.Person
+import com.sidspace.stary.ui.model.CollectionUi
+import com.sidspace.stary.ui.model.MovieLightUi
+import com.sidspace.stary.ui.model.MoviePreviewUi
+import com.sidspace.stary.ui.model.MovieUi
+import com.sidspace.stary.ui.model.PersonUi
 import com.sidspace.stary.ui.model.TrailerUi
 
 
-fun Movie.toMovieUiLight(): com.sidspace.stary.ui.model.MovieLightUi {
-    return _root_ide_package_.com.sidspace.stary.ui.model.MovieLightUi(
+fun Movie.toMovieUiLight(): MovieLightUi {
+    return MovieLightUi(
         id = id,
         name = name,
         enName = enName,
@@ -16,8 +21,8 @@ fun Movie.toMovieUiLight(): com.sidspace.stary.ui.model.MovieLightUi {
     )
 }
 
-fun Movie.toMovieData(): com.sidspace.stary.ui.model.MovieUi {
-    return _root_ide_package_.com.sidspace.stary.ui.model.MovieUi(
+fun Movie.toMovieData(): MovieUi {
+    return MovieUi(
         id = id,
         name = name,
         enName = enName,
@@ -53,8 +58,8 @@ fun Movie.toMovieData(): com.sidspace.stary.ui.model.MovieUi {
     )
 }
 
-fun Movie.toMovieUi(): com.sidspace.stary.ui.model.MoviePreviewUi {
-    return _root_ide_package_.com.sidspace.stary.ui.model.MoviePreviewUi(
+fun Movie.toMoviePreviewUi(): MoviePreviewUi {
+    return MoviePreviewUi(
         id = id,
         name = name,
         enName = enName,
@@ -75,8 +80,8 @@ fun Movie.toMovieUi(): com.sidspace.stary.ui.model.MoviePreviewUi {
     )
 }
 
-fun Person.toPersonUi(): com.sidspace.stary.ui.model.PersonUi {
-    return _root_ide_package_.com.sidspace.stary.ui.model.PersonUi(
+fun Person.toPersonUi(): PersonUi {
+    return PersonUi(
         id = id,
         name = name,
         photo = photo,
@@ -88,8 +93,8 @@ fun Person.toPersonUi(): com.sidspace.stary.ui.model.PersonUi {
     )
 }
 
-fun Collection.toCollectionUi(): com.sidspace.stary.ui.model.CollectionUi {
-    return _root_ide_package_.com.sidspace.stary.ui.model.CollectionUi(
+fun Collection.toCollectionUi(): CollectionUi {
+    return CollectionUi(
         id = id,
         name = name,
         slug = slug,
@@ -100,14 +105,14 @@ fun Collection.toCollectionUi(): com.sidspace.stary.ui.model.CollectionUi {
     )
 }
 
-fun com.sidspace.stary.ui.model.MovieUi.toMovieUi(): com.sidspace.stary.ui.model.MoviePreviewUi {
-    return _root_ide_package_.com.sidspace.stary.ui.model.MoviePreviewUi(
+fun MovieUi.toMoviePreviewUi(): MoviePreviewUi {
+    return MoviePreviewUi(
         id = id,
         name = name,
         enName = enName,
         previewUrl = previewUrl,
         score = scoreKp,
-        isSeries = isSeries == true,
+        isSeries = isSeries,
         year = year,
         countOfSeasons = countOfSeasons,
         releaseStart = releaseStart,

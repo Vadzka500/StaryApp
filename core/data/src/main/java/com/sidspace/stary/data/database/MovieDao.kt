@@ -33,9 +33,6 @@ interface MovieDao {
     @Query("Select Count(*) from Movie where movieId = :id")
     suspend fun getCountMovieById(id: Long): Long
 
-   /* @Query("Select * from Movie where idMovie in (" +
-            "select movieId from CollectionsMovie where collectionSlug = :slug)")*/
-
     @Query("Select Movie.* from Movie " +
             "inner join CollectionsMovie on CollectionsMovie.movieId = Movie.movieId " +
             "where collectionSlug = :slug and isViewed = true")

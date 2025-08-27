@@ -45,7 +45,8 @@ import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.uikit.poppinsFort
 
 import kotlinx.coroutines.flow.collectLatest
-
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
 
 
 @Composable
@@ -78,18 +79,20 @@ fun UserCollectionScreen(
         }
     }
 
-    Box(modifier = modifier.fillMaxSize().padding(top = 5.dp)) {
+    Box(modifier = modifier
+        .fillMaxSize()
+        .padding(top = 5.dp)) {
 
         if (state.value.folder?.imageResName != null) {
             Image(
                 painter = painterResource(
-                    LocalContext.current.resources.getIdentifier(
+                    LocalResources.current.getIdentifier(
                         state.value.folder!!.imageResName,
                         "drawable",
                         LocalContext.current.packageName
                     )
                 ),
-                contentDescription = "",
+                contentDescription = null,
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .size(380.dp)
@@ -139,7 +142,7 @@ fun UserCollectionScreen(
 
             Icon(
                 imageVector = Icons.Default.ArrowBackIosNew,
-                contentDescription = "",
+                contentDescription = null,
                 modifier = Modifier
                     .size(40.dp)
                     .clip(
@@ -150,7 +153,9 @@ fun UserCollectionScreen(
                     }
                     .padding(8.dp))
 
-            Row(modifier = Modifier.weight(1f)  .padding(end = 42.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(modifier = Modifier
+                .weight(1f)
+                .padding(end = 42.dp), verticalAlignment = Alignment.CenterVertically) {
 
 
                 Text(
@@ -175,7 +180,7 @@ fun UserCollectionScreen(
 
             Icon(
                 imageVector = Icons.AutoMirrored.Default.Notes,
-                contentDescription = "",
+                contentDescription = null,
                 modifier = Modifier
                     .padding(end = 8.dp)
                     .size(40.dp)
@@ -189,7 +194,7 @@ fun UserCollectionScreen(
 
             Icon(
                 imageVector = Icons.Default.DeleteForever,
-                contentDescription = "Удалить коллекцию",
+                contentDescription = stringResource(com.sidspace.stary.folder.presentation.R.string.remove_collection),
                 tint = Color.Red,
                 modifier = Modifier
                     .size(40.dp)
@@ -209,7 +214,7 @@ fun UserCollectionScreen(
             modifier = Modifier.padding(top = topHeight + 5.dp),
             isVisibleFilter = state.value.isShowFilter,
             viewType = state.value.viewMode,
-            true,
+            isShowSort = true,
             onHideFilter = {
                 folderViewModel.onIntent(FolderIntent.IsShowFilters(false))
             },
@@ -233,16 +238,16 @@ fun UserCollectionScreen(
     if (state.value.isShowDialog) {
         AlertDialog(
             onDismissRequest = { folderViewModel.onIntent(FolderIntent.HideDialog) },
-            title = { Text("Удалить коллекцию?") },
-            text = { Text("Вы уверены, что хотите удалить коллекцию?") },
+            title = { Text(stringResource(com.sidspace.stary.folder.presentation.R.string.remove_collection) + "?") },
+            text = { Text(stringResource(com.sidspace.stary.folder.presentation.R.string.remove_collection_approve)) },
             confirmButton = {
                 TextButton(onClick = { folderViewModel.onIntent(FolderIntent.RemoveFolder) }) {
-                    Text("Удалить")
+                    Text(stringResource(com.sidspace.stary.folder.presentation.R.string.remove))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { folderViewModel.onIntent(FolderIntent.HideDialog) }) {
-                    Text("Отмена")
+                    Text(stringResource(com.sidspace.stary.folder.presentation.R.string.cancel))
                 }
             }
         )

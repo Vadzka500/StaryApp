@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="view_mode_grid_str">Таблица</string>
+    <string name="view_mode_list_str">Список</string>
+    <string name="view_str">Вид:</string>
+    <string name="sort_str">Сортировка:</string>
+    <string name="sort_name_sortbyname_str">Название</string>
+    <string name="sort_name_sortbyscore_str">Оценка</string>
+    <string name="sort_name_sortbydate_str">Дата выхода</string>
+</resources>

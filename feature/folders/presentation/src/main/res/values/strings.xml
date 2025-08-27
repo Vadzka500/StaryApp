@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="my_collection">Мои коллекции</string>
+    <string name="add_collection">Add collection</string>
+    <string name="name_collection">Название коллекции</string>
+    <string name="choose_color">Выберите цвет</string>
+    <string name="choose_picture">Выберите картинку</string>
+    <string name="preview">Предпросмотр</string>
+    <string name="add_collection_rus">Добавить коллекцию</string>
+</resources>

@@ -1,5 +1,6 @@
 package com.sidspace.stary.search.presentation.screen
 
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -12,10 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Note
 import androidx.compose.material.icons.automirrored.filled.Notes
-import androidx.compose.material.icons.filled.Error
-import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -31,30 +29,28 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.sidspace.stary.search.presentation.screen.SearchIntent.*
+import com.sidspace.stary.search.presentation.screen.SearchIntent.IsShowFilter
+import com.sidspace.stary.search.presentation.screen.SearchIntent.OnError
+import com.sidspace.stary.search.presentation.screen.SearchIntent.SetGridViewMode
+import com.sidspace.stary.search.presentation.screen.SearchIntent.SetListViewMode
+import com.sidspace.stary.search.presentation.screen.SearchIntent.UpdateSearchStr
 import com.sidspace.stary.ui.FilterSection
 import com.sidspace.stary.ui.InitList
-import com.sidspace.stary.ui.R
 import com.sidspace.stary.ui.ShimmerGridList
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.utils.getSystemBarHeight
-
-
 import kotlinx.coroutines.flow.collectLatest
-
 
 
 @Composable
 fun SearchScreen(
-    onSelectMovie: (Long) -> Unit,
-    toErrorScreen:() -> Unit,
     modifier: Modifier = Modifier,
     searchViewModel: SearchViewModel = hiltViewModel(),
-
+    onSelectMovie: (Long) -> Unit,
+    toErrorScreen: () -> Unit,
 ) {
 
     val state = searchViewModel.state.collectAsState()
@@ -76,7 +72,10 @@ fun SearchScreen(
 
     Box() {
         Column(modifier = modifier) {
-            Row(modifier = Modifier.height(topHeight), verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.height(topHeight),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
 
                 TextField(
@@ -102,13 +101,6 @@ fun SearchScreen(
                         }
                     ),
 
-
-                  /*  trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardVoice,
-                            contentDescription = null
-                        )
-                    },*/
                     modifier = Modifier
                         .weight(1f)
                         .background(color = Color.Transparent)
@@ -116,8 +108,8 @@ fun SearchScreen(
                     placeholder = { Text(text = "Фильмы, сериалы") })
 
                 Icon(
-                    imageVector = Icons.AutoMirrored.Default.Notes ,
-                    contentDescription = "",
+                    imageVector = Icons.AutoMirrored.Default.Notes,
+                    contentDescription = null,
                     modifier = Modifier
                         .padding(end = 16.dp)
                         .size(40.dp)
@@ -129,7 +121,7 @@ fun SearchScreen(
                             searchViewModel.onIntent(IsShowFilter(!state.value.isVisibleFilter))
 
                         }
-                        .padding(8.dp)) // внутренний отступ, чтобы иконка была не впритык)
+                        .padding(8.dp))
 
             }
 
@@ -160,26 +152,11 @@ fun SearchScreen(
 
         }
 
-        val context = LocalContext.current
-
-        val resourcesHeight = remember(context) {
-            context.resources.getIdentifier(
-                "status_bar_height",
-                "dimen",
-                "android"
-            ).takeIf { it > 0 }?.let {
-                context.resources.getDimensionPixelSize(it).dp
-            } ?: 0.dp
-        }
-
-
-
-
         FilterSection(
             modifier = Modifier.padding(top = getSystemBarHeight() + topHeight),
             isVisibleFilter = state.value.isVisibleFilter,
             viewType = state.value.viewMode,
-            false,
+            isShowSort = false,
             onHideFilter = {
                 searchViewModel.onIntent(IsShowFilter(false))
             },
@@ -197,7 +174,5 @@ fun SearchScreen(
             }
         )
     }
-
-
 
 }

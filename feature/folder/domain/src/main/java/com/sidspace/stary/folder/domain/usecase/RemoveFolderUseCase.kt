@@ -1,4 +1,4 @@
-package com.example.domain.usecase.folder
+package com.sidspace.stary.folder.domain.usecase
 
 import com.sidspace.stary.domain.model.Result
 import com.sidspace.stary.folder.domain.repository.FolderRepository

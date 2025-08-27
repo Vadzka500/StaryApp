@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 
 import com.sidspace.stary.domain.model.Folder
 import com.sidspace.stary.domain.model.Result
-import com.example.domain.usecase.folder.GetFolderFromApiUseCase
-import com.example.domain.usecase.folder.RemoveFolderUseCase
+import com.sidspace.stary.folder.domain.usecase.GetFolderFromApiUseCase
+import com.sidspace.stary.folder.domain.usecase.RemoveFolderUseCase
 import com.sidspace.stary.folder.domain.usecase.GetFolderFromDbUseCase
 import com.sidspace.stary.ui.enum.ViewMode
 import com.sidspace.stary.ui.enum.toggle

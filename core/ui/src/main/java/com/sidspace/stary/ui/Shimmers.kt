@@ -29,9 +29,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 
 
-
-
-
 @Composable
 fun ShimmerGridList(modifier: Modifier = Modifier, count: Int) {
     LazyVerticalGrid(
@@ -52,7 +49,6 @@ fun ShimmerGridList(modifier: Modifier = Modifier, count: Int) {
 fun MovieCardGridShimmer(
     modifier: Modifier = Modifier
 ) {
-    //println("name = " + item.name)
 
     val configuration = LocalConfiguration.current
     val width = configuration.screenWidthDp / 2 - 22
@@ -60,7 +56,7 @@ fun MovieCardGridShimmer(
     val boxHeight = height + 30
 
     Column(
-        modifier = Modifier
+        modifier = modifier
            /* .then(
                 if (index == 0) Modifier.padding(start = 16.dp)
                 else Modifier
@@ -99,7 +95,7 @@ fun ShimmerMovies(modifier: Modifier = Modifier) {
             .padding(top = 16.dp)
     ) {
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .padding(start = 16.dp)
                 .width(150.dp)
                 .height(30.dp)

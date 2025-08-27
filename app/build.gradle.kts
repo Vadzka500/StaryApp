@@ -119,8 +119,6 @@ dependencies {
     implementation(libs.firebase.crashlytics.ndk)
     implementation(libs.firebase.analytics)
 
-    implementation(libs.firebase.messaging)
-
     implementation(project(":core:navigation"))
     implementation(project(":core:logger"))
 }

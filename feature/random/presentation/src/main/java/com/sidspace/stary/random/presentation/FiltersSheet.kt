@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,9 +41,9 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FiltersPopup(
-    modifier: Modifier = Modifier,
     filters: RandomFiltersOption,
     listOfCollectionResult: ResultData<List<CollectionRandomUi>>,
+    modifier: Modifier = Modifier,
     filerIntent: (intent: RandomIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(
@@ -51,7 +52,7 @@ fun FiltersPopup(
 
 
     ModalBottomSheet(
-        modifier = Modifier.fillMaxHeight(), sheetState = sheetState, onDismissRequest = {
+        modifier = modifier.fillMaxHeight(), sheetState = sheetState, onDismissRequest = {
             filerIntent(RandomIntent.SetShowFilters(false))
         }) {
 
@@ -98,7 +99,7 @@ fun ListFilters(
         item {
             Text(
                 modifier = Modifier.padding(horizontal = 5.dp),
-                text = "Тип",
+                text = stringResource(R.string.type),
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = poppinsFort,
                 fontSize = 16.sp
@@ -156,7 +157,7 @@ fun ListFilters(
                 modifier = Modifier
                     .padding(horizontal = 5.dp)
                     .padding(top = 8.dp),
-                text = "Жанр",
+                text = stringResource(R.string.genre),
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = poppinsFort,
                 fontSize = 16.sp
@@ -202,7 +203,7 @@ fun ListFilters(
                 modifier = Modifier
                     .padding(horizontal = 5.dp)
                     .padding(top = 8.dp),
-                text = "Оценка кп",
+                text = stringResource(R.string.score_kp),
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = poppinsFort,
                 fontSize = 16.sp
@@ -250,7 +251,7 @@ fun ListFilters(
                 modifier = Modifier
                     .padding(horizontal = 5.dp)
                     .padding(top = 8.dp),
-                text = "Дата релиза",
+                text = stringResource(R.string.date),
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = poppinsFort,
                 fontSize = 16.sp
@@ -268,7 +269,9 @@ fun ListFilters(
                 mutableStateOf(value)
             }
 
-            Column(modifier = Modifier.padding(horizontal = 5.dp).padding(top = 8.dp)) {
+            Column(modifier = Modifier
+                .padding(horizontal = 5.dp)
+                .padding(top = 8.dp)) {
                 RangeSlider(
                     value = sliderYears,
                     steps = (range.endInclusive - range.start).toInt() - 2,
@@ -311,8 +314,10 @@ fun ListFilters(
                 is ResultData.Success -> {
 
                     Text(
-                        modifier = Modifier.padding(horizontal = 5.dp).padding(top = 8.dp),
-                        text = "Популярные категории",
+                        modifier = Modifier
+                            .padding(horizontal = 5.dp)
+                            .padding(top = 8.dp),
+                        text = stringResource(R.string.popular_categories),
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = poppinsFort,
                         fontSize = 16.sp

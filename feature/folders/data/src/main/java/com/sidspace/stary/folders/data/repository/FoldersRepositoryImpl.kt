@@ -6,7 +6,7 @@ import com.sidspace.stary.folders.data.mapper.toFolderDBO
 import com.sidspace.stary.domain.model.Folder
 import com.sidspace.stary.domain.model.Result
 import com.sidspace.stary.folders.domain.repository.FoldersRepository
-import com.sidspace.stary.data.mapper.toDomainFromDB
+import com.sidspace.stary.data.mapper.toFolderFromFolderDBO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -29,7 +29,7 @@ class FoldersRepositoryImpl @Inject constructor(private val movieDatabase: Movie
 
         try {
             movieDatabase.getFolders().collect {
-                emit(Result.Success(it.map { it -> it.toDomainFromDB(it.movies) }))
+                emit(Result.Success(it.map { it -> it.toFolderFromFolderDBO(it.movies) }))
             }
         } catch (e: Exception) {
             emit(Result.Error)

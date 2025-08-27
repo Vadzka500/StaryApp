@@ -71,6 +71,7 @@ import com.sidspace.stary.ui.uikit.Purple40
 import com.sidspace.stary.ui.uikit.poppinsFort
 import com.sidspace.stary.ui.utils.InitRatingView
 import com.sidspace.stary.ui.utils.ScoreManager
+import androidx.compose.ui.platform.LocalResources
 
 @Composable
 fun InitList(
@@ -110,7 +111,6 @@ fun ListView(modifier: Modifier = Modifier, list: List<MovieUi>, onClick: (Long)
         itemsIndexed(list) { index, item ->
             CardList(
                 movie = item,
-                index = index,
                 onSelectMovie = { id -> onClick(id) },
                 modifier = Modifier
             )
@@ -210,13 +210,12 @@ fun MovieCardGrid(
 fun CardList(
     modifier: Modifier = Modifier,
     movie: MovieUi,
-    index: Int,
     onSelectMovie: (Long) -> Unit
 ) {
     var scale by remember { mutableStateOf(ContentScale.Crop) }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(120.dp)
             .clickable { onSelectMovie(movie.id) }
@@ -249,7 +248,7 @@ fun CardList(
                     .padding(vertical = 8.dp)
             ) {
                 Text(
-                    text = movie.name?:"null",
+                    text = movie.name ?: "null",
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = poppinsFort,
                     maxLines = 1,
@@ -276,9 +275,9 @@ fun CardList(
 
                         var text = releaseStart.toString()
 
-                        if (releaseStart != null && releaseEnd != null && releaseStart != releaseEnd) {
+                        if (releaseEnd != null && releaseStart != releaseEnd) {
                             text = "$releaseStart - $releaseEnd"
-                        } else if (releaseStart != null && releaseEnd == null) {
+                        } else if (releaseEnd == null) {
                             text =
                                 if (seasonCount == 1 || movie.status?.equals("completed") == true) {
                                     releaseStart.toString()
@@ -361,7 +360,7 @@ fun CardList(
 @Composable
 fun InitRow(modifier: Modifier = Modifier, label: String, onClick: () -> Unit) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(end = 16.dp)
             .padding(start = 16.dp)
@@ -397,7 +396,12 @@ fun InitRow(modifier: Modifier = Modifier, label: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun HorizontalList(list: List<MoviePreviewUi>, label: String, onSelectMovie: (Long) -> Unit, modifier: Modifier = Modifier){
+fun HorizontalList(
+    list: List<MoviePreviewUi>,
+    label: String,
+    onSelectMovie: (Long) -> Unit,
+    modifier: Modifier = Modifier
+) {
 
     Spacer(modifier = Modifier.height(16.dp))
     Text(
@@ -425,7 +429,6 @@ fun HorizontalList(list: List<MoviePreviewUi>, label: String, onSelectMovie: (Lo
                 enName = item.enName,
                 previewUrl = item.previewUrl,
                 score = item.score,
-                index = index,
                 onSelectMovie = { onSelectMovie(item.id) }
             )
 
@@ -434,7 +437,12 @@ fun HorizontalList(list: List<MoviePreviewUi>, label: String, onSelectMovie: (Lo
 }
 
 @Composable
-fun HorizontalHomeList(list: List<MoviePreviewUi>, label: String, onClickHeader:() -> Unit, onSelectMovie: (Long) -> Unit){
+fun HorizontalHomeList(
+    list: List<MoviePreviewUi>,
+    label: String,
+    onClickHeader: () -> Unit,
+    onSelectMovie: (Long) -> Unit
+) {
     InitRow(label = label, onClick = onClickHeader)
     LazyRow(
         modifier = Modifier.padding(top = 10.dp),
@@ -443,7 +451,7 @@ fun HorizontalHomeList(list: List<MoviePreviewUi>, label: String, onClickHeader:
     ) {
 
         itemsIndexed(
-            list .take(10),
+            list.take(10),
             key = { _, item -> item.id }) { index, item ->
 
             MovieCardHorizontal(
@@ -452,7 +460,6 @@ fun HorizontalHomeList(list: List<MoviePreviewUi>, label: String, onClickHeader:
                 enName = item.enName,
                 previewUrl = item.previewUrl,
                 score = item.score,
-                index = index,
                 onSelectMovie = { onSelectMovie(item.id) }
             )
 
@@ -468,7 +475,6 @@ fun MovieCardHorizontal(
     enName: String?,
     previewUrl: String?,
     score: Double?,
-    index: Int,
     onSelectMovie: (Long) -> Unit
 ) {
 
@@ -476,7 +482,7 @@ fun MovieCardHorizontal(
     var isShimmer by remember { mutableStateOf(true) }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(255.dp)
             .width(150.dp)
@@ -534,7 +540,7 @@ fun ShowCollectionList(
     list: ResultData<List<Folder>>,
     movieId: Long = -1,
     onSelectFolder: (Long) -> Unit,
-    onError:() -> Unit
+    onError: () -> Unit
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -553,7 +559,7 @@ fun ShowCollectionList(
 
         is ResultData.Success -> {
             LazyColumn(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxSize()
                     .animateContentSize(),
                 state = lazyListState
@@ -589,18 +595,16 @@ fun ShowCollectionList(
 }
 
 
-
 @Composable
 fun InitFolderItem(
     modifier: Modifier = Modifier,
     folder: Folder,
     index: Int,
     onShowAddImage: Boolean = false,
-    //foldersViewModel: FoldersViewModel = hiltViewModel(),
     onSelectFolder: (Long) -> Unit
 ) {
     ElevatedCard(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
 
             .then(
@@ -628,13 +632,11 @@ fun InitFolderItem(
         ) {
 
 
-            Row(
-
-            ) {
-                if(folder.imageResName != null) {
+            Row {
+                if (folder.imageResName != null) {
                     Image(
                         painter = painterResource(
-                            LocalContext.current.resources.getIdentifier(
+                            LocalResources.current.getIdentifier(
                                 folder.imageResName,
                                 "drawable",
                                 LocalContext.current.packageName

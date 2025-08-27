@@ -57,7 +57,6 @@ class MovieProfileViewModel @Inject constructor(
     fun onIntent(intent: MovieIntent) {
         when (intent) {
             is MovieIntent.LoadMovie -> {
-                println("load")
                 getMovieById(intent.id)
                 checkMovieDatabase(intent.id)
             }
@@ -114,11 +113,8 @@ class MovieProfileViewModel @Inject constructor(
     }
 
     fun getMovieById(id: Long) {
-        println("get movie = " + id)
 
         viewModelScope.launch {
-
-
             getMovieByIdUseCase(id).collect{
                 when (val data = it) {
                     is Result.Error -> {
@@ -147,14 +143,14 @@ class MovieProfileViewModel @Inject constructor(
 
 
                     LocalResult.Error -> {
-                        println("get error")
+
                     }
                     LocalResult.Loading -> {
-                        println("get loading")
+
                     }
                     is LocalResult.Success -> {
                         _state.update { it.copy(isExistMovieDb = data.data?.toLocalMovieUi()) }
-                        println("get movie check 2 = " + data.data)
+
                     }
                 }
 

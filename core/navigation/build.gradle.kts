@@ -38,7 +38,6 @@ android {
 dependencies {
 
 
-
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.icons)
 
@@ -58,7 +57,6 @@ dependencies {
     implementation(project(":feature:review:presentation"))
     implementation(project(":feature:viewed:presentation"))
     implementation(project(":feature:error:presentation"))
-    //implementation(project(":feature:home:data"))
 
     implementation(libs.compose.navigation)
     implementation(libs.kotlin.serialization)

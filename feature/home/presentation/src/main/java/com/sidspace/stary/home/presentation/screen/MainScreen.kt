@@ -49,6 +49,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -177,9 +178,10 @@ private fun MainScreen(
 @Composable
 fun TopBannedList(
     state: State<MainState>,
+    modifier: Modifier = Modifier,
     onSelectMovie: (Long) -> Unit,
     toErrorScreen: () -> Unit,
-    modifier: Modifier = Modifier
+
 ) {
 
     val configuration = LocalConfiguration.current
@@ -195,7 +197,6 @@ fun TopBannedList(
 
         AnimatedContent(
             targetState = state.value.listTopBanned,
-            /*transitionSpec = { fadeIn() togetherWith ExitTransition.None }*/
         ) { state ->
             when (state) {
                 is ResultData.Error -> {
@@ -218,7 +219,7 @@ fun TopBannedList(
 
 
                         Text(
-                            "Топ ожидаемых фильмов",
+                            stringResource(com.sidspace.stary.home.presentation.R.string.top_expected_movies),
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
@@ -256,15 +257,15 @@ fun TopBannedList(
 @Composable
 fun MainListMovies(
     state: State<MainState>,
+    modifier: Modifier = Modifier,
     onSelectMovie: (Long) -> Unit,
     toErrorScreen: () -> Unit,
     onSelectListMovies: (String, String) -> Unit,
-    modifier: Modifier = Modifier
+
 ) {
     AnimatedContent(
 
         targetState = state.value.listHomePage,
-        /*transitionSpec = { fadeIn() togetherWith ExitTransition.None }*/
     ) { state ->
 
         when (state) {
@@ -308,39 +309,6 @@ fun MainListMovies(
                                             (result.key as Pair<*, *>).second.toString()
                                         )
                                     })
-
-                                /*InitRow(
-                                    label = (result.key as Pair<*, *>).first.toString(),
-                                    onClick = {
-                                        onSelectListMovies(
-                                            (result.key as Pair<*, *>).first.toString(),
-                                            (result.key as Pair<*, *>).second.toString()
-                                        )
-                                    })
-
-                                LazyRow(
-                                    modifier = Modifier.padding(top = 10.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                    contentPadding = PaddingValues(horizontal = 16.dp)
-                                ) {
-
-                                    itemsIndexed(
-                                        collection.data.take(10),
-                                        key = { _, item -> item.id }) { index, item ->
-
-
-                                        MovieCardHorizontal(
-                                            id = item.id,
-                                            name = item.name,
-                                            enName = item.enName,
-                                            previewUrl = item.previewUrl!!,
-                                            score = item.score,
-                                            index = index,
-                                            onSelectMovie = onSelectMovie
-                                        )
-
-                                    }
-                                }*/
 
                             }
 
@@ -440,18 +408,11 @@ fun ShimmerTop(modifier: Modifier = Modifier) {
     }
 }
 
-
-@Composable
-
-fun LoadingScreen(modifier: Modifier = Modifier) {
-
-}
-
 @Composable
 
 fun InitCollections(
-    modifier: Modifier = Modifier,
     state: State<MainState>,
+    modifier: Modifier = Modifier,
     toCollectionScreen: () -> Unit,
     onSelectCollection: (String, String) -> Unit,
     toErrorScreen: () -> Unit
@@ -501,12 +462,8 @@ fun InitRow(modifier: Modifier = Modifier, label: String, onClick: () -> Unit) {
             fontWeight = FontWeight.Bold,
         )
 
-
-
-
-
         Text(
-            "Все",
+            stringResource(com.sidspace.stary.home.presentation.R.string.all),
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
             color = Purple40,
@@ -517,7 +474,7 @@ fun InitRow(modifier: Modifier = Modifier, label: String, onClick: () -> Unit) {
         Icon(
             modifier = Modifier.size(14.dp),
             imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-            contentDescription = "Все",
+            contentDescription = stringResource(com.sidspace.stary.home.presentation.R.string.all),
             tint = Purple40
         )
     }
@@ -525,14 +482,14 @@ fun InitRow(modifier: Modifier = Modifier, label: String, onClick: () -> Unit) {
 
 @Composable
 fun ShowCollection(
-    modifier: Modifier = Modifier,
     list: List<CollectionUi>,
+    modifier: Modifier = Modifier,
     toCollectionScreen: () -> Unit,
     onSelectCollection: (String, String) -> Unit
 ) {
 
 
-    InitRow(label = "Коллекции", onClick = toCollectionScreen)
+    InitRow(label = stringResource(com.sidspace.stary.home.presentation.R.string.collection), onClick = toCollectionScreen)
 
 
     LazyRow(
@@ -567,37 +524,11 @@ fun ShowCollection(
 }
 
 @Composable
-fun ListMovies(modifier: Modifier = Modifier, list: List<MoviePreviewUi>, onSelectMovie: (Long) -> Unit) {
-    LazyRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp)
-    ) {
-
-        itemsIndexed(list) { index, item ->
-
-            MovieCard(
-                id = item.id,
-                name = item.name,
-                enName = item.enName,
-                previewUrl = item.previewUrl!!,
-                score = item.score,
-                index = index,
-                onSelectMovie = onSelectMovie
-            )
-
-        }
-    }
-
-}
-
-
-@Composable
 fun InitPagerCard(
-    modifier: Modifier = Modifier,
     index: Int,
     pagerState: PagerState,
     item: MoviePreviewUi,
+    modifier: Modifier = Modifier,
     onSelectMovie: (Long) -> Unit
 ) {
     val pageOffSet = (pagerState.currentPage - index) + pagerState.currentPageOffsetFraction
@@ -620,13 +551,12 @@ fun InitPagerCard(
                 .fillMaxSize()
                 .weight(1f)
                 .clickable {
-                    onSelectMovie(item.id!!)
+                    onSelectMovie(item.id)
                 },
             elevation = CardDefaults.cardElevation(12.dp),
             shape = RoundedCornerShape(32.dp)
         ) {
             AsyncImage(
-                //model = listOfPoster[index],
                 model = item.previewUrl,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
@@ -648,77 +578,5 @@ fun InitPagerCard(
                 fontSize = 18.sp
             )
         }
-    }
-}
-
-@Composable
-fun MovieCard(
-    modifier: Modifier = Modifier,
-    id: Long,
-    name: String?,
-    enName: String?,
-    previewUrl: String,
-    score: Double?,
-    index: Int,
-    onSelectMovie: (Long) -> Unit
-) {
-
-    var scale by remember { mutableStateOf(ContentScale.Crop) }
-    var isShimmer by remember { mutableStateOf(true) }
-    //println("name = " + item.name)
-    Box(
-        modifier = Modifier
-            /*.then(
-            if (index == 0) Modifier.padding(start = 16.dp)
-            else Modifier
-        )*/
-            .fillMaxWidth()
-            .height(255.dp)
-            .width(150.dp)
-            .clickable {
-                onSelectMovie(id)
-            }) {
-        Column(
-
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            AsyncImage(
-                modifier = Modifier
-                    .width(150.dp)
-                    .height(215.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .then(
-                        if (isShimmer) Modifier.shimmerEffect()
-                        else Modifier
-                    ),
-                model = ImageRequest.Builder(LocalContext.current).data(previewUrl)
-                    .crossfade(true)
-
-                    .listener(onStart = {
-                        scale = ContentScale.Crop
-                    }, onSuccess = { _, _ ->
-                        isShimmer = false
-                        scale = ContentScale.FillBounds
-                    })
-                    .crossfade(true).build(),
-                contentScale = scale,
-                contentDescription = null,
-                error = painterResource(R.drawable.ic_placeholder_4)
-            )
-            Text(
-                modifier = Modifier.padding(top = 5.dp),
-                text = name ?: enName ?: "null",
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.SemiBold,
-                lineHeight = 16.sp,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-
-                fontSize = 14.sp
-            )
-        }
-
-        InitRatingView(score)
-
     }
 }

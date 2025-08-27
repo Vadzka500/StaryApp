@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,24 +40,24 @@ import com.sidspace.stary.ui.uikit.poppinsFort
 import kotlinx.coroutines.flow.collectLatest
 
 
-
 @Composable
 fun ViewedMoviesScreen(
+    modifier: Modifier = Modifier,
+    viewedMoviesViewModel: ViewedMoviesViewModel = hiltViewModel(),
     onBack: () -> Unit,
     onSelectMovie: (Long) -> Unit,
-    toErrorScreen:() -> Unit,
-    modifier: Modifier = Modifier,
-    viewedMoviesViewModel: ViewedMoviesViewModel = hiltViewModel()
+    toErrorScreen: () -> Unit,
 ) {
 
     val state = viewedMoviesViewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
         viewedMoviesViewModel.effect.collectLatest { effect ->
-            when(effect){
+            when (effect) {
                 ViewedMovieEffect.OnBack -> {
                     onBack()
                 }
+
                 is ViewedMovieEffect.OnSelectMovie -> {
                     onSelectMovie(effect.id)
                 }
@@ -76,14 +77,13 @@ fun ViewedMoviesScreen(
         Row(
             modifier = Modifier
                 .height(topHeight)
-                .padding(horizontal = 12.dp)
-            , verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically
 
         ) {
 
             Icon(
                 imageVector = Icons.Default.ArrowBackIosNew,
-                contentDescription = "",
+                contentDescription = null,
                 modifier = Modifier
                     .size(40.dp)
                     .clip(
@@ -96,7 +96,7 @@ fun ViewedMoviesScreen(
                     .padding(8.dp))
 
             Text(
-                "Просмотрено",
+                stringResource(com.sidspace.stary.viewed.presentation.R.string.viewed),
                 modifier = Modifier
                     .padding(start = 16.dp),
                 fontWeight = FontWeight.Bold,
@@ -117,7 +117,7 @@ fun ViewedMoviesScreen(
 
             Icon(
                 imageVector = Icons.AutoMirrored.Default.Notes,
-                contentDescription = "",
+                contentDescription = null,
                 modifier = Modifier
                     .size(40.dp)
                     .clip(
@@ -141,7 +141,7 @@ fun ViewedMoviesScreen(
             }
 
             is ResultData.Success -> {
-                if(data.data.isNotEmpty()) {
+                if (data.data.isNotEmpty()) {
                     InitList(
                         modifier = Modifier.padding(top = 60.dp),
                         list = data.data,
@@ -151,8 +151,12 @@ fun ViewedMoviesScreen(
                         },
                         viewType = state.value.viewMode
                     )
-                }else{
-                    Box(modifier = Modifier.fillMaxSize().padding(top = 60.dp), contentAlignment = Alignment.Center) {
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 60.dp), contentAlignment = Alignment.Center
+                    ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth(),
@@ -167,7 +171,7 @@ fun ViewedMoviesScreen(
                             Spacer(modifier = Modifier.height(8.dp))
 
                             Text(
-                                "Вы еще не отметили ни один фильм",
+                                stringResource(com.sidspace.stary.viewed.presentation.R.string.empty_movies),
                                 fontWeight = FontWeight.SemiBold,
                                 fontFamily = poppinsFort,
                                 fontSize = 16.sp,
@@ -188,7 +192,7 @@ fun ViewedMoviesScreen(
             modifier = Modifier.padding(top = topHeight + 5.dp),
             isVisibleFilter = state.value.isShowFilter,
             viewType = state.value.viewMode,
-            true,
+            isShowSort = true,
             onHideFilter = {
                 viewedMoviesViewModel.onIntent(ViewedMovieIntent.IsShowFilters(false))
             },

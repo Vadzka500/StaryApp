@@ -10,6 +10,4 @@ class TimeManager {
             return "$hours ч $minutes мин"
         }
     }
-
-
 }

@@ -14,7 +14,7 @@ import com.sidspace.stary.domain.model.Movie
 import com.sidspace.stary.domain.model.Result
 import com.sidspace.stary.movie.domain.repository.MovieRepository
 import com.sidspace.stary.data.mapper.toDomain
-import com.sidspace.stary.data.mapper.toDomainFromDB
+import com.sidspace.stary.data.mapper.toFolderFromFolderDBO
 import com.sidspace.stary.data.mapper.toLocalMovie
 import com.sidspace.stary.data.mapper.toMovie
 import com.sidspace.stary.data.mapper.toMovieDBO
@@ -59,7 +59,7 @@ class MovieRepositoryImpl @Inject constructor(
 
         try {
             movieDao.getFolders().collect {
-                emit(Result.Success(it.map{ it.toDomainFromDB(it.movies)}))
+                emit(Result.Success(it.map{ it.toFolderFromFolderDBO(it.movies)}))
             }
         } catch (e: Exception) {
             emit(Result.Error)

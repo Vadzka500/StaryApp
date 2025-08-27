@@ -8,7 +8,7 @@ import com.sidspace.stary.home.domain.usecase.InitDefaultFoldersUseCase
 import com.sidspace.stary.home.domain.usecase.GetListMoviesByCollectionUseCase
 import com.sidspace.stary.home.presentation.utils.MoviesCollections
 import com.sidspace.stary.ui.mapper.toCollectionUi
-import com.sidspace.stary.ui.mapper.toMovieUi
+import com.sidspace.stary.ui.mapper.toMoviePreviewUi
 import com.sidspace.stary.ui.model.MoviePreviewUi
 import com.sidspace.stary.ui.model.ResultData
 
@@ -122,7 +122,7 @@ class MainViewModel @Inject constructor(
                     }
 
                     is Result.Success -> {
-                        _state.update { it.copy(listTopBanned = ResultData.Success(data.data.map { it.toMovieUi() })) }
+                        _state.update { it.copy(listTopBanned = ResultData.Success(data.data.map { it.toMoviePreviewUi() })) }
                     }
                 }
             }
@@ -147,14 +147,12 @@ class MainViewModel @Inject constructor(
 
 
                 }.collect { data ->
-                    println("data = " + data[0])
-
                     data.forEachIndexed { index, item ->
                         when (val res = data[index]) {
 
                             is Result.Success -> {
                                 result[result.keys.elementAt(index)] =
-                                    ResultData.Success(res.data.map { it.toMovieUi() })
+                                    ResultData.Success(res.data.map { it.toMoviePreviewUi() })
                             }
 
                             else -> {

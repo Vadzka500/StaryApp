@@ -45,16 +45,15 @@ import com.sidspace.stary.ui.utils.getSystemBarHeight
 import kotlinx.coroutines.flow.collectLatest
 
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun AllMoviesScreen(
-    modifier: Modifier = Modifier,
     label: String,
     slug: String,
+    modifier: Modifier = Modifier,
+    listMoviesViewModel: ListMoviesViewModel = hiltViewModel(),
     onSelectMovie: (Long) -> Unit,
     onBack: () -> Unit,
-    toErrorScreen: () -> Unit,
-    listMoviesViewModel: ListMoviesViewModel = hiltViewModel()
+    toErrorScreen: () -> Unit
 ) {
 
     val state = listMoviesViewModel.state.collectAsState()
@@ -168,7 +167,7 @@ fun AllMoviesScreen(
         modifier = Modifier.padding(top = getSystemBarHeight() + topHeight),
         isVisibleFilter = state.value.isShowFilter,
         viewType = state.value.viewMode,
-        true,
+        isShowSort = true,
         onHideFilter = {
             listMoviesViewModel.onIntent(ListMoviesIntent.IsShowFilter(false))
         },

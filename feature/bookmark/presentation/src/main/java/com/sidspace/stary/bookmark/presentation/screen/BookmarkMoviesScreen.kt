@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,11 +42,11 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun BookmarkMoviesScreen(
+    modifier: Modifier = Modifier,
+    bookmarkMoviesViewModel: BookmarkMoviesViewModel = hiltViewModel(),
     onBack: () -> Unit,
     onSelectMovie: (Long) -> Unit,
     toErrorScreen: () -> Unit,
-    modifier: Modifier = Modifier,
-    bookmarkMoviesViewModel: BookmarkMoviesViewModel = hiltViewModel(),
 ) {
     val state = bookmarkMoviesViewModel.state.collectAsState()
 
@@ -95,7 +96,7 @@ fun BookmarkMoviesScreen(
                     .padding(8.dp))
 
             Text(
-                "Закладки",
+                stringResource(com.sidspace.stary.bookmark.presentation.R.string.bookmark),
                 modifier = Modifier
                     .padding(start = 16.dp),
                 fontWeight = FontWeight.Bold,
@@ -152,7 +153,9 @@ fun BookmarkMoviesScreen(
                         viewType = state.value.viewMode
                     )
                 } else {
-                    Box(modifier = Modifier.fillMaxSize().padding(top = 60.dp), contentAlignment = Alignment.Center) {
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 60.dp), contentAlignment = Alignment.Center) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth(),
@@ -161,13 +164,13 @@ fun BookmarkMoviesScreen(
                             Image(
                                 modifier = Modifier.size(48.dp),
                                 painter = painterResource(R.drawable.empty_result),
-                                contentDescription = ""
+                                contentDescription = null
                             )
 
                             Spacer(modifier = Modifier.height(8.dp))
 
                             Text(
-                                "Вы еще не отметили ни один фильм",
+                                stringResource(com.sidspace.stary.bookmark.presentation.R.string.hint_empty),
                                 fontWeight = FontWeight.SemiBold,
                                 fontFamily = poppinsFort,
                                 fontSize = 16.sp,
@@ -186,7 +189,7 @@ fun BookmarkMoviesScreen(
             modifier = Modifier.padding(top = topHeight + 5.dp),
             isVisibleFilter = state.value.isShowFilter,
             viewType = state.value.viewMode,
-            true,
+            isShowSort = true,
             onHideFilter = {
                 bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.IsShowFilters(false))
             },

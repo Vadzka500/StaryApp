@@ -64,6 +64,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -79,7 +80,7 @@ import androidx.core.net.toUri
 
 import com.sidspace.stary.movie.presentation.util.TimeManager
 
-import com.sidspace.stary.ui.mapper.toMovieUi
+import com.sidspace.stary.ui.mapper.toMoviePreviewUi
 
 import com.sidspace.stary.movie.presentation.R
 import com.sidspace.stary.ui.HorizontalList
@@ -97,17 +98,15 @@ import com.sidspace.stary.ui.utils.ScoreManager
 import kotlinx.coroutines.flow.collectLatest
 
 
-
-
 @Composable
 fun MovieScreen(
     id: Long,
+    modifier: Modifier = Modifier,
+    movieProfileViewModel: MovieProfileViewModel = hiltViewModel(),
     onSelectMovie: (Long) -> Unit,
     onSelectPerson: (Long) -> Unit,
     onClickReviews: (Long) -> Unit,
     toErrorScreen: () -> Unit,
-    modifier: Modifier = Modifier,
-    movieProfileViewModel: MovieProfileViewModel = hiltViewModel(),
 ) {
 
     val state = movieProfileViewModel.state.collectAsState()
@@ -336,7 +335,7 @@ fun InitMovie(
                 contentScale = ContentScale.Crop,
                 alpha = 0.8f
             )
-            //  Column(modifier = Modifier.fillMaxWidth().padding(top = 20.dp)) {
+
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(movie.previewUrl)
@@ -359,9 +358,6 @@ fun InitMovie(
             )
         }
 
-
-
-
         Text(
             text = movie.name ?: movie.enName ?: "",
             modifier = Modifier
@@ -372,8 +368,6 @@ fun InitMovie(
             fontFamily = poppinsFort,
             fontSize = 24.sp
         )
-
-
 
         RowPrimaryData(
             modifier = Modifier
@@ -408,7 +402,7 @@ fun InitMovie(
         if (movie.persons != null) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Актеры",
+                text = stringResource(R.string.actors),
                 modifier = Modifier.padding(start = 16.dp),
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = poppinsFort,
@@ -425,7 +419,7 @@ fun InitMovie(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Создатели",
+                text = stringResource(R.string.creators),
                 modifier = Modifier.padding(start = 16.dp),
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = poppinsFort,
@@ -446,7 +440,6 @@ fun InitMovie(
                             "режиссеры"
                         )
                     }
-                    //.thenBy { it.profession }
                 )
             )
         }
@@ -461,7 +454,7 @@ fun InitMovie(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Рецензии",
+                text = stringResource(R.string.review),
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = poppinsFort,
                 fontSize = 18.sp
@@ -471,93 +464,30 @@ fun InitMovie(
 
             Image(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                contentDescription = "Show reviews",
+                contentDescription = stringResource(R.string.show_review),
                 modifier = Modifier.scale(0.8f)
             )
         }
 
         if (!movie.sequelsAndPrequels.isNullOrEmpty()) {
 
-            HorizontalList(movie.sequelsAndPrequels!!.map{ it.toMovieUi()}, "Связанные фильмы", onSelectMovie = {
-                movieProfileViewModel.onIntent(MovieIntent.ToMovieScreen(it))
-            })
+            HorizontalList(
+                movie.sequelsAndPrequels!!.map { it.toMoviePreviewUi() },
+                stringResource(R.string.related_movies), onSelectMovie = {
+                    movieProfileViewModel.onIntent(MovieIntent.ToMovieScreen(it))
+                })
 
-            /*Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Связанные фильмы",
-                modifier = Modifier.padding(start = 16.dp),
-                fontWeight = FontWeight.SemiBold,
-                fontFamily = poppinsFort,
-                fontSize = 18.sp
-            )
-            Spacer(modifier = Modifier.height(5.dp))
-           *//* ListView(
-                list = movie.sequelsAndPrequels!!,
-                onClick = { id -> movieProfileViewModel.onIntent(MovieIntent.ToMovieScreen(id)) },
-                modifier = Modifier.padding(top = 10.dp)
-            )*//*
-
-            LazyRow(
-                modifier = Modifier.padding(top = 10.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp)
-            ) {
-
-                itemsIndexed(movie.sequelsAndPrequels!!) { index, item ->
-
-                    MovieCardHorizontal(
-                        id = item.id,
-                        name = item.name,
-                        enName = item.enName,
-                        previewUrl = item.previewUrl!!,
-                        score = item.scoreKp,
-                        index = index,
-                        onSelectMovie = { id -> movieProfileViewModel.onIntent(MovieIntent.ToMovieScreen(id))}
-                    )
-
-                }
-            }*/
         }
 
         if (!movie.similarMovies.isNullOrEmpty()) {
-            /*Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Похожие фильмы",
-                modifier = Modifier.padding(start = 16.dp),
-                fontWeight = FontWeight.SemiBold,
-                fontFamily = poppinsFort,
-                fontSize = 18.sp
-            )
-            Spacer(modifier = Modifier.height(5.dp))*/
-           /* ListView(
-                list = movie.similarMovies!!,
-                onClick = { id -> movieProfileViewModel.onIntent(MovieIntent.ToMovieScreen(id)) },
-                modifier = Modifier.padding(top = 10.dp)
-            )*/
 
-            HorizontalList(movie.similarMovies!!.map{ it.toMovieUi()}, "Похожие фильмы", onSelectMovie = {
-                movieProfileViewModel.onIntent(MovieIntent.ToMovieScreen(it))
-            })
-            /*LazyRow(
-                modifier = Modifier.padding(top = 10.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp)
-            ) {
+            HorizontalList(
+                movie.similarMovies!!.map { it.toMoviePreviewUi() },
+                "Похожие фильмы",
+                onSelectMovie = {
+                    movieProfileViewModel.onIntent(MovieIntent.ToMovieScreen(it))
+                })
 
-                itemsIndexed(movie.similarMovies!!) { index, item ->
-
-                    MovieCardHorizontal(
-                        id = item.id,
-                        name = item.name,
-                        enName = item.enName,
-                        previewUrl = item.previewUrl!!,
-                        score = item.scoreKp,
-                        index = index,
-                        onSelectMovie = { id -> movieProfileViewModel.onIntent(MovieIntent.ToMovieScreen(id))}
-                    )
-
-                }
-            }*/
         }
     }
 
@@ -570,7 +500,7 @@ fun RowDescription(modifier: Modifier = Modifier, movie: MovieUi) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
 
         Text(
-            text = "Описание", fontWeight = FontWeight.SemiBold,
+            text = stringResource(R.string.description), fontWeight = FontWeight.SemiBold,
             fontFamily = poppinsFort,
             fontSize = 18.sp
         )
@@ -605,8 +535,8 @@ fun RowDescription(modifier: Modifier = Modifier, movie: MovieUi) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrailersBottomSheet(
-    modifier: Modifier = Modifier,
     listOfTrailers: List<TrailerUi>,
+    modifier: Modifier = Modifier,
     movieProfileViewModel: MovieProfileViewModel = hiltViewModel()
 ) {
 
@@ -675,9 +605,9 @@ fun TrailerItem(modifier: Modifier = Modifier, trailer: TrailerUi) {
 
 @Composable
 fun RowButtons(
-    modifier: Modifier = Modifier,
     movie: MovieUi,
     state: State<MovieState>,
+    modifier: Modifier = Modifier,
     movieProfileViewModel: MovieProfileViewModel = hiltViewModel()
 ) {
 
@@ -712,7 +642,6 @@ fun RowButtons(
         horizontalArrangement = Arrangement.spacedBy(20.dp),
         modifier = Modifier.padding(horizontal = 6.dp)
     ) {
-        //Spacer(modifier = Modifier.width(10.dp))
         if (!movie.trailers.isNullOrEmpty()) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -745,7 +674,7 @@ fun RowButtons(
                     )
                 }
                 Text(
-                    text = "Трейлер", fontWeight = FontWeight.Normal,
+                    text = stringResource(R.string.trailer), fontWeight = FontWeight.Normal,
                     fontFamily = poppinsFort,
                     fontSize = 12.sp, textAlign = TextAlign.Center
                 )
@@ -810,15 +739,13 @@ fun RowButtons(
                         .size(25.dp)
                         .align(Alignment.Center)
                         .graphicsLayer {
-                            //if (movieDbState.value?.isViewed == true){
                             rotationZ = rotation
-                            //}
                         },
                     tint = color
                 )
             }
             Text(
-                text = "Просмотрен", fontWeight = FontWeight.Normal,
+                text = stringResource(R.string.viewed), fontWeight = FontWeight.Normal,
                 fontFamily = poppinsFort,
                 fontSize = 12.sp, textAlign = TextAlign.Center
             )
@@ -830,7 +757,7 @@ fun RowButtons(
                     .size(50.dp)
                     .clip(RoundedCornerShape(15.dp))
                     .background(MaterialTheme.colorScheme.secondaryContainer)
-                    .clickable { //bookmark = !bookmark
+                    .clickable {
 
                         if (state.value.isExistMovieDb?.isBookmark == true) {
 
@@ -873,7 +800,7 @@ fun RowButtons(
                 )
             }
             Text(
-                text = "В закладки", fontWeight = FontWeight.Normal,
+                text = stringResource(R.string.in_bookmark), fontWeight = FontWeight.Normal,
                 fontFamily = poppinsFort,
                 fontSize = 12.sp, textAlign = TextAlign.Center
             )
@@ -900,7 +827,7 @@ fun RowButtons(
                 )
             }
             Text(
-                text = "В коллекции", fontWeight = FontWeight.Normal,
+                text = stringResource(R.string.in_collection), fontWeight = FontWeight.Normal,
                 fontFamily = poppinsFort,
                 fontSize = 12.sp, textAlign = TextAlign.Center
             )
@@ -925,8 +852,8 @@ fun RowButtons(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollectionBottomSheet(
-    modifier: Modifier = Modifier,
     movie: MovieUi,
+    modifier: Modifier = Modifier,
     movieProfileViewModel: MovieProfileViewModel = hiltViewModel()
 ) {
     val sheetState = rememberModalBottomSheetState(
@@ -952,7 +879,8 @@ fun CollectionBottomSheet(
                     movieProfileViewModel.onIntent(
                         MovieIntent.OnSelectFolder(
                             idFolder,
-                            movie                        )
+                            movie
+                        )
                     )
                 }, onError = {
                     movieProfileViewModel.onIntent(MovieIntent.OnError)
@@ -968,8 +896,8 @@ fun CollectionBottomSheet(
 
 @Composable
 fun RowActors(
+    persons: List<PersonUi>,
     modifier: Modifier = Modifier,
-    persons: List<PersonUi>
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(15.dp),
@@ -986,8 +914,8 @@ fun RowActors(
 
 @Composable
 fun CardActor(
-    modifier: Modifier = Modifier,
     person: PersonUi,
+    modifier: Modifier = Modifier,
     movieProfileViewModel: MovieProfileViewModel = hiltViewModel()
 ) {
 
@@ -1027,9 +955,10 @@ fun CardActor(
 
 @Composable
 fun RowCreators(
+    persons: List<PersonUi>,
     modifier: Modifier = Modifier,
-    persons: List<PersonUi>
-) {
+
+    ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(15.dp),
         contentPadding = PaddingValues(horizontal = 16.dp)
@@ -1045,8 +974,8 @@ fun RowCreators(
 
 @Composable
 fun CardCreator(
-    modifier: Modifier = Modifier,
     person: PersonUi,
+    modifier: Modifier = Modifier,
     movieProfileViewModel: MovieProfileViewModel = hiltViewModel()
 ) {
 
@@ -1084,7 +1013,8 @@ fun CardCreator(
         Text(
             modifier = Modifier.fillMaxWidth(),
             lineHeight = 13.sp,
-            text = person.profession?.firstOrNull()?.dropLast(1)?.replaceFirstChar { it.uppercase() }?:"",
+            text = person.profession?.firstOrNull()?.dropLast(1)
+                ?.replaceFirstChar { it.uppercase() } ?: "",
             fontWeight = FontWeight.Light,
             fontFamily = poppinsFort,
             fontSize = 11.sp,
@@ -1095,7 +1025,10 @@ fun CardCreator(
 }
 
 @Composable
-fun RowScore(modifier: Modifier = Modifier, movie: MovieUi) {
+fun RowScore(
+    movie: MovieUi,
+    modifier: Modifier = Modifier
+) {
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         if (movie.scoreImdb != null && movie.scoreImdb != 0.0) {
             Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
@@ -1135,7 +1068,7 @@ fun RowScore(modifier: Modifier = Modifier, movie: MovieUi) {
 }
 
 @Composable
-fun RowGenres(modifier: Modifier = Modifier, movie: MovieUi) {
+fun RowGenres(movie: MovieUi, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier, horizontalArrangement = Arrangement.spacedBy(5.dp)
     ) {
@@ -1163,12 +1096,12 @@ fun RowGenres(modifier: Modifier = Modifier, movie: MovieUi) {
 }
 
 @Composable
-fun RowPrimaryData(modifier: Modifier = Modifier, movie: MovieUi) {
+fun RowPrimaryData(movie: MovieUi, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
 
-        if (!movie.isSeries!!) {
+        if (!movie.isSeries) {
             Text(
                 text = movie.year.toString(),
                 fontWeight = FontWeight.Medium,
@@ -1177,7 +1110,6 @@ fun RowPrimaryData(modifier: Modifier = Modifier, movie: MovieUi) {
             )
 
             if (movie.movieLength != null) {
-                //Text(text = "•", color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
 
                 Text(text = "•", color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
 
@@ -1224,9 +1156,6 @@ fun RowPrimaryData(modifier: Modifier = Modifier, movie: MovieUi) {
                 )
             }
 
-
-
-
             Text(text = "•", color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
 
             Text(
@@ -1237,8 +1166,6 @@ fun RowPrimaryData(modifier: Modifier = Modifier, movie: MovieUi) {
             )
 
         }
-
-
 
         if (movie.ageRating != null) {
 

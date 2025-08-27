@@ -26,41 +26,41 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.sidspace.stary.navigation.model.Error
-
-import com.sidspace.stary.folders.presentation.Folders
-
-import com.sidspace.stary.review.presentation.Review
-import com.sidspace.stary.viewed.presentation.Viewed
 
 
-import com.sidspace.stary.account.presentation.accountNavGraph
-import com.sidspace.stary.bookmark.presentation.bookmarkNavGraph
-import com.sidspace.stary.collectionmovies.presentation.collectionMoviesNavGraph
-import com.sidspace.stary.collections.presentation.collectionsNavGraph
-import com.sidspace.stary.folder.presentation.folderNavGraph
-import com.sidspace.stary.folders.presentation.foldersNavGraph
+import com.sidspace.stary.folders.presentation.navigation.Folders
 
-import com.sidspace.stary.person.presentation.personNavGraph
+import com.sidspace.stary.review.presentation.navigation.Review
+import com.sidspace.stary.viewed.presentation.navigation.Viewed
 
 
-import com.sidspace.stary.movie.presentation.movieNavGraph
+import com.sidspace.stary.account.presentation.navigation.accountNavGraph
+import com.sidspace.stary.bookmark.presentation.navigation.bookmarkNavGraph
+import com.sidspace.stary.collectionmovies.presentation.navigation.collectionMoviesNavGraph
+import com.sidspace.stary.collections.presentation.navigation.collectionsNavGraph
+import com.sidspace.stary.folder.presentation.navigation.folderNavGraph
+import com.sidspace.stary.folders.presentation.navigation.foldersNavGraph
+
+import com.sidspace.stary.person.presentation.navigation.personNavGraph
 
 
-import com.example.presentation.searchNavGraph
+import com.sidspace.stary.movie.presentation.navigation.movieNavGraph
 
-import com.sidspace.stary.bookmark.presentation.Bookmark
-import com.sidspace.stary.collectionmovies.presentation.CollectionMovies
-import com.sidspace.stary.collections.presentation.Collections
+
+import com.sidspace.stary.search.presentation.navigation.searchNavGraph
+
+import com.sidspace.stary.bookmark.presentation.navigation.Bookmark
+import com.sidspace.stary.collectionmovies.presentation.navigation.CollectionMovies
+import com.sidspace.stary.collections.presentation.navigation.Collections
 import com.sidspace.stary.error.presentation.navigation.errorNavGraph
-import com.sidspace.stary.folder.presentation.Folder
-import com.sidspace.stary.home.presentation.Home
-import com.sidspace.stary.home.presentation.homeNavGraph
-import com.sidspace.stary.movie.presentation.Profile
-import com.sidspace.stary.person.presentation.Person
-import com.sidspace.stary.random.presentation.randomNavGraph
-import com.sidspace.stary.review.presentation.reviewNavGraph
-import com.sidspace.stary.viewed.presentation.viewedNavGraph
+import com.sidspace.stary.folder.presentation.navigation.Folder
+import com.sidspace.stary.home.presentation.navigation.Home
+import com.sidspace.stary.home.presentation.navigation.homeNavGraph
+import com.sidspace.stary.movie.presentation.navigation.Profile
+import com.sidspace.stary.person.presentation.navigation.Person
+import com.sidspace.stary.random.presentation.navigation.randomNavGraph
+import com.sidspace.stary.review.presentation.navigation.reviewNavGraph
+import com.sidspace.stary.viewed.presentation.navigation.viewedNavGraph
 
 
 fun getNavigationMode(context: Context): Int {
@@ -109,7 +109,6 @@ fun NavigationBottomBar(modifier: Modifier = Modifier, navController: NavControl
 
             listOfScreens.forEachIndexed { index, item ->
                 NavigationBarItem(
-                    //label = { Text(text = item.name) },
                     onClick = {
 
                         if (indexSelected == index) {
@@ -148,7 +147,6 @@ fun AppNavHost(
     navController: NavHostController, innerPaddingValues: PaddingValues
 ) {
 
-
     NavHost(
         navController = navController, startDestination = Home,
         enterTransition = { scaleIn(initialScale = 0.95f, animationSpec = tween(300)) },
@@ -167,7 +165,7 @@ fun AppNavHost(
         searchNavGraph(innerPaddingValues, onSelectMovie = { id ->
             navController.navigate(Profile(id))
         }, toErrorScreen = {
-            navController.navigate(Error)
+            navController.navigate(com.sidspace.stary.error.presentation.navigation.Error)
         })
 
         homeNavGraph(paddingValues = innerPaddingValues, onMovieSelect = { id ->
@@ -175,7 +173,7 @@ fun AppNavHost(
                 Profile(id)
             )
         }, toErrorScreen = {
-            navController.navigate(Error)
+            navController.navigate(com.sidspace.stary.error.presentation.navigation.Error)
         }, toCollectionScreen = {
             navController.navigate(Collections)
         }, onSelectListMovies = { label, slug ->
@@ -187,7 +185,7 @@ fun AppNavHost(
                 navController.navigate(Profile(id))
             },
             toErrorScreen = {
-                navController.navigate(Error)
+                navController.navigate(com.sidspace.stary.error.presentation.navigation.Error)
             },
             onSelectPerson = { id ->
                 navController.navigate(Person(id))
@@ -198,7 +196,7 @@ fun AppNavHost(
         accountNavGraph(paddingValues = innerPaddingValues, onSelectMovie = { id ->
             navController.navigate(Profile(id))
         }, toErrorScreen = {
-            navController.navigate(Error)
+            navController.navigate(com.sidspace.stary.error.presentation.navigation.Error)
         }, onClickFolders = {
             navController.navigate(Folders)
         }, toViewedScreen = {
@@ -208,10 +206,10 @@ fun AppNavHost(
         })
 
 
-        collectionMoviesNavGraph(navController, innerPaddingValues, onSelectMovie = { id ->
+        collectionMoviesNavGraph(innerPaddingValues, onSelectMovie = { id ->
             navController.navigate(Profile(id))
         }, toErrorScreen = {
-            navController.navigate(Error)
+            navController.navigate(com.sidspace.stary.error.presentation.navigation.Error)
         }, onBack = {
             navController.popBackStack()
         })
@@ -222,7 +220,7 @@ fun AppNavHost(
                 navController.navigate(Profile(id))
             },
             toErrorScreen = {
-                navController.navigate(Error)
+                navController.navigate(com.sidspace.stary.error.presentation.navigation.Error)
             },
             onBack = {
                 navController.popBackStack()
@@ -231,54 +229,52 @@ fun AppNavHost(
         viewedNavGraph(innerPaddingValues, onSelectMovie = { id ->
             navController.navigate(Profile(id))
         }, toErrorScreen = {
-            navController.navigate(Error)
+            navController.navigate(com.sidspace.stary.error.presentation.navigation.Error)
         }, onBack = {
             navController.popBackStack()
         })
 
         collectionsNavGraph(
-            navController,
             innerPaddingValues,
             onSelectCollection = { label, slug ->
                 navController.navigate(CollectionMovies(label, slug))
             },
             toErrorScreen = {
-                navController.navigate(Error)
+                navController.navigate(com.sidspace.stary.error.presentation.navigation.Error)
             },
             onBack = {
                 navController.popBackStack()
             })
 
-        folderNavGraph(navController, innerPaddingValues, onSelectMovie = { id ->
+        folderNavGraph(innerPaddingValues, onSelectMovie = { id ->
             navController.navigate(Profile(id))
         }, toErrorScreen = {
-            navController.navigate(Error)
+            navController.navigate(com.sidspace.stary.error.presentation.navigation.Error)
         }, onBack = {
             navController.popBackStack()
         })
 
-        foldersNavGraph(navController, innerPaddingValues, onSelectFolder = { id ->
+        foldersNavGraph(innerPaddingValues, onSelectFolder = { id ->
             navController.navigate(Folder(id))
         }, toErrorScreen = {
-            navController.navigate(Error)
+            navController.navigate(com.sidspace.stary.error.presentation.navigation.Error)
         }, onBack = {
             navController.popBackStack()
         })
 
-        personNavGraph(navController, innerPaddingValues, onSelectMovie = { id ->
+        personNavGraph(innerPaddingValues, onSelectMovie = { id ->
             navController.navigate(Profile(id))
         }, toErrorScreen = {
-            navController.navigate(Error)
+            navController.navigate(com.sidspace.stary.error.presentation.navigation.Error)
         })
 
-        reviewNavGraph(navController, innerPaddingValues, toErrorScreen = {
-            navController.navigate(Error)
+        reviewNavGraph(innerPaddingValues, toErrorScreen = {
+            navController.navigate(com.sidspace.stary.error.presentation.navigation.Error)
         }, onBack = {
             navController.popBackStack()
         })
 
         errorNavGraph()
-
 
     }
 }

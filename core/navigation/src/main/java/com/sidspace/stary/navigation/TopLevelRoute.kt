@@ -1,5 +1,6 @@
 package com.sidspace.stary.navigation
 
+
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Movie
@@ -10,14 +11,10 @@ import androidx.compose.material.icons.outlined.Movie
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.sidspace.stary.account.presentation.Account
-import com.sidspace.stary.home.presentation.Home
-
-
-import com.sidspace.stary.navigation.model.Error
-
-import com.sidspace.stary.random.presentation.Random
-import com.sidspace.stary.search.presentation.Search
+import com.sidspace.stary.account.presentation.navigation.Account
+import com.sidspace.stary.home.presentation.navigation.Home
+import com.sidspace.stary.random.presentation.navigation.Random
+import com.sidspace.stary.search.presentation.navigation.Search
 
 data class TopLevelRoute<T : Any>(
     val name: String,

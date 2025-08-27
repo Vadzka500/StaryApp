@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="remove_collection">Удалить коллекцию</string>
+    <string name="remove_collection_approve">Вы уверены, что хотите удалить коллекцию?</string>
+    <string name="remove">Удалить</string>
+    <string name="cancel">Отмена</string>
+</resources>

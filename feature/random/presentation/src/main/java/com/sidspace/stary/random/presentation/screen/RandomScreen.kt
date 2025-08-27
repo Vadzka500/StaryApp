@@ -121,10 +121,8 @@ val listOfPoster = listOf(
     "https://image.openmoviedb.com/kinopoisk-images/1629390/72ba01f5-4cb3-49b6-9dd5-1edffe4411d5/x1000",
 )
 
-//val listOfYears = (1874..Calendar.getInstance().get(Calendar.YEAR)).toList()
-
 enum class RandomStatus {
-    SUCCESS, ERROR, LOADING, EMPTY, NONE
+    SUCCESS, ERROR, LOADING, NONE
 }
 
 
@@ -186,16 +184,16 @@ fun SliderScreen(
 
 @Composable
 fun InitView(
-    random: () -> Unit,
-    onSelectMovie: (Long) -> Unit,
-    setSearch: (Boolean) -> Unit,
-    setShowFilters: (Boolean) -> Unit,
-    updateCurrentPage: (Int, Float) -> Unit,
     status: State<ResultData<MoviePreviewUi>>,
     initialPage: Int,
     isSearch: Boolean,
     isBadgeShown: Boolean,
     modifier: Modifier = Modifier,
+    random: () -> Unit,
+    onSelectMovie: (Long) -> Unit,
+    setSearch: (Boolean) -> Unit,
+    setShowFilters: (Boolean) -> Unit,
+    updateCurrentPage: (Int, Float) -> Unit,
 ) {
 
     var posterUrl by remember {
@@ -208,7 +206,7 @@ fun InitView(
         mutableLongStateOf(0L)
     }
 
-    var statusFlow = remember {
+    val statusFlow = remember {
         mutableStateOf(RandomStatus.NONE)
     }
 
@@ -227,10 +225,6 @@ fun InitView(
 
         }
 
-
-        /* else -> {
-             statusFlow.value = RandomStatus.LOADING
-         }*/
         ResultData.Error -> {
             nameOfMovie = ""
             statusFlow.value = RandomStatus.ERROR
@@ -240,8 +234,6 @@ fun InitView(
             statusFlow.value = RandomStatus.LOADING
         }
     }
-
-    println("STATUSS = " + statusFlow.value)
 
 
     val pagerState = rememberPagerState(
@@ -352,7 +344,7 @@ fun InitView(
                     }) {
                 Text(
                     modifier = Modifier.padding(5.dp),
-                    text = "ПОИСК",
+                    text = stringResource(R.string.search),
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = poppinsFort,
                     fontSize = 18.sp
@@ -405,19 +397,19 @@ fun InitView(
 
 @Composable
 private fun RandomCardPager(
-    modifier: Modifier = Modifier,
     pagerState: PagerState,
     painter: AsyncImagePainter,
     posterUrl: String,
-    onSelectMovie: (Long) -> Unit,
     status: State<ResultData<MoviePreviewUi>>,
-    movieId: Long
+    movieId: Long,
+    modifier: Modifier = Modifier,
+    onSelectMovie: (Long) -> Unit,
 ) {
     val configuration = LocalConfiguration.current
     val height = (configuration.screenWidthDp - 140) * 1.5
 
     HorizontalPager(
-        modifier = Modifier
+        modifier = modifier
             .padding(top = 20.dp, bottom = 20.dp)
             .height(height.dp),
         state = pagerState,
@@ -460,8 +452,6 @@ fun anim(
     widthItem: Int,
     easy: Easing,
 ) {
-    println("status = ${randomStatus.value}")
-    println("anim")
 
     coroutineScope.launch {
         setSearch(true)
@@ -473,10 +463,6 @@ fun anim(
                 easing = easy
             )
         ).let {
-            //coroutineScope.launch {
-            //pagerState.animateScrollToPage(targetPage.value)
-            //targetPage.value += 100
-            //}
             setSearch(false)
         }
 
@@ -485,11 +471,8 @@ fun anim(
 
     coroutineScope.launch {
         delay(1500)
-        println("randomStatus = " + randomStatus.value)
-        println("randomStatus1 = " + pagerState.getOffsetDistanceInPages(targetPage.value + 100))
 
         val width = pagerState.getOffsetDistanceInPages(targetPage.value + 100) * widthItem
-        println("randomStatus2 = " + width)
         if (randomStatus.value is ResultData.Loading) {
 
             anim(

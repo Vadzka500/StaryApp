@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 import com.sidspace.stary.domain.model.Folder
 
 
-import com.sidspace.stary.folders.presentation.FiltersUtil
+import com.sidspace.stary.folders.presentation.util.FiltersUtil
 import com.sidspace.stary.ui.model.ResultData
 
 

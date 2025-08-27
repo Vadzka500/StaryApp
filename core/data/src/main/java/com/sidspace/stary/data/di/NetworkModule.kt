@@ -1,15 +1,13 @@
 package com.sidspace.stary.data.di
 
+
 import com.sidspace.stary.data.BuildConfig
-import com.sidspace.stary.data.api.MovieApi
-
-
 import com.sidspace.stary.data.MoviesApiKeyInterceptor
+import com.sidspace.stary.data.api.MovieApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

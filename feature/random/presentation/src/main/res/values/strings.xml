@@ -2,4 +2,10 @@
 <resources>
     <string name="text_random_none">Найди случайный фильм, фильтры на любой вкус</string>
     <string name="empty_result_random">Похоже мы ничего не нашли по вашим запросам, проверьте фильтры</string>
+    <string name="type">Тип</string>
+    <string name="genre">Жанр</string>
+    <string name="score_kp">Оценка кп</string>
+    <string name="date">Дата релиза</string>
+    <string name="popular_categories">Популярные категории</string>
+    <string name="search">ПОИСК</string>
 </resources>
