@@ -13,6 +13,6 @@ abstract class SearchRepositoryModule {
 
     @Binds
     abstract fun provideSearchRepository(
-        impl : SearchRepositoryImpl
+        impl: SearchRepositoryImpl
     ): SearchRepository
 }

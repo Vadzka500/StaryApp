@@ -12,6 +12,5 @@ data class MoviePreviewUi(
     val countOfSeasons: Int,
     val releaseStart: Int?,
     val releaseEnd: Int?,
-    val listOfGenres: List<String>?,
-
+    val listOfGenres: List<String>?
 )

@@ -27,7 +27,9 @@ fun NavGraphBuilder.accountNavGraph(
             toErrorScreen = toErrorScreen,
             toViewedScreen = toViewedScreen,
             toBookmarkScreen = toBookmarkScreen,
-            modifier = Modifier.fillMaxSize().padding(paddingValues)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
         )
     }
 

@@ -46,7 +46,7 @@ dependencies {
     implementation(project(":feature:home:data"))
     implementation(project(":core:domain"))
     implementation(project(":core:ui"))
-        //implementation(project(":core:navigation"))
+    //implementation(project(":core:navigation"))
 
     implementation(libs.icons)
 

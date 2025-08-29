@@ -14,25 +14,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 
-
 @Composable
-fun InitRatingView(score: Double?, modifier: Modifier = Modifier) {
-    DrawView(score ?: /*item.rating?.imdb ?:*/ 0.0)
+fun InitRatingView(score: Double?) {
+    DrawView(score ?: 0.0)
 }
+
+const val BAD_SCORE = 5
+const val MEDIUM_SCORE = 7
 
 @Composable
 fun DrawView(it: Double, modifier: Modifier = Modifier) {
     if (it == 0.0) return
+
     Box(
-        modifier = Modifier
+        modifier = modifier
             .padding(8.dp)
             .clip(RoundedCornerShape(4.dp))
             .then(
-                if (it < 5) {
+                if (it < BAD_SCORE) {
                     Modifier.background(color = Color.Red)
-                } else if (it < 7) {
+                } else if (it < MEDIUM_SCORE) {
                     Modifier.background(color = Color.Gray)
-                } else Modifier.background(color = _root_ide_package_.com.sidspace.stary.ui.uikit.Purple40)
+                } else {
+                    Modifier.background(color = _root_ide_package_.com.sidspace.stary.ui.uikit.Purple40)
+                }
             )
     ) {
         Text(

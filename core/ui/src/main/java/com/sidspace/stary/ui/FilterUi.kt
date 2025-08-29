@@ -41,6 +41,14 @@ import com.sidspace.stary.ui.enum.ViewMode
 import com.sidspace.stary.ui.uikit.Purple40
 import com.sidspace.stary.ui.uikit.poppinsFort
 
+data class FilterStateCallback(
+    val toggleSortDirection: () -> Unit,
+    val setSortType: (SortType) -> Unit,
+    val sortList: () -> Unit,
+    val onHideFilter: () -> Unit,
+    val setGridView: () -> Unit,
+    val setListView: () -> Unit
+)
 
 @Composable
 fun FilterSection(
@@ -50,12 +58,7 @@ fun FilterSection(
     modifier: Modifier = Modifier,
     sortType: SortType = SortType.NONE,
     sortDirection: SortDirection = SortDirection.DESCENDING,
-    toggleSortDirection: () -> Unit,
-    setSortType: (SortType) -> Unit,
-    sortList: () -> Unit,
-    onHideFilter: () -> Unit,
-    setGridView: () -> Unit,
-    setListView: () -> Unit,
+    filterStateCallback: FilterStateCallback
 ) {
 
     val alpha by animateFloatAsState(
@@ -71,7 +74,7 @@ fun FilterSection(
             .fillMaxSize()
             .background(Color.Black.copy(alpha = alpha))
             .clickable(indication = null, interactionSource = null) {
-                onHideFilter()
+                filterStateCallback.onHideFilter()
             }
     ) {
 
@@ -119,12 +122,13 @@ fun FilterSection(
                         modifier = Modifier,
                         shape = RoundedCornerShape(15.dp),
                         onClick = {
-                            setGridView()
+                            filterStateCallback.setGridView()
 
                         },
                         label = {
                             Text(
-                                stringResource(R.string.view_mode_grid_str), fontWeight = FontWeight.Medium,
+                                stringResource(R.string.view_mode_grid_str),
+                                fontWeight = FontWeight.Medium,
                                 fontFamily = poppinsFort,
                                 fontSize = 14.sp
                             )
@@ -144,7 +148,7 @@ fun FilterSection(
                         modifier = Modifier,
                         shape = RoundedCornerShape(15.dp),
                         onClick = {
-                            setListView()
+                            filterStateCallback.setListView()
 
                         },
                         label = {
@@ -165,9 +169,9 @@ fun FilterSection(
                     FilterSort(
                         sortType = sortType,
                         sortDirection = sortDirection,
-                        setSortType = setSortType,
-                        toggleSortDirection = toggleSortDirection,
-                        sortList = sortList
+                        setSortType = filterStateCallback.setSortType,
+                        toggleSortDirection = filterStateCallback.toggleSortDirection,
+                        sortList = filterStateCallback.sortList
                     )
                 }
             }
@@ -187,7 +191,7 @@ fun FilterSort(
 
     Text(
         stringResource(R.string.sort_str),
-        modifier = Modifier.padding(top = 12.dp),
+        modifier = modifier.padding(top = 12.dp),
         fontWeight = FontWeight.Medium,
         fontFamily = poppinsFort,
         fontSize = 16.sp
@@ -212,12 +216,17 @@ fun FilterSort(
                 Text(stringResource(R.string.sort_name_sortbyname_str))
             },
             leadingIcon = {
-                if (sortType == SortType.NAME)
+                if (sortType == SortType.NAME) {
                     Icon(
-                        imageVector = if (sortDirection == SortDirection.ASCENDING) Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
+                        imageVector = if (sortDirection == SortDirection.ASCENDING) {
+                            Icons.Default.ArrowDownward
+                        } else {
+                            Icons.Default.ArrowUpward
+                        },
                         contentDescription = null,
                         tint = Purple40
                     )
+                }
             },
             selected = sortType == SortType.NAME,
 
@@ -237,12 +246,17 @@ fun FilterSort(
                 Text(stringResource(R.string.sort_name_sortbyscore_str))
             },
             leadingIcon = {
-                if (sortType == SortType.RATING)
+                if (sortType == SortType.RATING){
                     Icon(
-                        imageVector = if (sortDirection == SortDirection.ASCENDING) Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
+                        imageVector = if (sortDirection == SortDirection.ASCENDING) {
+                            Icons.Default.ArrowDownward
+                        } else {
+                            Icons.Default.ArrowUpward
+                        },
                         contentDescription = null,
                         tint = Purple40
                     )
+                }
             },
             selected = sortType == SortType.RATING,
 
@@ -260,12 +274,17 @@ fun FilterSort(
                 Text(stringResource(R.string.sort_name_sortbydate_str))
             },
             leadingIcon = {
-                if (sortType == SortType.DATE)
+                if (sortType == SortType.DATE) {
                     Icon(
-                        imageVector = if (sortDirection == SortDirection.ASCENDING) Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
+                        imageVector = if (sortDirection == SortDirection.ASCENDING) {
+                            Icons.Default.ArrowDownward
+                        } else {
+                            Icons.Default.ArrowUpward
+                        },
                         contentDescription = "",
                         tint = Purple40
                     )
+                }
             },
             selected = sortType == SortType.DATE,
 

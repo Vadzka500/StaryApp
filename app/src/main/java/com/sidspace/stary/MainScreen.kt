@@ -1,4 +1,4 @@
-package com.sidspace.stary.features.screen
+package com.sidspace.stary
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
@@ -9,12 +9,12 @@ import com.sidspace.stary.navigation.AppNavHost
 import com.sidspace.stary.navigation.NavigationBottomBar
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
+fun MainScreen() {
 
     val navController = rememberNavController()
 
     Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = {
-            NavigationBottomBar(navController = navController)
+        NavigationBottomBar(navController = navController)
     }) { innerPadding ->
         AppNavHost(navController = navController, innerPaddingValues = innerPadding)
     }

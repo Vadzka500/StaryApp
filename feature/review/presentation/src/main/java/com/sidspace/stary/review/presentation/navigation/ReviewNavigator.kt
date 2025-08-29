@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
@@ -18,7 +17,14 @@ fun NavGraphBuilder.reviewNavGraph(
 
     composable<Review> {
         val review: Review = it.toRoute()
-        ReviewScreen(id = review.idMovie, toErrorScreen = toErrorScreen, onBack = onBack,modifier = Modifier.fillMaxSize().padding(paddingValues))
+        ReviewScreen(
+            id = review.idMovie,
+            toErrorScreen = toErrorScreen,
+            onBack = onBack,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        )
     }
 
 }

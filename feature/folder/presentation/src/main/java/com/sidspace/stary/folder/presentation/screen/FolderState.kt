@@ -18,4 +18,9 @@ data class FolderState(
     val isShowFilter: Boolean = false,
     val sortType: SortType = SortType.NONE,
     val sortDirection: SortDirection = SortDirection.DESCENDING
-)
+){
+    companion object{
+        const val FOLDER_PICTURE_ROTATE = 40f
+        const val FOLDER_PICTURE_ALPHA = 0.3f
+    }
+}

@@ -17,8 +17,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
 
-        buildConfigField("String", "MOVIES_API_KEY","\"FF3PF1A-YQ6MXEK-NFQM9QD-76A6GH0\"")
-        buildConfigField("String", "MOVIES_API_BASE_URL","\"https://api.kinopoisk.dev/v1.4/\"")
+        buildConfigField("String", "MOVIES_API_KEY", "\"FF3PF1A-YQ6MXEK-NFQM9QD-76A6GH0\"")
+        buildConfigField("String", "MOVIES_API_BASE_URL", "\"https://api.kinopoisk.dev/v1.4/\"")
     }
 
 
@@ -44,13 +44,13 @@ android {
         jvmTarget = "11"
     }
 
-    buildFeatures{
+    buildFeatures {
         buildConfig = true
     }
 
 }
 
-room{
+room {
     schemaDirectory("${rootProject.projectDir}/schemas")
 }
 
@@ -65,12 +65,12 @@ dependencies {
 
     implementation(libs.androidx.room.common.jvm)
     implementation(libs.androidx.room.runtime.android)
-        kapt(libs.androidx.room.compiler.android)
+    kapt(libs.androidx.room.compiler.android)
 
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.retrofit)
 
-    implementation (libs.converter.gson)
+    implementation(libs.converter.gson)
 
     implementation(libs.okhttp)
 

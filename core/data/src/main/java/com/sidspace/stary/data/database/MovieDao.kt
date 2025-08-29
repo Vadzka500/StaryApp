@@ -1,6 +1,5 @@
 package com.sidspace.stary.data.database
 
-
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -11,11 +10,11 @@ import com.sidspace.stary.data.model.database.CollectionMovieDBO
 import com.sidspace.stary.data.model.database.FolderDBO
 import com.sidspace.stary.data.model.database.FolderMovieRef
 import com.sidspace.stary.data.model.database.FolderWithMoviesDBO
-
 import com.sidspace.stary.data.model.database.MovieDBO
 import kotlinx.coroutines.flow.Flow
 
 @Dao
+@Suppress("TooManyFunctions")
 interface MovieDao {
 
     @Query("Select * from Movie")
@@ -33,9 +32,11 @@ interface MovieDao {
     @Query("Select Count(*) from Movie where movieId = :id")
     suspend fun getCountMovieById(id: Long): Long
 
-    @Query("Select Movie.* from Movie " +
-            "inner join CollectionsMovie on CollectionsMovie.movieId = Movie.movieId " +
-            "where collectionSlug = :slug and isViewed = true")
+    @Query(
+        "Select Movie.* from Movie " +
+                "inner join CollectionsMovie on CollectionsMovie.movieId = Movie.movieId " +
+                "where collectionSlug = :slug and isViewed = true"
+    )
     fun getMovieByCollectionCount(slug: String): Flow<List<MovieDBO>>
 
     @Insert(onConflict = OnConflictStrategy.Companion.IGNORE)
@@ -73,7 +74,7 @@ interface MovieDao {
     suspend fun removeMovieFromFolder(ref: FolderMovieRef)
 
     @Query("Update Movie Set isViewed = :isViewed, dateViewed = :date where movieId = :id")
-    suspend fun updateIsViewed(id: Long, isViewed: Boolean, date : Long)
+    suspend fun updateIsViewed(id: Long, isViewed: Boolean, date: Long)
 
     @Query("Update Movie Set isBookmark = :isBookmark, dateBookmark = :date where movieId = :id")
     suspend fun updateIsBookmark(id: Long, isBookmark: Boolean, date: Long)

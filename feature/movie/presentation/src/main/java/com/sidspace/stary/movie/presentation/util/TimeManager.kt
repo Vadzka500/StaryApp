@@ -1,13 +1,14 @@
 package com.sidspace.stary.movie.presentation.util
 
 
-class TimeManager {
+object TimeManager {
 
-    companion object{
-        fun getTimeByMinutes(data: Int): String{
-            val hours = data / 60
-            val minutes = data % 60
-            return "$hours ч $minutes мин"
-        }
+    private const val MINUTES_IN_HOUR = 60
+
+    fun getTimeByMinutes(data: Int): String {
+        val hours = data / MINUTES_IN_HOUR
+        val minutes = data % MINUTES_IN_HOUR
+        return "$hours ч $minutes мин"
     }
+
 }

@@ -2,12 +2,10 @@ package com.sidspace.stary.collections.presentation.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-
-import com.sidspace.stary.domain.model.Result
 import com.sidspace.stary.collections.domain.usecase.GetCollectionUseCase
+import com.sidspace.stary.domain.model.Result
 import com.sidspace.stary.ui.mapper.toCollectionUi
 import com.sidspace.stary.ui.model.ResultData
-
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -12,7 +12,7 @@ kotlin {
     }
 }
 
-dependencies{
+dependencies {
 
     implementation(project(":core:domain"))
 

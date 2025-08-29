@@ -1,8 +1,8 @@
 package com.sidspace.stary.domain
 
-interface Logger{
+interface Logger {
 
-    fun d(tag:String, message:String)
+    fun d(tag: String, message: String)
 
     fun e(tag: String, message: String)
 }

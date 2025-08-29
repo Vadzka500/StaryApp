@@ -21,12 +21,7 @@ fun NavGraphBuilder.homeNavGraph(
     toCollectionScreen: () -> Unit
 ) {
 
-    composable<Home>(popEnterTransition = {
-        scaleIn(
-            initialScale = 1.10f,
-            animationSpec = tween(300)
-        )
-    }) {
+    composable<Home> {
         ListScreen(
             modifier = Modifier
                 .fillMaxSize()

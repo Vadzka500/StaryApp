@@ -1,7 +1,7 @@
 package com.sidspace.stary.ui.enum
 
 
-enum class SortDirection{
+enum class SortDirection {
     ASCENDING,
     DESCENDING
 }

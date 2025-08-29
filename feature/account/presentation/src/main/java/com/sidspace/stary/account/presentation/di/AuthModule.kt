@@ -22,7 +22,7 @@ object AuthModule {
     fun getGoogleSignInClient(
         @ApplicationContext
         context: Context
-    ): GoogleSignInClient{
+    ): GoogleSignInClient {
         val signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
             .build()
@@ -32,7 +32,7 @@ object AuthModule {
 
     @Provides
     @Singleton
-    fun getGoogleAccount(@ApplicationContext context: Context): GoogleSignInAccount?{
+    fun getGoogleAccount(@ApplicationContext context: Context): GoogleSignInAccount? {
         return GoogleSignIn.getLastSignedInAccount(context)
     }
 }

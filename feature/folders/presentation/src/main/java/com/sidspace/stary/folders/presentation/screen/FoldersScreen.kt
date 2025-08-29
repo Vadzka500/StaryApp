@@ -73,7 +73,7 @@ fun UserCollectionsScreen(
     foldersViewModel: FoldersViewModel = hiltViewModel(),
     onSelectFolder: (id: Long) -> Unit,
     onBack: () -> Unit,
-    toErrorScreen:() -> Unit,
+    toErrorScreen: () -> Unit,
 ) {
 
     val state = foldersViewModel.state.collectAsState()
@@ -177,7 +177,6 @@ fun UserCollectionsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShowCreateFolderBottomSheet(
-    modifier: Modifier = Modifier,
     foldersViewModel: FoldersViewModel = hiltViewModel(),
     state: State<FoldersState>
 ) {
@@ -280,7 +279,8 @@ fun CreateSheetData(
                     modifier = Modifier.size(96.dp),
                     onClick = {
 
-                        val name = if( item != null )context.resources.getResourceEntryName(item) else null
+                        val name =
+                            if (item != null) context.resources.getResourceEntryName(item) else null
                         foldersViewModel.onIntent(FoldersIntent.UpdateImage(index, name))
                     },
                     border = BorderStroke(
@@ -288,13 +288,13 @@ fun CreateSheetData(
                         MaterialTheme.colorScheme.outlineVariant
                     )
                 ) {
-                    if(item != null) {
+                    if (item != null) {
                         Image(
                             painter = painterResource(item),
                             contentDescription = "",
                             modifier = Modifier
                                 .fillMaxSize()
-                                .rotate(40f)
+                                .rotate(FoldersState.FOLDER_PICTURE_ROTATE)
                                 .padding(4.dp)
                         )
                     }
@@ -336,7 +336,7 @@ fun CreateSheetData(
                     Row(
 
                     ) {
-                        if(FiltersUtil.listOfImage[state.value.selectImage] != null) {
+                        if (FiltersUtil.listOfImage[state.value.selectImage] != null) {
                             Image(
                                 painter = painterResource(
                                     FiltersUtil.listOfImage[state.value.selectImage]!!
@@ -346,7 +346,7 @@ fun CreateSheetData(
                                     .fillMaxHeight()
                                     .width(150.dp)
                                     .offset(y = 30.dp, x = (-10).dp)
-                                    .rotate(40f)
+                                    .rotate(FoldersState.FOLDER_PICTURE_ROTATE)
                             )
                         }
                         Column(
@@ -379,7 +379,9 @@ fun CreateSheetData(
             }
         }
 
-        Button(modifier = Modifier.fillMaxWidth(), onClick = { foldersViewModel.onIntent(FoldersIntent.AddFolder) }) {
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { foldersViewModel.onIntent(FoldersIntent.AddFolder) }) {
             Text(stringResource(R.string.add_collection_rus))
         }
 

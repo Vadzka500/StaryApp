@@ -5,7 +5,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import com.sidspace.stary.ui.R
 
-
 val poppinsFort = FontFamily(
     Font(R.font.poppins_black, FontWeight.Black),
     Font(R.font.poppins_regular, FontWeight.Normal),

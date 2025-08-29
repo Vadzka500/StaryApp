@@ -6,19 +6,23 @@ import com.sidspace.stary.ui.model.MovieLightUi
 import com.sidspace.stary.ui.model.ResultData
 
 
-data class AccountState (
-    val resultAccountViewed : ResultData<List<MovieLightUi>> = ResultData.Loading,
-    val resultAccountBookmark : ResultData<List<MovieLightUi>> = ResultData.Loading,
+data class AccountState(
+    val resultAccountViewed: ResultData<List<MovieLightUi>> = ResultData.Loading,
+    val resultAccountBookmark: ResultData<List<MovieLightUi>> = ResultData.Loading,
     val countViewed: Int = 0,
     val countBookmark: Int = 0,
     val countFolders: Long = 0,
     val isShowEmptyHint: Boolean = false,
-    val bookmarkScrollOffSet:Int = 0,
+    val bookmarkScrollOffSet: Int = 0,
     val scrollViewed: ScrollState = ScrollState(),
     val scrollBookmark: ScrollState = ScrollState(),
     val account: GoogleSignInAccount? = null,
     val isGoogleSheetShown: Boolean = false
-)
+){
+    companion object{
+        const val MAX_MOVIES = 10
+    }
+}
 
 data class ScrollState(
     val scrollIndex: Int = 0,

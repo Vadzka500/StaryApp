@@ -13,6 +13,6 @@ abstract class PersonRepositoryModule {
 
     @Binds
     abstract fun providePersonRepository(
-        impl : PersonRepositoryImpl
+        impl: PersonRepositoryImpl
     ): PersonRepository
 }

@@ -2,17 +2,17 @@ package com.sidspace.stary.data.utils
 
 import retrofit2.Response
 
-
 suspend fun <T> safeCall(fund: suspend () -> Response<T>): ResultRemote<T> {
     return try {
         val response = fund()
 
         if (response.isSuccessful) {
             val data = response.body()
-            if (data != null)
+            if (data != null) {
                 ResultRemote.Success(data)
-            else
+            } else {
                 ResultRemote.Error("")
+            }
         } else {
             ResultRemote.Error(response.code())
         }

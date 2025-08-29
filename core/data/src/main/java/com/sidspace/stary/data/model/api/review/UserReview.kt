@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserReview(
-    val id:Long,
+    val id: Long,
     val movieId: Long,
     val title: String,
     val type: String,

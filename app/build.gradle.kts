@@ -22,8 +22,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "MOVIES_API_KEY","\"FF3PF1A-YQ6MXEK-NFQM9QD-76A6GH0\"")
-        buildConfigField("String", "MOVIES_API_BASE_URL","\"https://api.kinopoisk.dev/v1.4/\"")
+        buildConfigField("String", "MOVIES_API_KEY", "\"FF3PF1A-YQ6MXEK-NFQM9QD-76A6GH0\"")
+        buildConfigField("String", "MOVIES_API_BASE_URL", "\"https://api.kinopoisk.dev/v1.4/\"")
     }
 
     buildTypes {

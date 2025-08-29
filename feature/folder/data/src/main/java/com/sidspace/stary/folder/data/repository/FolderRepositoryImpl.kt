@@ -3,13 +3,12 @@ package com.sidspace.stary.folder.data.repository
 import com.sidspace.stary.data.api.MovieApi
 import com.sidspace.stary.data.database.MovieDao
 import com.sidspace.stary.data.mapper.toFolderFromFolderDBO
-
+import com.sidspace.stary.data.mapper.toMovie
 import com.sidspace.stary.data.utils.ResultRemote
 import com.sidspace.stary.data.utils.safeCall
 import com.sidspace.stary.domain.model.Folder
 import com.sidspace.stary.domain.model.Result
 import com.sidspace.stary.folder.domain.repository.FolderRepository
-import com.sidspace.stary.data.mapper.toMovie
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -21,8 +20,13 @@ class FolderRepositoryImpl @Inject constructor(
 ) : FolderRepository {
     override fun getFolderFromDb(id: Long): Flow<Result<Folder>> = flow {
         try {
-            emit(Result.Success(folderDatabase.getFolder(id).let { it.toFolderFromFolderDBO(it.movies) }))
+            emit(
+                Result.Success(
+                    folderDatabase.getFolder(id).let { it.toFolderFromFolderDBO(it.movies) }
+                )
+            )
         } catch (e: Exception) {
+            e.printStackTrace()
             emit(Result.Error)
         }
     }
@@ -50,6 +54,7 @@ class FolderRepositoryImpl @Inject constructor(
             folderDatabase.removeFolder(id)
             return Result.Success(Unit)
         } catch (e: Exception) {
+            e.printStackTrace()
             return Result.Error
         }
     }

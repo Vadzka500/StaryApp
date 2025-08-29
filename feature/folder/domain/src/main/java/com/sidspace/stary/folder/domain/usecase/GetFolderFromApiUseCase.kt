@@ -9,5 +9,6 @@ import javax.inject.Inject
 
 
 class GetFolderFromApiUseCase @Inject constructor(private val repository: FolderRepository) {
-    suspend operator fun invoke(folder: Folder) : Flow<Result<Folder>> = repository.getFolderFromApi(folder)
+    suspend operator fun invoke(folder: Folder): Flow<Result<Folder>> =
+        repository.getFolderFromApi(folder)
 }

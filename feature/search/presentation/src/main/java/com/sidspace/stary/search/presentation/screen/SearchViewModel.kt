@@ -2,13 +2,11 @@ package com.sidspace.stary.search.presentation.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sidspace.stary.search.domain.usecase.GetSearchedMoviesUseCase
 import com.sidspace.stary.domain.model.Result
-import com.example.domain.usecase.movie.GetSearchedMoviesUseCase
 import com.sidspace.stary.ui.enum.ViewMode
-
 import com.sidspace.stary.ui.mapper.toMovieData
 import com.sidspace.stary.ui.model.ResultData
-
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -83,7 +81,7 @@ class SearchViewModel @Inject constructor(
                 }
 
                 is Result.Success -> {
-                    _state.update { it.copy(list = ResultData.Success(data.data.map{ it.toMovieData() })) }
+                    _state.update { it.copy(list = ResultData.Success(data.data.map { it.toMovieData() })) }
                 }
             }
 
@@ -91,7 +89,7 @@ class SearchViewModel @Inject constructor(
 
     }
 
-    private fun toErrorScreen(){
+    private fun toErrorScreen() {
         viewModelScope.launch {
             _effect.emit(SearchEffect.ToErrorScreen)
         }

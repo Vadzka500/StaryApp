@@ -1,18 +1,17 @@
 package com.sidspace.stary.home.presentation.screen
 
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sidspace.stary.domain.model.Result
 import com.sidspace.stary.home.domain.usecase.GetCollectionUseCase
-import com.sidspace.stary.home.domain.usecase.InitDefaultFoldersUseCase
 import com.sidspace.stary.home.domain.usecase.GetListMoviesByCollectionUseCase
+import com.sidspace.stary.home.domain.usecase.InitDefaultFoldersUseCase
 import com.sidspace.stary.home.presentation.utils.MoviesCollections
 import com.sidspace.stary.ui.mapper.toCollectionUi
 import com.sidspace.stary.ui.mapper.toMoviePreviewUi
 import com.sidspace.stary.ui.model.MoviePreviewUi
 import com.sidspace.stary.ui.model.ResultData
-
-
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,9 +23,6 @@ import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
 import javax.inject.Inject
 
-import kotlin.collections.set
-
-
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -35,6 +31,11 @@ class MainViewModel @Inject constructor(
     val initDefaultFoldersUseCase: InitDefaultFoldersUseCase
 ) : ViewModel() {
 
+    companion object {
+        private const val MAX_COLLECTIONS_TO_LOAD = 5
+        private const val MAX_MOVIES_PER_COLLECTION = 10
+
+    }
 
     private val _state = MutableStateFlow(MainState())
     val state = _state.asStateFlow()
@@ -46,6 +47,7 @@ class MainViewModel @Inject constructor(
 
 
     init {
+
         initFolders()
         getHomeData()
         getCollections()
@@ -98,11 +100,11 @@ class MainViewModel @Inject constructor(
 
     fun getHomeData() {
 
-        MoviesCollections.Companion.listOfFavoriteCollections.shuffled().take(5).forEach {
+        MoviesCollections.listOfFavoriteCollections.shuffled().take(MAX_COLLECTIONS_TO_LOAD).forEach {
             result[it] = null
         }
 
-        getMoviesByCollectionTopBanned("planned-to-watch-films");
+        getMoviesByCollectionTopBanned("planned-to-watch-films")
         getMoviesByCollection()
     }
 
@@ -122,7 +124,12 @@ class MainViewModel @Inject constructor(
                     }
 
                     is Result.Success -> {
-                        _state.update { it.copy(listTopBanned = ResultData.Success(data.data.map { it.toMoviePreviewUi() })) }
+                        _state.update {
+                            it.copy(
+                                listTopBanned = ResultData.Success(
+                                    data.data.map { it.toMoviePreviewUi() })
+                            )
+                        }
                     }
                 }
             }
@@ -134,18 +141,15 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             try {
 
-                combine(
-                    getListMoviesByCollectionUseCase(result.keys.elementAt(0).second, limit = 10),
-                    getListMoviesByCollectionUseCase(result.keys.elementAt(1).second, limit = 10),
-                    getListMoviesByCollectionUseCase(result.keys.elementAt(2).second, limit = 10),
-                    getListMoviesByCollectionUseCase(result.keys.elementAt(3).second, limit = 10),
-                    getListMoviesByCollectionUseCase(result.keys.elementAt(4).second, limit = 10)
-                )
-                { list1, list2, list3, list4, list5 ->
+                val flows = result.keys
+                    .take(MAX_COLLECTIONS_TO_LOAD)
+                    .map { (_, collectionId) ->
+                        getListMoviesByCollectionUseCase(collectionId, limit = MAX_MOVIES_PER_COLLECTION)
+                    }
 
-                    listOf(list1, list2, list3, list4, list5)
-
-
+                combine(flows)
+                { combinedResults ->
+                    combinedResults
                 }.collect { data ->
                     data.forEachIndexed { index, item ->
                         when (val res = data[index]) {
@@ -160,8 +164,6 @@ class MainViewModel @Inject constructor(
                             }
                         }
                     }
-
-
 
                     _state.update { it.copy(listHomePage = ResultData.Success(result)) }
 
@@ -190,7 +192,12 @@ class MainViewModel @Inject constructor(
                     }
 
                     is Result.Success -> {
-                        _state.update { it.copy(listCollection = ResultData.Success(data.data.map{it.toCollectionUi()})) }
+                        _state.update {
+                            it.copy(
+                                listCollection = ResultData.Success(
+                                    data.data.map { it.toCollectionUi() })
+                            )
+                        }
                     }
                 }
             }

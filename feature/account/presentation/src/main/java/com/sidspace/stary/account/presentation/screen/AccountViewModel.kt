@@ -1,21 +1,17 @@
 package com.sidspace.stary.account.presentation.screen
 
+
 import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sidspace.stary.domain.model.Result
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
-
-import com.sidspace.stary.account.domain.usecase.GetViewedMoviesUseCase
-import com.sidspace.stary.account.domain.usecase.GetFoldersCountUseCase
 import com.sidspace.stary.account.domain.usecase.GetBookmarkMoviesUseCase
-
-
+import com.sidspace.stary.account.domain.usecase.GetFoldersCountUseCase
+import com.sidspace.stary.account.domain.usecase.GetViewedMoviesUseCase
+import com.sidspace.stary.domain.model.Result
 import com.sidspace.stary.ui.mapper.toMovieUiLight
 import com.sidspace.stary.ui.model.ResultData
-
-
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,7 +54,6 @@ class AccountViewModel @Inject constructor(
     fun getViewedAndBookmarkMovies() {
 
 
-
         viewModelScope.launch {
 
             combine(
@@ -78,9 +73,10 @@ class AccountViewModel @Inject constructor(
                         it.copy(
                             countViewed = viewed.data.size,
                             resultAccountViewed = ResultData.Success(
-                                viewed.data.take(10).map {
-                                    it.toMovieUiLight()
-                                })
+                                viewed.data.take(AccountState.MAX_MOVIES).map { item ->
+                                    item.toMovieUiLight()
+                                }
+                            )
                         )
                     }
 
@@ -93,7 +89,7 @@ class AccountViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             countBookmark = bookmark.data.size,
-                            resultAccountBookmark = ResultData.Success(bookmark.data.take(10).map{
+                            resultAccountBookmark = ResultData.Success(bookmark.data.take(AccountState.MAX_MOVIES).map {
                                 it.toMovieUiLight()
                             })
                         )

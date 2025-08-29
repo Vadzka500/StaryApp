@@ -22,14 +22,13 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sidspace.stary.search.presentation.screen.SearchIntent.IsShowFilter
@@ -38,8 +37,11 @@ import com.sidspace.stary.search.presentation.screen.SearchIntent.SetGridViewMod
 import com.sidspace.stary.search.presentation.screen.SearchIntent.SetListViewMode
 import com.sidspace.stary.search.presentation.screen.SearchIntent.UpdateSearchStr
 import com.sidspace.stary.ui.FilterSection
+import com.sidspace.stary.ui.FilterStateCallback
 import com.sidspace.stary.ui.InitList
 import com.sidspace.stary.ui.ShimmerGridList
+import com.sidspace.stary.ui.enum.ViewMode
+import com.sidspace.stary.ui.model.MovieUi
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.utils.getSystemBarHeight
 import kotlinx.coroutines.flow.collectLatest
@@ -70,93 +72,35 @@ fun SearchScreen(
         }
     }
 
-    Box() {
+    Box {
         Column(modifier = modifier) {
-            Row(
-                modifier = Modifier.height(topHeight),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
 
-
-                TextField(
-                    value = state.value.searchStr,
-                    singleLine = true,
-                    onValueChange = { searchViewModel.onIntent(UpdateSearchStr(it)) },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
-                    ),
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = null
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Search
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onSearch = {
-                            keyboardController!!.hide()
-                        }
-                    ),
-
-                    modifier = Modifier
-                        .weight(1f)
-                        .background(color = Color.Transparent)
-                        .padding(16.dp),
-                    placeholder = { Text(text = "Фильмы, сериалы") })
-
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.Notes,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(end = 16.dp)
-                        .size(40.dp)
-
-                        .clip(
-                            CircleShape
-                        )
-                        .clickable {
-                            searchViewModel.onIntent(IsShowFilter(!state.value.isVisibleFilter))
-
-                        }
-                        .padding(8.dp))
-
-            }
-
-
-            when (val data = state.value.list) {
-
-
-                is ResultData.Error -> {
-                    searchViewModel.onIntent(OnError)
+            SearchToolbar(
+                topHeight = topHeight,
+                searchStr = state.value.searchStr,
+                valueChanged = {
+                    searchViewModel.onIntent(UpdateSearchStr(it))
+                },
+                visibleFilter = {
+                    searchViewModel.onIntent(IsShowFilter(!state.value.isVisibleFilter))
+                },
+                onSearch = {
+                    keyboardController!!.hide()
                 }
+            )
 
-                ResultData.Loading -> {
-                    ShimmerGridList(count = 16)
-                }
 
-                is ResultData.Success -> {
-                    InitList(modifier = Modifier, list = data.data, onClick = { id ->
-                        searchViewModel.onIntent(
-                            SearchIntent.OnSelectMovie(id)
-                        )
-                    }, viewType = state.value.viewMode)
-                }
-
-                ResultData.None -> {
-
-                }
-            }
+            SearchContent(result = state.value.list, viewMode = state.value.viewMode, onError = {
+                searchViewModel.onIntent(OnError)
+            }, onSelectMovie = {
+                searchViewModel.onIntent(
+                    SearchIntent.OnSelectMovie(it)
+                )
+            })
 
         }
 
-        FilterSection(
-            modifier = Modifier.padding(top = getSystemBarHeight() + topHeight),
-            isVisibleFilter = state.value.isVisibleFilter,
-            viewType = state.value.viewMode,
-            isShowSort = false,
+        val filterStateCallback = FilterStateCallback(
             onHideFilter = {
                 searchViewModel.onIntent(IsShowFilter(false))
             },
@@ -165,14 +109,116 @@ fun SearchScreen(
             },
             setListView = {
                 searchViewModel.onIntent(SetListViewMode)
-            }, toggleSortDirection = {
+            },
+            setSortType = {
 
-            }, setSortType = {
+            },
+            sortList = {
 
-            }, sortList = {
+            },
+            toggleSortDirection = {
 
             }
         )
+
+        FilterSection(
+            modifier = Modifier.padding(top = getSystemBarHeight() + topHeight),
+            isVisibleFilter = state.value.isVisibleFilter,
+            viewType = state.value.viewMode,
+            isShowSort = false,
+            filterStateCallback = filterStateCallback
+        )
     }
 
+}
+
+@Composable
+fun SearchContent(result : ResultData<List<MovieUi>>,
+                   viewMode: ViewMode,
+                   onError:() -> Unit,
+                   onSelectMovie:(Long) -> Unit) {
+    when (val data = result) {
+
+        is ResultData.Error -> {
+           onError()
+        }
+
+        ResultData.Loading -> {
+            ShimmerGridList(count = 16)
+        }
+
+        is ResultData.Success -> {
+            InitList(modifier = Modifier, list = data.data, onClick = { id ->
+              onSelectMovie(id)
+            }, viewType = viewMode)
+        }
+
+        ResultData.None -> {
+
+        }
+    }
+}
+
+
+@Composable
+fun SearchToolbar(
+    topHeight: Dp,
+    searchStr: String,
+    onSearch: () -> Unit,
+    valueChanged: (String) -> Unit,
+    visibleFilter: () -> Unit
+) {
+    Row(
+        modifier = Modifier.height(topHeight),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+
+        TextField(
+            value = searchStr,
+            singleLine = true,
+            onValueChange = { valueChanged(it) },
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent
+            ),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null
+                )
+            },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Search
+            ),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    onSearch()
+                }
+            ),
+
+            modifier = Modifier
+                .weight(1f)
+                .background(color = Color.Transparent)
+                .padding(16.dp),
+            placeholder = { Text(text = "Фильмы, сериалы") })
+
+        Icon(
+            imageVector = Icons.AutoMirrored.Default.Notes,
+            contentDescription = null,
+            modifier = Modifier
+                .padding(end = 16.dp)
+                .size(40.dp)
+
+                .clip(
+                    CircleShape
+                )
+                .clickable {
+                    visibleFilter()
+
+                }
+                .padding(8.dp)
+        )
+
+    }
 }

@@ -5,8 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 
-import com.sidspace.stary.features.screen.MainScreen
-
 
 import com.sidspace.stary.theme.StaryTheme
 import dagger.hilt.android.AndroidEntryPoint

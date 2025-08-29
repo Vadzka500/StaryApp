@@ -2,7 +2,7 @@ package com.sidspace.stary.review.presentation.model
 
 
 data class ReviewUi(
-    val id:Long,
+    val id: Long,
     val title: String,
     val type: String,
     val review: String,

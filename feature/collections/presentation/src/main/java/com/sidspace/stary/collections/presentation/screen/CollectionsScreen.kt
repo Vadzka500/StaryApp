@@ -39,10 +39,7 @@ import com.sidspace.stary.ui.model.CollectionUi
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.shimmerEffect
 import com.sidspace.stary.ui.uikit.poppinsFort
-
-
 import kotlinx.coroutines.flow.collectLatest
-
 
 
 @Composable
@@ -50,7 +47,7 @@ fun CollectionsScreen(
     modifier: Modifier = Modifier,
     onSelectCollection: (String, String) -> Unit,
     onBack: () -> Unit,
-    toErrorScreen:() -> Unit,
+    toErrorScreen: () -> Unit,
     collectionsViewModel: CollectionsViewModel = hiltViewModel()
 ) {
 
@@ -79,41 +76,9 @@ fun CollectionsScreen(
 
 
     Column(modifier = modifier) {
-        Row(
-            modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Icon(
-                imageVector = Icons.Default.ArrowBackIosNew,
-                contentDescription = "",
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(
-                        CircleShape
-                    )
-                    .clickable {
-                        collectionsViewModel.onIntent(CollectionsIntent.OnBack)
-                    }
-                    .padding(8.dp))
-
-
-            Text(
-                "Коллекции",
-                modifier = Modifier.padding(start = 16.dp),
-                fontWeight = FontWeight.Bold,
-                fontFamily = poppinsFort,
-                fontSize = 24.sp,
-            )
-
-            Text(
-                state.value.countCollection.toString(),
-                modifier = Modifier.padding(start = 8.dp),
-                fontWeight = FontWeight.SemiBold,
-                fontFamily = poppinsFort,
-                fontSize = 24.sp,
-            )
-        }
+        CollectionToolbar(collectionCount = state.value.countCollection, onBack = {
+            collectionsViewModel.onIntent(CollectionsIntent.OnBack)
+        })
 
         AnimatedContent(
             targetState = state.value.collectionResult,
@@ -147,16 +112,57 @@ fun CollectionsScreen(
 }
 
 @Composable
+fun CollectionToolbar(collectionCount: Int, onBack:() -> Unit) {
+    Row(
+        modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        Icon(
+            imageVector = Icons.Default.ArrowBackIosNew,
+            contentDescription = "",
+            modifier = Modifier
+                .size(40.dp)
+                .clip(
+                    CircleShape
+                )
+                .clickable {
+                    onBack()
+                }
+                .padding(8.dp))
+
+
+        Text(
+            "Коллекции",
+            modifier = Modifier.padding(start = 16.dp),
+            fontWeight = FontWeight.Bold,
+            fontFamily = poppinsFort,
+            fontSize = 24.sp,
+        )
+
+        Text(
+            collectionCount.toString(),
+            modifier = Modifier.padding(start = 8.dp),
+            fontWeight = FontWeight.SemiBold,
+            fontFamily = poppinsFort,
+            fontSize = 24.sp,
+        )
+    }
+}
+
+@Composable
 fun ShimmerCollection(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        repeat(8) {
+        repeat(CollectionsState.SHIMMER_ITEMS) {
             InitItemShimmer()
         }
     }
 }
+
+
 
 @Composable
 private fun InitItemShimmer() {
@@ -195,7 +201,7 @@ private fun InitItem(
 ) {
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(120.dp)
 

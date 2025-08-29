@@ -4,7 +4,7 @@ import com.sidspace.stary.data.model.api.review.UserReview
 import com.sidspace.stary.domain.model.Review
 
 
-fun UserReview.toReview(): Review{
+fun UserReview.toReview(): Review {
     return Review(
         id = id,
         movieId = movieId,

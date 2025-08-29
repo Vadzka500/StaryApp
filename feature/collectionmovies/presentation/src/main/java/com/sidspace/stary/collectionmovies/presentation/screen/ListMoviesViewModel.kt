@@ -1,18 +1,15 @@
 package com.sidspace.stary.collectionmovies.presentation.screen
 
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sidspace.stary.collectionmovies.domain.usecase.GetListMoviesByCollectionUseCase
 import com.sidspace.stary.domain.model.Result
-
-import com.example.domain.usecase.movie.GetListMoviesByCollectionUseCase
 import com.sidspace.stary.ui.enum.ViewMode
 import com.sidspace.stary.ui.enum.toggle
-
 import com.sidspace.stary.ui.mapper.toMovieData
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.sort.sortListMovies
-
-
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

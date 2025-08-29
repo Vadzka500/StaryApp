@@ -1,13 +1,12 @@
 package com.example.data
 
+import com.sidspace.stary.account.data.repository.AccountRepositoryImpl
 import com.sidspace.stary.data.api.MovieApi
 import com.sidspace.stary.data.database.MovieDao
-import com.sidspace.stary.account.data.repository.AccountRepositoryImpl
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
 import org.junit.Test
-
-import org.junit.Assert.*
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -22,7 +21,7 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun `dsas`() = runTest{
+    fun `dsas`() = runTest {
         val api = mockk<MovieApi>()
         val db = mockk<MovieDao>()
         val repo = AccountRepositoryImpl(api, db)

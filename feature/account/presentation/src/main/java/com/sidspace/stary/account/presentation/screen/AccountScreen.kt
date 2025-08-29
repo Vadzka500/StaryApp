@@ -449,7 +449,7 @@ fun LatestViewedBlock(
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
 
-            itemsIndexed(list, key = { _, it -> it.id }) { index, item ->
+            itemsIndexed(list, key = { _, item -> item.id }) { index, item ->
 
                 MovieCardHorizontal(
                     id = item.id,
@@ -521,7 +521,7 @@ fun LatestBookmarkBlock(
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
 
-            itemsIndexed(list, key = { _, it -> it.id }) { index, item ->
+            itemsIndexed(list, key = { _, item -> item.id }) { index, item ->
 
                 MovieCardHorizontal(
                     id = item.id,

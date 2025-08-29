@@ -1,14 +1,6 @@
 package com.sidspace.stary.data.mapper
 
 
-import com.sidspace.stary.domain.model.Collection
-import com.sidspace.stary.domain.model.Folder
-import com.sidspace.stary.domain.model.LocalMovie
-import com.sidspace.stary.domain.model.Movie
-import com.sidspace.stary.domain.model.Person
-import com.sidspace.stary.domain.model.ReleaseYear
-import com.sidspace.stary.domain.model.SeasonsInfo
-
 import com.sidspace.stary.data.model.api.collection.CollectionMovie
 import com.sidspace.stary.data.model.api.movie.MovieDTO
 import com.sidspace.stary.data.model.api.movie.PersonDTO
@@ -16,7 +8,14 @@ import com.sidspace.stary.data.model.api.movie.PersonOfMovieDTO
 import com.sidspace.stary.data.model.database.FolderWithMoviesDBO
 import com.sidspace.stary.data.model.database.MovieDBO
 import com.sidspace.stary.data.utils.ResultRemote
+import com.sidspace.stary.domain.model.Collection
+import com.sidspace.stary.domain.model.Folder
+import com.sidspace.stary.domain.model.LocalMovie
+import com.sidspace.stary.domain.model.Movie
+import com.sidspace.stary.domain.model.Person
+import com.sidspace.stary.domain.model.ReleaseYear
 import com.sidspace.stary.domain.model.Result
+import com.sidspace.stary.domain.model.SeasonsInfo
 import com.sidspace.stary.domain.model.Trailer
 
 
@@ -60,11 +59,11 @@ fun MovieDTO.toMovie(): Movie {
         status = status,
         trailersUrl = videos?.trailers?.map { Trailer(it.name, it.url!!) },
         listOfCollection = lists,
-        listOfPerson = persons?.map{it.toPerson()}
+        listOfPerson = persons?.map { it.toPerson() }
     )
 }
 
-fun PersonDTO.toPerson(): Person{
+fun PersonDTO.toPerson(): Person {
     return Person(
         id = id,
         name = name,
@@ -77,7 +76,7 @@ fun PersonDTO.toPerson(): Person{
     )
 }
 
-fun PersonOfMovieDTO.toPerson(): Person{
+fun PersonOfMovieDTO.toPerson(): Person {
     return Person(
         id = id,
         name = name,
@@ -86,7 +85,7 @@ fun PersonOfMovieDTO.toPerson(): Person{
     )
 }
 
-fun MovieDBO.toLocalMovie(): LocalMovie{
+fun MovieDBO.toLocalMovie(): LocalMovie {
     return LocalMovie(
         movieId = movieId,
         isViewed = isViewed,
@@ -97,13 +96,13 @@ fun MovieDBO.toLocalMovie(): LocalMovie{
     )
 }
 
-fun MovieDBO.toMovie(): Movie{
+fun MovieDBO.toMovie(): Movie {
     return Movie(
         id = movieId,
     )
 }
 
-fun LocalMovie.toMovieDBO(): MovieDBO{
+fun LocalMovie.toMovieDBO(): MovieDBO {
     return MovieDBO(
         movieId = movieId,
         isViewed = isViewed,
@@ -113,7 +112,7 @@ fun LocalMovie.toMovieDBO(): MovieDBO{
     )
 }
 
-fun FolderWithMoviesDBO.toFolderFromFolderDBO(list: List<MovieDBO>): Folder{
+fun FolderWithMoviesDBO.toFolderFromFolderDBO(list: List<MovieDBO>): Folder {
     return Folder(
         id = folder.folderId,
         name = folder.folderName,
@@ -123,7 +122,7 @@ fun FolderWithMoviesDBO.toFolderFromFolderDBO(list: List<MovieDBO>): Folder{
     )
 }
 
-fun CollectionMovie.toCollection(): Collection{
+fun CollectionMovie.toCollection(): Collection {
     return Collection(
         id = id,
         name = name,

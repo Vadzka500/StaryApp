@@ -1,12 +1,9 @@
 package com.sidspace.stary.bookmark.data.di
 
-import com.sidspace.stary.data.api.MovieApi
-import com.sidspace.stary.data.database.MovieDao
 import com.sidspace.stary.bookmark.data.repository.BookmarkRepositoryImpl
 import com.sidspace.stary.bookmark.domain.repository.BookmarkRepository
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 
@@ -16,6 +13,6 @@ abstract class BookmarkRepositoryModule {
 
     @Binds
     abstract fun provideBookmarkRepository(
-        impl : BookmarkRepositoryImpl
+        impl: BookmarkRepositoryImpl
     ): BookmarkRepository
 }

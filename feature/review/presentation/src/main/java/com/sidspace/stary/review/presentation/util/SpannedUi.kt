@@ -16,7 +16,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 
 
-
 fun Spanned.toAnnotatedString(): AnnotatedString {
     return buildAnnotatedString {
         val text = this@toAnnotatedString.toString()

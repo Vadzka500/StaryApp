@@ -20,7 +20,7 @@ interface MovieRepository {
 
     suspend fun removeMovieFromFolder(idMovie: Long, idFolder: Long): Result<Unit>
 
-    suspend fun updateMovieBookmark(idMovie: Long, isBookmark: Boolean) : Result<Unit>
+    suspend fun updateMovieBookmark(idMovie: Long, isBookmark: Boolean): Result<Unit>
 
     suspend fun updateMovieViewed(idMovie: Long, isViewed: Boolean): Result<Unit>
 

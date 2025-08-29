@@ -13,6 +13,6 @@ abstract class ReviewRepositoryModule {
 
     @Binds
     abstract fun provideReviewRepository(
-        impl : ReviewRepositoryImpl
+        impl: ReviewRepositoryImpl
     ): ReviewRepository
 }

@@ -11,17 +11,19 @@ import com.sidspace.stary.bookmark.presentation.screen.BookmarkMoviesScreen
 
 fun NavGraphBuilder.bookmarkNavGraph(
     paddingValues: PaddingValues,
-    onSelectMovie:(Long) -> Unit,
-    toErrorScreen:() -> Unit,
-    onBack:() -> Unit
-){
+    onSelectMovie: (Long) -> Unit,
+    toErrorScreen: () -> Unit,
+    onBack: () -> Unit
+) {
 
-    composable<Bookmark>{
+    composable<Bookmark> {
         BookmarkMoviesScreen(
             onSelectMovie = onSelectMovie,
             toErrorScreen = toErrorScreen,
             onBack = onBack,
-            modifier = Modifier.fillMaxSize().padding(paddingValues)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
         )
     }
 

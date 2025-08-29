@@ -13,6 +13,6 @@ abstract class HomeRepositoryModule {
 
     @Binds
     abstract fun provideHomeRepository(
-       impl: HomeRepositoryImpl
+        impl: HomeRepositoryImpl
     ): HomeRepository
 }

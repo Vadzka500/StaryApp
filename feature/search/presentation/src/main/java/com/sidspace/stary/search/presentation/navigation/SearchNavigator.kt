@@ -11,12 +11,18 @@ import com.sidspace.stary.search.presentation.screen.SearchScreen
 
 fun NavGraphBuilder.searchNavGraph(
     paddingValues: PaddingValues,
-    onSelectMovie:(Long) -> Unit,
-    toErrorScreen:() -> Unit
-){
+    onSelectMovie: (Long) -> Unit,
+    toErrorScreen: () -> Unit
+) {
 
-    composable<Search>{
-        SearchScreen(onSelectMovie = onSelectMovie, toErrorScreen = toErrorScreen, modifier = Modifier.fillMaxSize().padding(paddingValues))
+    composable<Search> {
+        SearchScreen(
+            onSelectMovie = onSelectMovie,
+            toErrorScreen = toErrorScreen,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        )
     }
 
 }

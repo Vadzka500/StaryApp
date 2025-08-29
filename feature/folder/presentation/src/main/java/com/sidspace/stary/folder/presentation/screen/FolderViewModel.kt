@@ -1,21 +1,18 @@
 package com.sidspace.stary.folder.presentation.screen
 
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-
 import com.sidspace.stary.domain.model.Folder
 import com.sidspace.stary.domain.model.Result
 import com.sidspace.stary.folder.domain.usecase.GetFolderFromApiUseCase
-import com.sidspace.stary.folder.domain.usecase.RemoveFolderUseCase
 import com.sidspace.stary.folder.domain.usecase.GetFolderFromDbUseCase
+import com.sidspace.stary.folder.domain.usecase.RemoveFolderUseCase
 import com.sidspace.stary.ui.enum.ViewMode
 import com.sidspace.stary.ui.enum.toggle
-
 import com.sidspace.stary.ui.mapper.toMovieData
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.sort.sortListMovies
-
-
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -150,7 +147,12 @@ class FolderViewModel @Inject constructor(
                                         val count = data.data.listOfMovies!!.size
                                         _state.update { it.copy(countMovies = count) }
                                         if (count > 0) {
-                                            _state.update { it.copy(list = ResultData.Success(data.data.listOfMovies!!.map { it.toMovieData() })) }
+                                            _state.update {
+                                                it.copy(
+                                                    list = ResultData.Success(
+                                                        data.data.listOfMovies!!.map { it.toMovieData() })
+                                                )
+                                            }
                                         } else {
                                             _state.update {
                                                 it.copy(
@@ -163,7 +165,7 @@ class FolderViewModel @Inject constructor(
                                     }
                                 }
                             }
-                        }else{
+                        } else {
                             _state.update { it.copy(list = ResultData.Success(emptyList())) }
                         }
                     }

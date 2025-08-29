@@ -24,7 +24,7 @@ object DatabaseModel {
         return Room.databaseBuilder(
             context,
             MovieDatabase::class.java,
-            name ="db_movie_16"
+            name = "db_movie_16"
         )
             .fallbackToDestructiveMigration()
             .build()
@@ -35,6 +35,4 @@ object DatabaseModel {
     fun provideDatabaseDao(database: MovieDatabase): MovieDao {
         return database.getMovieDao()
     }
-
-
 }

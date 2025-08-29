@@ -13,6 +13,6 @@ abstract class CollectionRepositoryModule {
 
     @Binds
     abstract fun provideCollectionRepository(
-        impl : CollectionRepositoryImpl
+        impl: CollectionRepositoryImpl
     ): CollectionRepository
 }

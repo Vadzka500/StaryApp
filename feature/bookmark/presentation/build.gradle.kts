@@ -51,7 +51,7 @@ dependencies {
     implementation(libs.coil.compose)
 
     implementation(libs.compose.navigation)
-    
+
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.viewmodel.compose.navigatiom)

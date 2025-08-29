@@ -1,6 +1,5 @@
 package com.sidspace.stary.data.model.api.movie
 
-import com.sidspace.moviesapi.models.movie.Genre
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -51,5 +50,4 @@ data class MovieDTO(
     val votes: Votes? = null,
     val watchability: Watchability? = null,
     val year: Int? = null,
-    //val internalNames: String? = null
 )

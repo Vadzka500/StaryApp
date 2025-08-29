@@ -20,7 +20,9 @@ fun NavGraphBuilder.viewedNavGraph(
             onSelectMovie = onSelectMovie,
             toErrorScreen = toErrorScreen,
             onBack = onBack,
-            modifier = Modifier.fillMaxSize().padding(paddingValues)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
         )
     }
 

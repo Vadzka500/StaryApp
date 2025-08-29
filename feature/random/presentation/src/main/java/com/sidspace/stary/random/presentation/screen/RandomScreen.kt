@@ -141,17 +141,6 @@ fun SliderScreen(
         derivedStateOf { state.randomMovie }
     }
 
-    LaunchedEffect(Unit) {
-        randomViewModel.effect.collectLatest { effect ->
-            when (effect) {
-
-                else -> {}
-            }
-        }
-    }
-
-
-
     InitView(
         status = status,
         isSearch = state.isSearch,
@@ -278,9 +267,9 @@ fun InitView(
             widthPx - 140.dp.roundToPx()
         }
 
-        val scrollWidth = screenWidthPx * 100f
+        val scrollWidth = screenWidthPx * RandomState.PAGER_OFFSET
 
-        var targetPage = remember { mutableIntStateOf(pagerState.currentPage + 100) }
+        var targetPage = remember { mutableIntStateOf(pagerState.currentPage + RandomState.PAGER_OFFSET.toInt()) }
 
 
 
@@ -325,7 +314,7 @@ fun InitView(
                     )
 
                     coroutineScope.launch {
-                        delay(500)
+                        delay(RandomState.DELAY_API_REQUEST)
                         random()
                     }
 
@@ -395,6 +384,7 @@ fun InitView(
 
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 private fun RandomCardPager(
     pagerState: PagerState,
@@ -406,7 +396,7 @@ private fun RandomCardPager(
     onSelectMovie: (Long) -> Unit,
 ) {
     val configuration = LocalConfiguration.current
-    val height = (configuration.screenWidthDp - 140) * 1.5
+    val height = (configuration.screenWidthDp - RandomState.PAGER_HORIZONTAL_PADDING) * RandomState.PAGER_HEIGHT_SCALE
 
     HorizontalPager(
         modifier = modifier
@@ -416,9 +406,8 @@ private fun RandomCardPager(
         userScrollEnabled = false,
         contentPadding = PaddingValues(horizontal = 70.dp)
     ) { page ->
-        if (page > 100 && page % 100 == 1) {
-            println("state = " + painter.state)
-            println("state = " + painter.request.data)
+        if (page > RandomState.PAGER_OFFSET && page % RandomState.PAGER_OFFSET.toInt() == 1) {
+
             PagerCardImage(
                 posterUrl = posterUrl,
                 pagerState,
@@ -441,6 +430,7 @@ private fun RandomCardPager(
 }
 
 
+@Suppress("LongParameterList")
 fun anim(
     coroutineScope: CoroutineScope,
     setSearch: (Boolean) -> Unit,
@@ -455,11 +445,11 @@ fun anim(
 
     coroutineScope.launch {
         setSearch(true)
-        targetPage.value += 100 //
+        targetPage.value += RandomState.PAGER_OFFSET.toInt() //
         pagerState.animateScrollBy(
             scrollWidth,
             animationSpec = tween<Float>(
-                3000/*, easing = LinearOutSlowInEasing*//*, easing = Ease*/,
+                RandomState.PAGER_DURATION,
                 easing = easy
             )
         ).let {
@@ -470,9 +460,9 @@ fun anim(
 
 
     coroutineScope.launch {
-        delay(1500)
+        delay(RandomState.DELAY_REPEAT_ANIMATION_SCROLL)
 
-        val width = pagerState.getOffsetDistanceInPages(targetPage.value + 100) * widthItem
+        val width = pagerState.getOffsetDistanceInPages(targetPage.value + RandomState.PAGER_OFFSET.toInt()) * widthItem
         if (randomStatus.value is ResultData.Loading) {
 
             anim(

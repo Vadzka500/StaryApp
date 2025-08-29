@@ -52,6 +52,7 @@ javax-inject = "1"
 material3Version = "1.3.2"
 runtime = "1.9.0"
 foundationLayout = "1.9.0"
+detect = "1.23.8"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
@@ -87,8 +88,8 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
-compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "nav_version"}
-kotlin-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlin-serialization"}
+compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "nav_version" }
+kotlin-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlin-serialization" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
@@ -103,11 +104,11 @@ hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt"
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
 
-viewmodel-compose-navigatiom = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref="hilt-navigation" }
-core-splash-screen = { group = "androidx.core", name = "core-splashscreen", version.ref="splash-screen" }
+viewmodel-compose-navigatiom = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-navigation" }
+core-splash-screen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splash-screen" }
 javax-inject = { module = "javax.inject:javax.inject", version.ref = "javax-inject" }
 
-icons = { group = "androidx.compose.material", name = "material-icons-extended", version.ref="icons" }
+icons = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "icons" }
 androidx-room-common-jvm = { group = "androidx.room", name = "room-common-jvm", version.ref = "roomCommonJvm" }
 androidx-room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "roomRuntimeAndroid" }
 androidx-room-compiler-android = { group = "androidx.room", name = "room-compiler", version.ref = "roomRuntimeAndroid" }
@@ -126,9 +127,10 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-kapt = {id = "org.jetbrains.kotlin.kapt", version.ref = "kapt"}
-crashlytics = {id = "com.google.firebase.crashlytics", version.ref = "crashlyticsVer"}
+kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kapt" }
+crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlyticsVer" }
 play-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 androidx-room = { id = "androidx.room", version.ref = "roomRuntimeAndroid" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detect" }

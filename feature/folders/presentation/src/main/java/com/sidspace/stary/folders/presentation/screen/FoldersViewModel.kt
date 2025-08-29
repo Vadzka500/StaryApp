@@ -3,12 +3,11 @@ package com.sidspace.stary.folders.presentation.screen
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sidspace.stary.folders.domain.usecase.AddFolderUseCase
 import com.sidspace.stary.domain.model.Folder
 import com.sidspace.stary.domain.model.Result
-import com.example.domain.usecase.folder.AddFolderUseCase
 import com.sidspace.stary.folders.domain.usecase.GetAllFoldersUseCase
 import com.sidspace.stary.ui.model.ResultData
-
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -92,19 +91,19 @@ class FoldersViewModel @Inject constructor(
 
     fun addFolder() {
         viewModelScope.launch {
-            delay(200)
+            delay(FoldersState.ADD_FOLDER_DELAY)
             val name = _state.value.textFieldFolderValue
             val color = _state.value.listOfColors[_state.value.selectColor].toArgb()
             val image = _state.value.selectImageName
 
 
-             addFolderUseCase(
-                 Folder(
-                     name = name,
-                     color = color,
-                     imageResName = image
-                 )
-             )
+            addFolderUseCase(
+                Folder(
+                    name = name,
+                    color = color,
+                    imageResName = image
+                )
+            )
             _state.update { it.copy(textFieldFolderValue = "") }
         }
     }
@@ -120,7 +119,7 @@ class FoldersViewModel @Inject constructor(
         }
     }
 
-    fun toErrorScreen(){
+    fun toErrorScreen() {
         viewModelScope.launch {
             _effect.emit(FoldersEffect.ToErrorScreen)
         }

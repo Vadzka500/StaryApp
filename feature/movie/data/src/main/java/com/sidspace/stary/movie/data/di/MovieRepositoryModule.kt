@@ -13,6 +13,6 @@ abstract class MovieRepositoryModule {
 
     @Binds
     abstract fun provideMovieRepository(
-        impl : MovieRepositoryImpl
+        impl: MovieRepositoryImpl
     ): MovieRepository
 }

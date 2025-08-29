@@ -1,12 +1,9 @@
-package com.example.domain.usecase.movie
-
+package com.sidspace.stary.movie.domain.usecase
 
 import com.sidspace.stary.domain.model.LocalMovie
 import com.sidspace.stary.domain.model.Result
 import com.sidspace.stary.movie.domain.repository.MovieRepository
-
 import javax.inject.Inject
-
 
 class AddMovieUseCase @Inject constructor(private val repository: MovieRepository) {
 

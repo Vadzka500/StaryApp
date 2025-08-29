@@ -1,12 +1,8 @@
 package com.sidspace.stary.collectionmovies.presentation.screen
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,7 +13,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,24 +21,70 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sidspace.stary.ui.FilterSection
+import com.sidspace.stary.ui.FilterStateCallback
 import com.sidspace.stary.ui.InitList
 import com.sidspace.stary.ui.MovieCardGridShimmer
-import com.sidspace.stary.ui.R
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.uikit.poppinsFort
 import com.sidspace.stary.ui.utils.getSystemBarHeight
-
 import kotlinx.coroutines.flow.collectLatest
 
+
+@Composable
+fun ListMoviesToolbar(modifier: Modifier, label: String, onBack: () -> Unit, isShowFilter: () -> Unit) {
+    Box(
+        modifier = modifier
+    ) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 50.dp)
+                .align(Alignment.Center),
+            text = label,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.SemiBold,
+            fontFamily = poppinsFort,
+            fontSize = 18.sp
+        )
+
+        Icon(
+            imageVector = Icons.Default.ArrowBackIosNew,
+            contentDescription = "",
+            modifier = Modifier
+                .size(40.dp)
+                .clip(
+                    CircleShape
+                )
+                .clickable {
+                    onBack()
+
+                }
+                .padding(8.dp)
+                .align(Alignment.CenterStart))
+
+        Icon(
+            imageVector = Icons.AutoMirrored.Default.Notes,
+            contentDescription = "",
+            modifier = Modifier
+                .size(40.dp)
+                .clip(
+                    CircleShape
+                )
+                .clickable {
+                    isShowFilter()
+                }
+                .padding(8.dp)
+                .align(Alignment.CenterEnd)
+        )
+
+    }
+}
 
 @Composable
 fun AllMoviesScreen(
@@ -59,8 +100,9 @@ fun AllMoviesScreen(
     val state = listMoviesViewModel.state.collectAsState()
 
     LaunchedEffect(slug) {
-        if (state.value.list == ResultData.Loading)
+        if (state.value.list == ResultData.Loading) {
             listMoviesViewModel.getMoviesByCollection(slug, limit = 250)
+        }
     }
     val topHeight = 50.dp
 
@@ -111,63 +153,21 @@ fun AllMoviesScreen(
             }
         }
 
-
-
-        Box(
+        ListMoviesToolbar(
             modifier = Modifier
                 .height(topHeight)
-                .padding(horizontal = 12.dp)
-
-        ) {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 50.dp)
-                    .align(Alignment.Center),
-                text = label, textAlign = TextAlign.Center,
-                fontWeight = FontWeight.SemiBold,
-                fontFamily = poppinsFort,
-                fontSize = 18.sp
-            )
-
-            Icon(
-                imageVector = Icons.Default.ArrowBackIosNew,
-                contentDescription = "",
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(
-                        CircleShape
-                    )
-                    .clickable {
-                        listMoviesViewModel.onIntent(ListMoviesIntent.OnBack)
-                    }
-                    .padding(8.dp)
-                    .align(Alignment.CenterStart))
-
-            Icon(
-                imageVector = Icons.AutoMirrored.Default.Notes,
-                contentDescription = "",
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(
-                        CircleShape
-                    )
-                    .clickable {
-                        listMoviesViewModel.onIntent(ListMoviesIntent.IsShowFilter(!state.value.isShowFilter))
-                    }
-                    .padding(8.dp)
-                    .align(Alignment.CenterEnd))
-
-        }
-
-
+                .padding(horizontal = 12.dp),
+            label = label,
+            onBack = {
+                listMoviesViewModel.onIntent(ListMoviesIntent.OnBack)
+            },
+            isShowFilter = {
+                listMoviesViewModel.onIntent(ListMoviesIntent.IsShowFilter(!state.value.isShowFilter))
+            }
+        )
     }
 
-    FilterSection(
-        modifier = Modifier.padding(top = getSystemBarHeight() + topHeight),
-        isVisibleFilter = state.value.isShowFilter,
-        viewType = state.value.viewMode,
-        isShowSort = true,
+    val filterStateCallback = FilterStateCallback(
         onHideFilter = {
             listMoviesViewModel.onIntent(ListMoviesIntent.IsShowFilter(false))
         },
@@ -177,17 +177,25 @@ fun AllMoviesScreen(
         setListView = {
             listMoviesViewModel.onIntent(ListMoviesIntent.SetListViewMode)
         },
-        sortType = state.value.sortType,
-        sortDirection = state.value.sortDirection,
-        toggleSortDirection = {
-            listMoviesViewModel.onIntent(ListMoviesIntent.ToggleSortDirection)
-        },
         setSortType = {
             listMoviesViewModel.onIntent(ListMoviesIntent.SetSortType(it))
         },
         sortList = {
             listMoviesViewModel.onIntent(ListMoviesIntent.SortMovies)
+        },
+        toggleSortDirection = {
+            listMoviesViewModel.onIntent(ListMoviesIntent.ToggleSortDirection)
         }
+    )
+
+    FilterSection(
+        modifier = Modifier.padding(top = getSystemBarHeight() + topHeight),
+        isVisibleFilter = state.value.isShowFilter,
+        viewType = state.value.viewMode,
+        isShowSort = true,
+        filterStateCallback = filterStateCallback,
+        sortType = state.value.sortType,
+        sortDirection = state.value.sortDirection
     )
 }
 
@@ -200,7 +208,7 @@ fun LoadList(modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        items(16) {
+        items(ListMoviesState.SHIMMER_ITEMS) {
             MovieCardGridShimmer()
         }
     }

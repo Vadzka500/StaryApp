@@ -13,6 +13,6 @@ abstract class ViewedRepositoryModule {
 
     @Binds
     abstract fun provideViewedRepository(
-        impl : ViewedRepositoryImpl
+        impl: ViewedRepositoryImpl
     ): ViewedRepository
 }

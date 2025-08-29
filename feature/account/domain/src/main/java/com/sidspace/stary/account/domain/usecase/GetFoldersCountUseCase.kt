@@ -1,7 +1,7 @@
 package com.sidspace.stary.account.domain.usecase
 
-import com.sidspace.stary.domain.model.Result
 import com.sidspace.stary.account.domain.repository.AccountRepository
+import com.sidspace.stary.domain.model.Result
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

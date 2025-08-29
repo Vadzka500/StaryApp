@@ -12,7 +12,7 @@ kotlin {
     }
 }
 
-dependencies{
+dependencies {
     implementation(project(":core:domain"))
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.javax.inject)

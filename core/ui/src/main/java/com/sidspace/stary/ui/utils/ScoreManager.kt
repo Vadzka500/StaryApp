@@ -1,11 +1,11 @@
 package com.sidspace.stary.ui.utils
 
-class ScoreManager {
+object ScoreManager {
 
-    companion object{
+    private const val RATING_SCALE = 10.0
 
-        fun ratingToFormat(value: Double): Double {
-            return (value * 10).toInt() / 10.0
-        }
+    fun ratingToFormat(value: Double): Double {
+        return (value * RATING_SCALE).toInt() / RATING_SCALE
     }
+
 }

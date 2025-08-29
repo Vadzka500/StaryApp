@@ -2,24 +2,20 @@ package com.sidspace.stary.movie.presentation.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-
+import com.sidspace.stary.movie.domain.usecase.GetAllFoldersUseCase
+import com.sidspace.stary.movie.domain.usecase.AddMovieToFolderUseCase
+import com.sidspace.stary.movie.domain.usecase.AddMovieUseCase
+import com.sidspace.stary.movie.domain.usecase.CheckMovieUseCase
+import com.sidspace.stary.movie.domain.usecase.GetMovieByIdUseCase
+import com.sidspace.stary.movie.domain.usecase.RemoveMovieFromFolderUseCase
 import com.sidspace.stary.domain.model.LocalMovie
 import com.sidspace.stary.domain.model.LocalResult
 import com.sidspace.stary.domain.model.Result
-import com.example.domain.usecase.folder.GetAllFoldersUseCase
-import com.example.domain.usecase.movie.AddMovieToFolderUseCase
-import com.example.domain.usecase.movie.AddMovieUseCase
-import com.example.domain.usecase.movie.CheckMovieUseCase
-import com.example.domain.usecase.movie.GetMovieByIdUseCase
-import com.example.domain.usecase.movie.RemoveMovieFromFolderUseCase
 import com.sidspace.stary.movie.domain.usecase.UpdateMovieBookmarkUseCase
 import com.sidspace.stary.movie.domain.usecase.UpdateMovieViewedUseCase
-
-import com.sidspace.stary.ui.mapper.toMovieData
-
 import com.sidspace.stary.movie.presentation.mapper.toLocalMovieUi
+import com.sidspace.stary.ui.mapper.toMovieData
 import com.sidspace.stary.ui.model.ResultData
-
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,10 +25,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
+@Suppress("TooManyFunctions", "LongParameterList")
 @HiltViewModel
 class MovieProfileViewModel @Inject constructor(
-
     private val checkMovieUseCase: CheckMovieUseCase,
     private val updateMovieViewedUseCase: UpdateMovieViewedUseCase,
     private val updateMovieBookmarkUseCase: UpdateMovieBookmarkUseCase,
@@ -41,7 +36,6 @@ class MovieProfileViewModel @Inject constructor(
     private val removeMovieFromFolderUseCase: RemoveMovieFromFolderUseCase,
     private val getAllFoldersUseCase: GetAllFoldersUseCase,
     private val getMovieByIdUseCase: GetMovieByIdUseCase
-
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(MovieState())
@@ -54,6 +48,7 @@ class MovieProfileViewModel @Inject constructor(
         getFolders()
     }
 
+    @Suppress("CyclomaticComplexMethod")
     fun onIntent(intent: MovieIntent) {
         when (intent) {
             is MovieIntent.LoadMovie -> {
@@ -80,12 +75,15 @@ class MovieProfileViewModel @Inject constructor(
             is MovieIntent.BookmarkToMovie -> {
                 setBookmarkToMovie(intent.id, intent.collections, intent.isBookmark)
             }
+
             is MovieIntent.ViewedToMovie -> {
                 setViewedToMovie(intent.id, intent.collections, intent.isViewed)
             }
 
             is MovieIntent.OnSelectFolder -> {
-                if ((_state.value.filters as ResultData.Success).data.first { it.id == intent.id }.listOfMovies!!.any { it.id == intent.movie.id }) {
+                if ((_state.value.filters as ResultData.Success).data.first { it.id == intent.id }.listOfMovies!!.any {
+                        it.id == intent.movie.id
+                    }) {
                     removeMovieFromFolder(intent.movie.id, intent.id)
                 } else {
                     addMovieToFolder(intent.movie.id, intent.id, intent.movie.collections)
@@ -95,6 +93,7 @@ class MovieProfileViewModel @Inject constructor(
             MovieIntent.HideFoldersSheet -> {
                 _state.update { it.copy(isShowSheetFolders = false) }
             }
+
             MovieIntent.ShowFoldersSheet -> {
                 _state.update { it.copy(isShowSheetFolders = true) }
             }
@@ -102,6 +101,7 @@ class MovieProfileViewModel @Inject constructor(
             MovieIntent.HideTrailerSheet -> {
                 _state.update { it.copy(isShowTrailerSheet = false) }
             }
+
             MovieIntent.ShowTrailerSheet -> {
                 _state.update { it.copy(isShowTrailerSheet = true) }
             }
@@ -115,7 +115,7 @@ class MovieProfileViewModel @Inject constructor(
     fun getMovieById(id: Long) {
 
         viewModelScope.launch {
-            getMovieByIdUseCase(id).collect{
+            getMovieByIdUseCase(id).collect {
                 when (val data = it) {
                     is Result.Error -> {
                         _state.update { it.copy(movie = ResultData.Error) }
@@ -124,6 +124,7 @@ class MovieProfileViewModel @Inject constructor(
                     Result.Loading -> {
 
                     }
+
                     is Result.Success -> {
                         _state.update { it.copy(movie = ResultData.Success(data.data.toMovieData())) }
                     }
@@ -145,9 +146,11 @@ class MovieProfileViewModel @Inject constructor(
                     LocalResult.Error -> {
 
                     }
+
                     LocalResult.Loading -> {
 
                     }
+
                     is LocalResult.Success -> {
                         _state.update { it.copy(isExistMovieDb = data.data?.toLocalMovieUi()) }
 
@@ -172,7 +175,7 @@ class MovieProfileViewModel @Inject constructor(
         viewModelScope.launch {
             getAllFoldersUseCase().collect { result ->
 
-                if(result is Result.Success){
+                if (result is Result.Success) {
                     _state.update { it.copy(filters = ResultData.Success(result.data)) }
                 }
             }
@@ -185,49 +188,49 @@ class MovieProfileViewModel @Inject constructor(
         }
     }
 
-    fun setViewedToMovie(id:Long, collections: List<String>?, isViewed: Boolean ){
+    fun setViewedToMovie(id: Long, collections: List<String>?, isViewed: Boolean) {
         viewModelScope.launch {
             addMovie(id, collections)
             updateMovieViewedUseCase(id, isViewed)
         }
     }
 
-    fun setBookmarkToMovie(id:Long, collections: List<String>?, isBookmark: Boolean ){
+    fun setBookmarkToMovie(id: Long, collections: List<String>?, isBookmark: Boolean) {
         viewModelScope.launch {
             addMovie(id, collections)
             updateMovieBookmarkUseCase(id, isBookmark)
         }
     }
 
-    private suspend fun addMovie(movieId: Long, collections: List<String>?){
+    private suspend fun addMovie(movieId: Long, collections: List<String>?) {
         addMovieUseCase.invoke(LocalMovie(movieId = movieId), list = collections)
     }
 
-    private fun toMovieScreen(id: Long){
+    private fun toMovieScreen(id: Long) {
         viewModelScope.launch {
             _effect.emit(MovieEffect.ToMovieScreen(id))
         }
     }
 
-    private fun toPersonScreen(id: Long){
+    private fun toPersonScreen(id: Long) {
         viewModelScope.launch {
             _effect.emit(MovieEffect.ToPersonScreen(id))
         }
     }
 
-    private fun toReviewScreen(id: Long){
+    private fun toReviewScreen(id: Long) {
         viewModelScope.launch {
             _effect.emit(MovieEffect.ToReviewScreen(id))
         }
     }
 
-    private fun toErrorScreen(){
+    private fun toErrorScreen() {
         viewModelScope.launch {
             _effect.emit(MovieEffect.ToErrorScreen)
         }
     }
 
-    private fun playTrailer(url: String){
+    private fun playTrailer(url: String) {
         viewModelScope.launch {
             _effect.emit(MovieEffect.PlayTrailer(url))
         }

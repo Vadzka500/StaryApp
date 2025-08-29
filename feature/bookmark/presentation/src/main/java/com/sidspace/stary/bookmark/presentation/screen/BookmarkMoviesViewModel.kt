@@ -1,16 +1,14 @@
 package com.sidspace.stary.bookmark.presentation.screen
 
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sidspace.stary.bookmark.domain.usecase.GetBookmarkMoviesFromDbUseCase
-import com.sidspace.stary.domain.model.Result
-
-
-import com.sidspace.stary.ui.mapper.toMovieData
-
 import com.sidspace.stary.bookmark.domain.usecase.GetBookmarkMoviesUseCase
+import com.sidspace.stary.domain.model.Result
 import com.sidspace.stary.ui.enum.ViewMode
 import com.sidspace.stary.ui.enum.toggle
+import com.sidspace.stary.ui.mapper.toMovieData
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.sort.sortListMovies
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -87,19 +85,24 @@ class BookmarkMoviesViewModel @Inject constructor(
                 if (result is Result.Success) {
                     _state.update { it.copy(countMovies = result.data.size) }
 
-                    if(result.data.isNotEmpty()) {
+                    if (result.data.isNotEmpty()) {
                         getBookmarkMoviesUseCase(result.data).collect { result ->
 
                             if (result is Result.Success) {
 
-                                _state.update { it.copy(list = ResultData.Success(result.data.map { it.toMovieData() })) }
+                                _state.update {
+                                    it.copy(
+                                        list = ResultData.Success(
+                                            result.data.map { it.toMovieData() })
+                                    )
+                                }
 
                             } else if (result is Result.Error) {
                                 _state.update { it.copy(list = ResultData.Error) }
                             }
 
                         }
-                    }else{
+                    } else {
                         _state.update { it.copy(list = ResultData.Success(emptyList())) }
                     }
 

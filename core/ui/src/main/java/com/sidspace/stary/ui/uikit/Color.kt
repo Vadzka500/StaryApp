@@ -2,6 +2,7 @@ package com.sidspace.stary.ui.uikit
 
 import androidx.compose.ui.graphics.Color
 
+@Suppress("MagicNumber")
 val Purple40 = Color(0xFF6650a4)
 
 val ShimmerColorShades = listOf(

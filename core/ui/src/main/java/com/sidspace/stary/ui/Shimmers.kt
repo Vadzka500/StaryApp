@@ -28,6 +28,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 
+const val HORIZONTAL_SHIMMER_ITEMS_COUNT = 5
+const val GRID_SHIMMER_ITEMS_COUNT = 10
+const val GRID_CARD_SHIMMER_PADDING = 22
+const val GRID_CARD_SHIMMER_HEIGHT_SCALE = 1.5
+const val GRID_CARD_SHIMMER_TEXT_HEIGHT = 30
 
 @Composable
 fun ShimmerGridList(modifier: Modifier = Modifier, count: Int) {
@@ -38,7 +43,7 @@ fun ShimmerGridList(modifier: Modifier = Modifier, count: Int) {
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        items(if(count > 10) 10 else count) {
+        items(if (count > GRID_SHIMMER_ITEMS_COUNT) GRID_SHIMMER_ITEMS_COUNT else count) {
             MovieCardGridShimmer()
         }
     }
@@ -51,16 +56,16 @@ fun MovieCardGridShimmer(
 ) {
 
     val configuration = LocalConfiguration.current
-    val width = configuration.screenWidthDp / 2 - 22
-    val height = (configuration.screenWidthDp / 2 - 22) * 1.5
-    val boxHeight = height + 30
+    val width = configuration.screenWidthDp / 2 - GRID_CARD_SHIMMER_PADDING
+    val height = (configuration.screenWidthDp / 2 - GRID_CARD_SHIMMER_PADDING) * GRID_CARD_SHIMMER_HEIGHT_SCALE
+    val boxHeight = height + GRID_CARD_SHIMMER_TEXT_HEIGHT
 
     Column(
         modifier = modifier
-           /* .then(
-                if (index == 0) Modifier.padding(start = 16.dp)
-                else Modifier
-            )*/
+            /* .then(
+                 if (index == 0) Modifier.padding(start = 16.dp)
+                 else Modifier
+             )*/
             .fillMaxWidth()
             .height(boxHeight.dp)
             .width(width.dp),
@@ -103,7 +108,7 @@ fun ShimmerMovies(modifier: Modifier = Modifier) {
                 .shimmerEffect()
         )
         LazyRow(modifier = Modifier.padding(top = 16.dp)) {
-            items(5) { index ->
+            items(HORIZONTAL_SHIMMER_ITEMS_COUNT) { index ->
                 Box(
                     modifier = Modifier
                         .padding(start = 16.dp)
@@ -124,7 +129,8 @@ fun Modifier.shimmerEffect(): Modifier = composed {
         targetValue = 2000f,
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 1200, easing = FastOutSlowInEasing)
-        ), label = ""
+        ),
+        label = ""
     )
     background(
         brush = Brush.horizontalGradient(

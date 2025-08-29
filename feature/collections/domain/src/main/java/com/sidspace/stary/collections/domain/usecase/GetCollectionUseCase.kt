@@ -1,9 +1,9 @@
 package com.sidspace.stary.collections.domain.usecase
 
 
+import com.sidspace.stary.collections.domain.repository.CollectionRepository
 import com.sidspace.stary.domain.model.Collection
 import com.sidspace.stary.domain.model.Result
-import com.sidspace.stary.collections.domain.repository.CollectionRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

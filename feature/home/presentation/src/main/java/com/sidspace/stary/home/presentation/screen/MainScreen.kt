@@ -7,8 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-
-
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -21,7 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -37,31 +34,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.sidspace.stary.ui.HorizontalHomeList
-import com.sidspace.stary.ui.R
 import com.sidspace.stary.ui.ShimmerMovies
 import com.sidspace.stary.ui.model.CollectionUi
 import com.sidspace.stary.ui.model.MoviePreviewUi
@@ -69,8 +56,6 @@ import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.shimmerEffect
 import com.sidspace.stary.ui.uikit.Purple40
 import com.sidspace.stary.ui.uikit.poppinsFort
-import com.sidspace.stary.ui.utils.InitRatingView
-
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.absoluteValue
 
@@ -180,16 +165,16 @@ fun TopBannedList(
     state: State<MainState>,
     modifier: Modifier = Modifier,
     onSelectMovie: (Long) -> Unit,
-    toErrorScreen: () -> Unit,
-
+    toErrorScreen: () -> Unit
 ) {
 
     val configuration = LocalConfiguration.current
-    val height = (configuration.screenWidthDp - 90) * 1.5
-    val heightBox = height + 30
+    val height =
+        (configuration.screenWidthDp - MainState.TOP_BANNED_HORIZONTAL_PADDING) * MainState.TOP_BANNED_HEIGHT_SCALE
+    val heightBox = height + MainState.TOP_BANNED_TEXT_HEIGHT
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(heightBox.dp)
     ) {
@@ -262,9 +247,9 @@ fun MainListMovies(
     toErrorScreen: () -> Unit,
     onSelectListMovies: (String, String) -> Unit,
 
-) {
+    ) {
     AnimatedContent(
-
+        modifier = modifier,
         targetState = state.value.listHomePage,
     ) { state ->
 
@@ -300,7 +285,7 @@ fun MainListMovies(
                             is ResultData.Success -> {
 
                                 HorizontalHomeList(
-                                    list = collection.data.take(10),
+                                    list = collection.data.take(MainState.MAX_MOVIES),
                                     label = (result.key as Pair<*, *>).first.toString(),
                                     onSelectMovie = onSelectMovie,
                                     onClickHeader = {
@@ -340,13 +325,14 @@ fun MainListMovies(
 @Composable
 fun ShimmerTop(modifier: Modifier = Modifier) {
     val configuration = LocalConfiguration.current
-    val height = (configuration.screenWidthDp - 90) * 1.5
+    val height =
+        (configuration.screenWidthDp - MainState.TOP_BANNED_HORIZONTAL_PADDING) * MainState.TOP_BANNED_HEIGHT_SCALE
 
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { 2 })
 
     Column {
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .padding(start = 16.dp, bottom = 14.dp, top = 16.dp)
                 .width(200.dp)
                 .height(22.dp)
@@ -364,46 +350,52 @@ fun ShimmerTop(modifier: Modifier = Modifier) {
             contentPadding = PaddingValues(end = 89.dp, start = 16.dp)
         ) { page ->
 
-            val pageOffSet = (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
-            Column(
-                modifier = Modifier
-                    .padding(end = 15.dp)
-                    .fillMaxSize()
-                    .graphicsLayer {
-                        lerp(
-                            start = 0.80f.dp,
-                            stop = 1f.dp,
-                            fraction = 1f - pageOffSet.absoluteValue.coerceIn(0f, 1f)
-                        ).also { scale ->
-                            scaleX = scale.value
-                            scaleY = scale.value
-                        }
-                    }) {
-                ElevatedCard(
-                    elevation = CardDefaults.cardElevation(12.dp),
-                    shape = RoundedCornerShape(32.dp),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .shimmerEffect()
-                    )
-                }
+            ShimmerItemTop(page, pagerState)
 
-                Column(modifier = Modifier.padding(top = 14.dp)) {
-                    Box(
-                        modifier = Modifier
-                            .width(250.dp)
-                            .height(20.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .shimmerEffect()
-                    )
+        }
+    }
+}
+
+@Composable
+fun ShimmerItemTop(page: Int, pagerState: PagerState) {
+    val pageOffSet = (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
+    Column(
+        modifier = Modifier
+            .padding(end = 15.dp)
+            .fillMaxSize()
+            .graphicsLayer {
+                lerp(
+                    start = 0.80f.dp,
+                    stop = 1f.dp,
+                    fraction = 1f - pageOffSet.absoluteValue.coerceIn(0f, 1f)
+                ).also { scale ->
+                    scaleX = scale.value
+                    scaleY = scale.value
                 }
             }
+    ) {
+        ElevatedCard(
+            elevation = CardDefaults.cardElevation(12.dp),
+            shape = RoundedCornerShape(32.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .shimmerEffect()
+            )
+        }
 
+        Column(modifier = Modifier.padding(top = 14.dp)) {
+            Box(
+                modifier = Modifier
+                    .width(250.dp)
+                    .height(20.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .shimmerEffect()
+            )
         }
     }
 }
@@ -430,6 +422,7 @@ fun InitCollections(
 
         is ResultData.Success -> {
             ShowCollection(
+                modifier = modifier,
                 list = data.data,
                 toCollectionScreen = toCollectionScreen,
                 onSelectCollection = onSelectCollection
@@ -445,7 +438,7 @@ fun InitCollections(
 @Composable
 fun InitRow(modifier: Modifier = Modifier, label: String, onClick: () -> Unit) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(end = 16.dp)
             .padding(start = 16.dp)
@@ -489,11 +482,14 @@ fun ShowCollection(
 ) {
 
 
-    InitRow(label = stringResource(com.sidspace.stary.home.presentation.R.string.collection), onClick = toCollectionScreen)
+    InitRow(
+        label = stringResource(com.sidspace.stary.home.presentation.R.string.collection),
+        onClick = toCollectionScreen
+    )
 
 
     LazyRow(
-        modifier = Modifier
+        modifier = modifier
             .padding(top = 10.dp, bottom = 16.dp)
             .fillMaxWidth()
             .height(100.dp),
@@ -533,7 +529,7 @@ fun InitPagerCard(
 ) {
     val pageOffSet = (pagerState.currentPage - index) + pagerState.currentPageOffsetFraction
     Column(
-        modifier = Modifier
+        modifier = modifier
             .padding(end = 15.dp)
             .fillMaxSize()
             .graphicsLayer {

@@ -15,7 +15,12 @@ fun NavGraphBuilder.randomNavGraph(
 ) {
 
     composable<Random> {
-        SliderScreen(onSelectMovie = onSelectMovie, modifier = Modifier.fillMaxSize().padding(paddingValues))
+        SliderScreen(
+            onSelectMovie = onSelectMovie,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        )
     }
 
 }

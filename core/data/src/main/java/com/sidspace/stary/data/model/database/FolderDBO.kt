@@ -1,7 +1,6 @@
 package com.sidspace.stary.data.model.database
 
 
-
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Junction
@@ -32,7 +31,8 @@ data class FolderWithMoviesDBO(
         associateBy = Junction(
             value = FolderMovieRef::class,
             parentColumn = "folderId",
-            entityColumn = "movieId")
+            entityColumn = "movieId"
+        )
     )
     val movies: List<MovieDBO>
 )

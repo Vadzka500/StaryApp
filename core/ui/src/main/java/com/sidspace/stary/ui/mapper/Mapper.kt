@@ -31,11 +31,11 @@ fun Movie.toMovieData(): MovieUi {
         scoreImdb = imdbScore,
         isSeries = isSeries == true,
         year = year,
-        countOfSeasons = seasonsInfo?.let { it ->
-            if (it.isEmpty()) {
+        countOfSeasons = seasonsInfo?.let { item ->
+            if (item.isEmpty()) {
                 1
             } else {
-                it.count { season -> season.number != 0 }
+                item.count { season -> season.number != 0 }
             }
         } ?: 1,
         releaseStart = releaseYears?.firstOrNull()?.start,
@@ -67,11 +67,11 @@ fun Movie.toMoviePreviewUi(): MoviePreviewUi {
         score = kpScore,
         isSeries = isSeries == true,
         year = year,
-        countOfSeasons = seasonsInfo?.let { it ->
-            if (it.isEmpty()) {
+        countOfSeasons = seasonsInfo?.let { item ->
+            if (item.isEmpty()) {
                 1
             } else {
-                it.count { season -> season.number != 0 }
+                item.count { season -> season.number != 0 }
             }
         } ?: 1,
         releaseStart = releaseYears?.firstOrNull()?.start,
@@ -120,4 +120,3 @@ fun MovieUi.toMoviePreviewUi(): MoviePreviewUi {
         listOfGenres = listOfGenres,
     )
 }
-

@@ -18,13 +18,15 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
+    const val CONNECTION_TIMEOUT = 15L
+
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
 
-        return OkHttpClient.Builder().connectTimeout(15, TimeUnit.SECONDS)
-            .readTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.SECONDS)
+        return OkHttpClient.Builder().connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
+            .readTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
             .addInterceptor(MoviesApiKeyInterceptor()).build()
     }
 

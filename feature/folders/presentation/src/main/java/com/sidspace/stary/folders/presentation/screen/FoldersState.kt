@@ -18,4 +18,9 @@ data class FoldersState(
     val listOfColors: List<Color> = FiltersUtil.listOfColors,
     val listOfImages: List<Int?> = FiltersUtil.listOfImage,
     val isErrorEmptyName: Boolean = false
-)
+) {
+    companion object {
+        const val FOLDER_PICTURE_ROTATE = 40f
+        const val ADD_FOLDER_DELAY = 200L
+    }
+}

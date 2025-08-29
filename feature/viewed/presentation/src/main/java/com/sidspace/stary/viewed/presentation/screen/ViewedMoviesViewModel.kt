@@ -1,19 +1,16 @@
 package com.sidspace.stary.viewed.presentation.screen
 
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sidspace.stary.domain.model.Result
 import com.sidspace.stary.ui.enum.ViewMode
 import com.sidspace.stary.ui.enum.toggle
-
-import com.sidspace.stary.viewed.domain.usecase.GetViewedMoviesUseCase
-
 import com.sidspace.stary.ui.mapper.toMovieData
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.sort.sortListMovies
 import com.sidspace.stary.viewed.domain.usecase.GetViewedMoviesFromDbUseCase
-
-
+import com.sidspace.stary.viewed.domain.usecase.GetViewedMoviesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -94,14 +91,19 @@ class ViewedMoviesViewModel @Inject constructor(
 
                             if (result is Result.Success) {
 
-                                _state.update { it.copy(list = ResultData.Success(result.data.map { it.toMovieData() })) }
+                                _state.update {
+                                    it.copy(
+                                        list = ResultData.Success(
+                                            result.data.map { it.toMovieData() })
+                                    )
+                                }
 
                             } else if (result is Result.Error) {
                                 _state.update { it.copy(list = ResultData.Error) }
                             }
 
                         }
-                    }else{
+                    } else {
                         _state.update { it.copy(list = ResultData.Success(emptyList())) }
                     }
 

@@ -54,6 +54,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -64,14 +65,16 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.sidspace.stary.domain.model.Folder
 import com.sidspace.stary.ui.enum.ViewMode
-import com.sidspace.stary.ui.model.MovieUi
 import com.sidspace.stary.ui.model.MoviePreviewUi
+import com.sidspace.stary.ui.model.MovieUi
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.uikit.Purple40
 import com.sidspace.stary.ui.uikit.poppinsFort
 import com.sidspace.stary.ui.utils.InitRatingView
 import com.sidspace.stary.ui.utils.ScoreManager
-import androidx.compose.ui.platform.LocalResources
+
+
+const val FOLDER_APPLY_PICTURE_ALPHA = 0.8F
 
 @Composable
 fun InitList(
@@ -684,7 +687,7 @@ fun InitFolderItem(
                     modifier = Modifier
                         .size(64.dp)
                         .offset(y = (5).dp, x = (5).dp)
-                        .alpha(0.8f)
+                        .alpha(FOLDER_APPLY_PICTURE_ALPHA)
                 )
             }
         }

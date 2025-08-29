@@ -13,6 +13,6 @@ abstract class FolderRepositoryModule {
 
     @Binds
     abstract fun provideFolderRepository(
-        impl : FolderRepositoryImpl
+        impl: FolderRepositoryImpl
     ): FolderRepository
 }

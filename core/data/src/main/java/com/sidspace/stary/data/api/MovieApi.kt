@@ -59,7 +59,7 @@ interface MovieApi {
 
     @GET("review")
     suspend fun getReviewsById(
-        @Query("movieId") id:Long,
+        @Query("movieId") id: Long,
         @Query("page") page: Int = 1,
         @Query("sortField") sort: String = "date",
         @Query("sortType") type: Int = -1,

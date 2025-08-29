@@ -3,9 +3,8 @@ package com.sidspace.stary.folders.presentation.util
 import androidx.compose.ui.graphics.Color
 import com.sidspace.stary.ui.R
 
-class FiltersUtil {
-
-    companion object{
+@Suppress("MagicNumber")
+object FiltersUtil {
 
         val listOfColors = listOf(
             Color(0xFF9FA8DA),
@@ -36,5 +35,5 @@ class FiltersUtil {
             R.drawable.rotate,
             R.drawable.add
         )
-    }
+
 }

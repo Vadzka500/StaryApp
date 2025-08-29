@@ -7,7 +7,7 @@
     <string name="related_movies">Связанные фильмы</string>
     <string name="description">Описание</string>
     <string name="trailer">Трейлер</string>
-    <string name="viewed">Просмотрен</string>
+    <string name="viewed">Просмотренo</string>
     <string name="in_bookmark">В закладки</string>
     <string name="in_collection">В коллекции</string>
 </resources>

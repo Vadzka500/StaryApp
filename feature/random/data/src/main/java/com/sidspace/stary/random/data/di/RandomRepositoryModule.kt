@@ -13,6 +13,6 @@ abstract class RandomRepositoryModule {
 
     @Binds
     abstract fun provideRandomRepository(
-        impl : RandomRepositoryImpl
+        impl: RandomRepositoryImpl
     ): RandomRepository
 }

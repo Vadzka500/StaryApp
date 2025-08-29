@@ -1,4 +1,4 @@
-package com.example.domain.usecase.collection
+package com.sidspace.stary.random.domain.usecase
 
 
 import com.sidspace.stary.domain.model.Collection

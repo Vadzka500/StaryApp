@@ -3,7 +3,11 @@ package com.sidspace.stary.movie.data.repository
 
 import com.sidspace.stary.data.api.MovieApi
 import com.sidspace.stary.data.database.MovieDao
-
+import com.sidspace.stary.data.mapper.toDomain
+import com.sidspace.stary.data.mapper.toFolderFromFolderDBO
+import com.sidspace.stary.data.mapper.toLocalMovie
+import com.sidspace.stary.data.mapper.toMovie
+import com.sidspace.stary.data.mapper.toMovieDBO
 import com.sidspace.stary.data.model.database.CollectionMovieDBO
 import com.sidspace.stary.data.model.database.FolderMovieRef
 import com.sidspace.stary.data.utils.safeCall
@@ -13,11 +17,6 @@ import com.sidspace.stary.domain.model.LocalResult
 import com.sidspace.stary.domain.model.Movie
 import com.sidspace.stary.domain.model.Result
 import com.sidspace.stary.movie.domain.repository.MovieRepository
-import com.sidspace.stary.data.mapper.toDomain
-import com.sidspace.stary.data.mapper.toFolderFromFolderDBO
-import com.sidspace.stary.data.mapper.toLocalMovie
-import com.sidspace.stary.data.mapper.toMovie
-import com.sidspace.stary.data.mapper.toMovieDBO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -59,7 +58,7 @@ class MovieRepositoryImpl @Inject constructor(
 
         try {
             movieDao.getFolders().collect {
-                emit(Result.Success(it.map{ it.toFolderFromFolderDBO(it.movies)}))
+                emit(Result.Success(it.map { it.toFolderFromFolderDBO(it.movies) }))
             }
         } catch (e: Exception) {
             emit(Result.Error)
@@ -74,22 +73,23 @@ class MovieRepositoryImpl @Inject constructor(
         idMovie: Long,
         idFolder: Long
     ): Result<Unit> {
-       return try{
-           movieDao.removeMovieFromFolder(FolderMovieRef(idMovie, idFolder))
-           Result.Success(Unit)
-       }catch (e: Exception){
-           Result.Error
-       }
+        return try {
+            movieDao.removeMovieFromFolder(FolderMovieRef(idMovie, idFolder))
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error
+        }
     }
 
     override suspend fun updateMovieBookmark(
         idMovie: Long,
         isBookmark: Boolean
     ): Result<Unit> {
-        return try{
+        return try {
             movieDao.updateIsBookmark(idMovie, isBookmark, System.currentTimeMillis())
             Result.Success(Unit)
-        }catch (e: Exception){
+        } catch (e: Exception) {
+            e.printStackTrace()
             Result.Error
         }
     }
@@ -98,10 +98,10 @@ class MovieRepositoryImpl @Inject constructor(
         idMovie: Long,
         isViewed: Boolean
     ): Result<Unit> {
-        return try{
+        return try {
             movieDao.updateIsViewed(idMovie, isViewed, System.currentTimeMillis())
             Result.Success(Unit)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Result.Error
         }
     }
@@ -121,7 +121,7 @@ class MovieRepositoryImpl @Inject constructor(
 
 
             Result.Success(Unit)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Result.Error
         }
     }

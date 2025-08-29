@@ -14,7 +14,11 @@ data class ListMoviesState(
     val isShowFilter: Boolean = false,
     val sortType: SortType = SortType.NONE,
     val sortDirection: SortDirection = SortDirection.DESCENDING
-)
+){
+    companion object{
+        const val SHIMMER_ITEMS = 8
+    }
+}
 
 
 

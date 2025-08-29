@@ -1,6 +1,6 @@
 package com.sidspace.stary.ui.enum
 
-enum class ViewMode{
+enum class ViewMode {
     LIST,
     GRID
 }

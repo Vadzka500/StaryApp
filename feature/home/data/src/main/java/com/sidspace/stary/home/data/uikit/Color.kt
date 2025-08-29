@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber")
+
 package com.sidspace.stary.home.data.uikit
 
 import androidx.compose.ui.graphics.Color

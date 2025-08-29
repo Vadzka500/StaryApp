@@ -8,4 +8,8 @@ import com.sidspace.stary.ui.model.ResultData
 data class CollectionsState(
     val collectionResult: ResultData<List<CollectionUi>> = ResultData.Loading,
     val countCollection: Int = 0,
-)
+){
+    companion object{
+        const val SHIMMER_ITEMS = 8
+    }
+}

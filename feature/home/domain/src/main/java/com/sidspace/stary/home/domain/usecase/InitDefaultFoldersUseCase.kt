@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 
 class InitDefaultFoldersUseCase @Inject constructor(private val repository: HomeRepository) {
-    suspend operator fun invoke(){
+    suspend operator fun invoke() {
         repository.initDefaultFolders()
     }
 }

@@ -1,4 +1,4 @@
-package com.sidspace.moviesapi.models.movie
+package com.sidspace.stary.data.model.api.movie
 
 import kotlinx.serialization.Serializable
 

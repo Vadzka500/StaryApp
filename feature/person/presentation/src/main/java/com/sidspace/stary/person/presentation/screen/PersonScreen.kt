@@ -246,10 +246,12 @@ fun InitPersonScreen(modifier: Modifier = Modifier, person: PersonUi) {
                     )
                 }
 
-                Row() {
+                Row {
                     if (person.age != null) {
                         Text(
-                            text = person.age?.let { if (it % 10 == 1) "$it год" else if (it % 10 in 2..4) "$it года" else "$it лет" }
+                            text = person.age?.let { if (it % 10 == 1) "$it год"
+                            else if (it % 10 in 2..4) "$it года"
+                            else "$it лет" }
                                 ?: "0",
                             fontFamily = poppinsFort,
                             fontWeight = FontWeight.Normal,

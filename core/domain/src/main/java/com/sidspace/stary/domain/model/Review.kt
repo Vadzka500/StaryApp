@@ -2,7 +2,7 @@ package com.sidspace.stary.domain.model
 
 
 data class Review(
-    val id:Long,
+    val id: Long,
     val movieId: Long,
     val title: String,
     val type: String,

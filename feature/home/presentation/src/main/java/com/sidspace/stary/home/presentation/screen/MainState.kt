@@ -10,4 +10,11 @@ data class MainState(
     val listTopBanned: ResultData<List<MoviePreviewUi>> = ResultData.Loading,
     val listHomePage: ResultData<Map<Pair<String, String>, ResultData<List<MoviePreviewUi>>?>> = ResultData.Loading,
     val listCollection: ResultData<List<CollectionUi>> = ResultData.Loading
-)
+){
+    companion object{
+        const val TOP_BANNED_HORIZONTAL_PADDING = 90
+        const val TOP_BANNED_HEIGHT_SCALE = 1.5
+        const val TOP_BANNED_TEXT_HEIGHT = 30
+        const val MAX_MOVIES = 10
+    }
+}
