@@ -35,20 +35,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sidspace.stary.ui.enum.SortDirection
-import com.sidspace.stary.ui.enum.SortType
-import com.sidspace.stary.ui.enum.ViewMode
+import com.sidspace.stary.ui.enums.SortDirection
+import com.sidspace.stary.ui.enums.SortType
+import com.sidspace.stary.ui.enums.ViewMode
 import com.sidspace.stary.ui.uikit.Purple40
 import com.sidspace.stary.ui.uikit.poppinsFort
 
-data class FilterStateCallback(
-    val toggleSortDirection: () -> Unit,
-    val setSortType: (SortType) -> Unit,
-    val sortList: () -> Unit,
-    val onHideFilter: () -> Unit,
-    val setGridView: () -> Unit,
-    val setListView: () -> Unit
-)
+
 
 @Composable
 fun FilterSection(
@@ -291,3 +284,12 @@ fun FilterSort(
             )
     }
 }
+
+data class FilterStateCallback(
+    val toggleSortDirection: () -> Unit,
+    val setSortType: (SortType) -> Unit,
+    val sortList: () -> Unit,
+    val onHideFilter: () -> Unit,
+    val setGridView: () -> Unit,
+    val setListView: () -> Unit
+)

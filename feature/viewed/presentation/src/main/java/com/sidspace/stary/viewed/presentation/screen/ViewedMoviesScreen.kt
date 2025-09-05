@@ -35,7 +35,7 @@ import com.sidspace.stary.ui.FilterStateCallback
 import com.sidspace.stary.ui.InitList
 import com.sidspace.stary.ui.R
 import com.sidspace.stary.ui.ShimmerGridList
-import com.sidspace.stary.ui.enum.ViewMode
+import com.sidspace.stary.ui.enums.ViewMode
 import com.sidspace.stary.ui.model.MovieUi
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.uikit.poppinsFort
@@ -96,36 +96,41 @@ fun ViewedMoviesScreen(
             }
         )
 
-        val filterStateCallback = FilterStateCallback(
-            onHideFilter = {
-                viewedMoviesViewModel.onIntent(ViewedMovieIntent.IsShowFilters(false))
-            },
-            setGridView = {
-                viewedMoviesViewModel.onIntent(ViewedMovieIntent.SetGridView)
-            },
-            setListView = {
-                viewedMoviesViewModel.onIntent(ViewedMovieIntent.SetListView)
-            },
-            setSortType = {
-                viewedMoviesViewModel.onIntent(ViewedMovieIntent.SetSortType(it))
-            },
-            sortList = {
-                viewedMoviesViewModel.onIntent(ViewedMovieIntent.SortMovies)
-            },
-            toggleSortDirection = {
-                viewedMoviesViewModel.onIntent(ViewedMovieIntent.ToggleSortDirection)
-            }
-        )
-
-        FilterSection(
-            modifier = Modifier.padding(top = topHeight + 5.dp),
-            isVisibleFilter = state.value.isShowFilter,
-            viewType = state.value.viewMode,
-            isShowSort = true,
-            filterStateCallback = filterStateCallback
-        )
+        ViewedFilterSection(state = state.value, viewedMoviesViewModel = viewedMoviesViewModel, topHeight = topHeight)
     }
 
+}
+
+@Composable
+fun ViewedFilterSection(state: ViewedMovieState, viewedMoviesViewModel: ViewedMoviesViewModel, topHeight: Dp) {
+    val filterStateCallback = FilterStateCallback(
+        onHideFilter = {
+            viewedMoviesViewModel.onIntent(ViewedMovieIntent.IsShowFilters(false))
+        },
+        setGridView = {
+            viewedMoviesViewModel.onIntent(ViewedMovieIntent.SetGridView)
+        },
+        setListView = {
+            viewedMoviesViewModel.onIntent(ViewedMovieIntent.SetListView)
+        },
+        setSortType = {
+            viewedMoviesViewModel.onIntent(ViewedMovieIntent.SetSortType(it))
+        },
+        sortList = {
+            viewedMoviesViewModel.onIntent(ViewedMovieIntent.SortMovies)
+        },
+        toggleSortDirection = {
+            viewedMoviesViewModel.onIntent(ViewedMovieIntent.ToggleSortDirection)
+        }
+    )
+
+    FilterSection(
+        modifier = Modifier.padding(top = topHeight + 5.dp),
+        isVisibleFilter = state.isShowFilter,
+        viewType = state.viewMode,
+        isShowSort = true,
+        filterStateCallback = filterStateCallback
+    )
 }
 
 @Composable

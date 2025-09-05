@@ -3,6 +3,8 @@ package com.sidspace.stary.account.presentation.screen
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
@@ -80,12 +82,13 @@ fun AccountScreen(
     ) { result ->
 
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        try {
+
+        runCatching {
             val account = task.getResult(ApiException::class.java)
             accountViewModel.onIntent(AccountIntent.OnSignInResult(account))
-        } catch (e: Exception) {
+        }.onFailure { error ->
             accountViewModel.onIntent(AccountIntent.OnSignInResult(null))
-            e.printStackTrace()
+            error.printStackTrace()
         }
     }
 
@@ -294,60 +297,52 @@ fun ListOfCollectionBlock(
     countBookmark: Int,
     countViewed: Int,
     countFolder: Long,
-    modifier: Modifier = Modifier,
     accountViewModel: AccountViewModel = hiltViewModel(),
 ) {
 
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable {
-                accountViewModel.onIntent(AccountIntent.ToBookmarkScreen)
-            }
-            .padding(horizontal = 16.dp)
-            .padding(vertical = 16.dp), verticalAlignment = Alignment.CenterVertically
-    ) {
+    AccountRowContent(
+        idImg = com.sidspace.stary.ui.R.drawable.ic_bookmark_fill,
+        idStr = R.string.bookmark_str,
+        count = countBookmark,
+        onClick = {
+            accountViewModel.onIntent(AccountIntent.ToBookmarkScreen)
+        }
+    )
+    AccountRowContent(
+        idImg = com.sidspace.stary.ui.R.drawable.ic_visibility_fill,
+        idStr = R.string.viewed_str,
+        count = countViewed,
+        onClick = {
+            accountViewModel.onIntent(AccountIntent.ToViewedScreen)
+        }
+    )
+    AccountRowContent(
+        idImg = com.sidspace.stary.ui.R.drawable.ic_folder,
+        idStr = R.string.my_collections_str,
+        count = countFolder.toInt(),
+        onClick = {
+            accountViewModel.onIntent(AccountIntent.ToFoldersScreen)
+        }
+    )
 
-        Icon(
-            painter = painterResource(
-                com.sidspace.stary.ui.R.drawable.ic_bookmark_fill
-            ),
-            contentDescription = null,
-            modifier = Modifier
-                .size(25.dp),
-            tint = MaterialTheme.colorScheme.onSecondaryContainer
-        )
+}
 
-        Text(
-            text = stringResource(R.string.bookmark_str),
-            modifier = Modifier.padding(start = 16.dp),
-            fontWeight = FontWeight.SemiBold,
-            fontFamily = poppinsFort,
-            fontSize = 14.sp
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Text(
-            text = countBookmark.toString(), fontWeight = FontWeight.SemiBold,
-            fontFamily = poppinsFort,
-            fontSize = 14.sp
-        )
-    }
-
+@Composable
+fun AccountRowContent(@DrawableRes idImg: Int, @StringRes idStr: Int, count: Int, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                accountViewModel.onIntent(AccountIntent.ToViewedScreen)
+                onClick()
             }
             .padding(horizontal = 16.dp)
-            .padding(vertical = 16.dp), verticalAlignment = Alignment.CenterVertically
+            .padding(vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
 
         Icon(
             painter = painterResource(
-                com.sidspace.stary.ui.R.drawable.ic_visibility_fill
+                idImg
             ),
             contentDescription = null,
             modifier = Modifier
@@ -356,7 +351,7 @@ fun ListOfCollectionBlock(
         )
 
         Text(
-            text = stringResource(R.string.viewed_str),
+            text = stringResource(idStr),
             modifier = Modifier.padding(start = 16.dp),
             fontWeight = FontWeight.SemiBold,
             fontFamily = poppinsFort,
@@ -366,49 +361,13 @@ fun ListOfCollectionBlock(
         Spacer(modifier = Modifier.weight(1f))
 
         Text(
-            text = countViewed.toString(), fontWeight = FontWeight.SemiBold,
-            fontFamily = poppinsFort,
-            fontSize = 14.sp
-        )
-    }
-
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { accountViewModel.onIntent(AccountIntent.ToFoldersScreen) }
-            .padding(horizontal = 16.dp)
-            .padding(vertical = 16.dp), verticalAlignment = Alignment.CenterVertically
-    ) {
-
-        Icon(
-            painter = painterResource(
-                com.sidspace.stary.ui.R.drawable.ic_folder
-            ),
-            contentDescription = null,
-            modifier = Modifier
-                .size(25.dp),
-            tint = MaterialTheme.colorScheme.onSecondaryContainer
-        )
-
-        Text(
-            text = stringResource(R.string.my_collections_str),
-            modifier = Modifier.padding(start = 16.dp),
+            text = count.toString(),
             fontWeight = FontWeight.SemiBold,
             fontFamily = poppinsFort,
             fontSize = 14.sp
         )
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Text(
-            text = countFolder.toString(), fontWeight = FontWeight.SemiBold,
-            fontFamily = poppinsFort,
-            fontSize = 14.sp
-        )
-
-
     }
+
 }
 
 

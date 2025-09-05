@@ -1,4 +1,4 @@
-package com.sidspace.stary.ui.enum
+package com.sidspace.stary.ui.enums
 
 enum class ViewMode {
     LIST,

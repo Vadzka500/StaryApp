@@ -4,8 +4,8 @@ package com.sidspace.stary.viewed.presentation.screen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sidspace.stary.domain.model.Result
-import com.sidspace.stary.ui.enum.ViewMode
-import com.sidspace.stary.ui.enum.toggle
+import com.sidspace.stary.ui.enums.ViewMode
+import com.sidspace.stary.ui.enums.toggle
 import com.sidspace.stary.ui.mapper.toMovieData
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.sort.sortListMovies

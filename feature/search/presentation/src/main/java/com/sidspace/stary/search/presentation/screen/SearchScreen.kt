@@ -40,7 +40,7 @@ import com.sidspace.stary.ui.FilterSection
 import com.sidspace.stary.ui.FilterStateCallback
 import com.sidspace.stary.ui.InitList
 import com.sidspace.stary.ui.ShimmerGridList
-import com.sidspace.stary.ui.enum.ViewMode
+import com.sidspace.stary.ui.enums.ViewMode
 import com.sidspace.stary.ui.model.MovieUi
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.utils.getSystemBarHeight
@@ -100,47 +100,54 @@ fun SearchScreen(
 
         }
 
-        val filterStateCallback = FilterStateCallback(
-            onHideFilter = {
-                searchViewModel.onIntent(IsShowFilter(false))
-            },
-            setGridView = {
-                searchViewModel.onIntent(SetGridViewMode)
-            },
-            setListView = {
-                searchViewModel.onIntent(SetListViewMode)
-            },
-            setSortType = {
-
-            },
-            sortList = {
-
-            },
-            toggleSortDirection = {
-
-            }
-        )
-
-        FilterSection(
-            modifier = Modifier.padding(top = getSystemBarHeight() + topHeight),
-            isVisibleFilter = state.value.isVisibleFilter,
-            viewType = state.value.viewMode,
-            isShowSort = false,
-            filterStateCallback = filterStateCallback
-        )
+        SearchFilterSection(state = state.value, searchViewModel = searchViewModel, topHeight = topHeight)
     }
 
 }
 
 @Composable
-fun SearchContent(result : ResultData<List<MovieUi>>,
-                   viewMode: ViewMode,
-                   onError:() -> Unit,
-                   onSelectMovie:(Long) -> Unit) {
+fun SearchFilterSection(state: SearchState, searchViewModel: SearchViewModel, topHeight: Dp) {
+    val filterStateCallback = FilterStateCallback(
+        onHideFilter = {
+            searchViewModel.onIntent(IsShowFilter(false))
+        },
+        setGridView = {
+            searchViewModel.onIntent(SetGridViewMode)
+        },
+        setListView = {
+            searchViewModel.onIntent(SetListViewMode)
+        },
+        setSortType = {
+
+        },
+        sortList = {
+
+        },
+        toggleSortDirection = {
+
+        }
+    )
+
+    FilterSection(
+        modifier = Modifier.padding(top = getSystemBarHeight() + topHeight),
+        isVisibleFilter = state.isVisibleFilter,
+        viewType = state.viewMode,
+        isShowSort = false,
+        filterStateCallback = filterStateCallback
+    )
+}
+
+@Composable
+fun SearchContent(
+    result: ResultData<List<MovieUi>>,
+    viewMode: ViewMode,
+    onError: () -> Unit,
+    onSelectMovie: (Long) -> Unit
+) {
     when (val data = result) {
 
         is ResultData.Error -> {
-           onError()
+            onError()
         }
 
         ResultData.Loading -> {
@@ -149,7 +156,7 @@ fun SearchContent(result : ResultData<List<MovieUi>>,
 
         is ResultData.Success -> {
             InitList(modifier = Modifier, list = data.data, onClick = { id ->
-              onSelectMovie(id)
+                onSelectMovie(id)
             }, viewType = viewMode)
         }
 

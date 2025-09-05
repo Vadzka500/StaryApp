@@ -79,15 +79,11 @@ fun PersonScreen(
     }
 
 
-    InitScreen(
-        state = state,
-        modifier = modifier,
-        onSelectMovie = {
-            personViewModel.onIntent(PersonIntent.OnSelectMovie(it))
-        }, onError = {
-            personViewModel.onIntent(PersonIntent.OnError)
-        }
-    )
+    InitScreen(state = state, modifier = modifier, onSelectMovie = {
+        personViewModel.onIntent(PersonIntent.OnSelectMovie(it))
+    }, onError = {
+        personViewModel.onIntent(PersonIntent.OnError)
+    })
 }
 
 @Composable
@@ -133,9 +129,7 @@ fun InitScreen(
 
                 is ResultData.Success -> {
                     ShowMovies(
-                        title = stringResource(R.string.movies),
-                        list = result.data,
-                        onSelectMovie = onSelectMovie
+                        title = stringResource(R.string.movies), list = result.data, onSelectMovie = onSelectMovie
                     )
                 }
 
@@ -159,9 +153,7 @@ fun InitScreen(
 
                 is ResultData.Success -> {
                     ShowMovies(
-                        title = stringResource(R.string.serials),
-                        list = result.data,
-                        onSelectMovie = onSelectMovie
+                        title = stringResource(R.string.serials), list = result.data, onSelectMovie = onSelectMovie
                     )
                 }
 
@@ -177,7 +169,6 @@ fun InitScreen(
 @Composable
 fun InitPersonScreen(modifier: Modifier = Modifier, person: PersonUi) {
 
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -186,9 +177,8 @@ fun InitPersonScreen(modifier: Modifier = Modifier, person: PersonUi) {
         Row {
 
             AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(person.photo)
-                    .crossfade(true).build(), contentDescription = null,
+                model = ImageRequest.Builder(LocalContext.current).data(person.photo).crossfade(true).build(),
+                contentDescription = null,
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier
                     .padding(start = 16.dp)
@@ -201,93 +191,89 @@ fun InitPersonScreen(modifier: Modifier = Modifier, person: PersonUi) {
 
             )
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp)
-            ) {
-                Text(
-                    text = person.name!!,
-                    modifier.fillMaxWidth(),
-                    fontFamily = poppinsFort,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 20.sp
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-
-                if (!person.profession.isNullOrEmpty())
-                    Text(
-                        text = person.profession!!.joinToString(
-                            ", ", transform = { it }),
-                        modifier
-                            .fillMaxWidth()
-                            .padding(top = 4.dp),
-                        fontFamily = poppinsFort,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 14.sp
-                    )
-
-                if (person.birthday != null) {
-
-                    val isoFormat = DateTimeFormatter.ISO_DATE_TIME
-                    val date = ZonedDateTime.parse(person.birthday, isoFormat).toLocalDate()
-
-                    val firstApiFormat =
-                        DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.getDefault())
-                    val textDate = date.format(firstApiFormat)
-
-                    Text(
-                        text = textDate,
-                        fontFamily = poppinsFort,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 14.sp
-                    )
-                }
-
-                Row {
-                    if (person.age != null) {
-                        Text(
-                            text = person.age?.let { if (it % 10 == 1) "$it год"
-                            else if (it % 10 in 2..4) "$it года"
-                            else "$it лет" }
-                                ?: "0",
-                            fontFamily = poppinsFort,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 14.sp
-                        )
-                        if (person.growth != null) Text(
-                            text = "•",
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-                            modifier = Modifier.padding(horizontal = 6.dp)
-                        )
-                    }
-
-                    if (person.growth != null)
-                        Text(
-                            text = person.growth.toString() + " см",
-                            fontFamily = poppinsFort,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 14.sp
-                        )
-                }
-
-            }
+            InitPersonData(modifier = modifier, person = person)
 
         }
     }
+}
+
+@Composable
+fun InitPersonData(modifier: Modifier = Modifier, person: PersonUi) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp)
+    ) {
+        Text(
+            text = person.name!!,
+            modifier.fillMaxWidth(),
+            fontFamily = poppinsFort,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 20.sp
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
 
+        if (!person.profession.isNullOrEmpty()) Text(
+            text = person.profession!!.joinToString(
+                ", ", transform = { it }),
+            modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp),
+            fontFamily = poppinsFort,
+            fontWeight = FontWeight.Normal,
+            fontSize = 14.sp
+        )
+
+        if (person.birthday != null) {
+
+            val isoFormat = DateTimeFormatter.ISO_DATE_TIME
+            val date = ZonedDateTime.parse(person.birthday, isoFormat).toLocalDate()
+
+            val firstApiFormat = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.getDefault())
+            val textDate = date.format(firstApiFormat)
+
+            Text(
+                text = textDate, fontFamily = poppinsFort, fontWeight = FontWeight.Normal, fontSize = 14.sp
+            )
+        }
+
+        InitPersonGrowthAndAge(person)
+
+    }
+}
+
+@Composable
+fun InitPersonGrowthAndAge(person: PersonUi) {
+    Row {
+        if (person.age != null) {
+            Text(text = person.age?.let {
+                if (it % 10 == 1) "$it год"
+                else if (it % 10 in 2..4) "$it года"
+                else "$it лет"
+            } ?: "0", fontFamily = poppinsFort, fontWeight = FontWeight.Normal, fontSize = 14.sp)
+            if (person.growth != null) Text(
+                text = "•",
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                modifier = Modifier.padding(horizontal = 6.dp)
+            )
+        }
+
+        if (person.growth != null) Text(
+            text = person.growth.toString() + " см",
+            fontFamily = poppinsFort,
+            fontWeight = FontWeight.Normal,
+            fontSize = 14.sp
+        )
+    }
 }
 
 @Composable
 
 fun ShowMovies(
-    title: String,
-    list: List<MovieUi>,
-    modifier: Modifier = Modifier,
-    onSelectMovie: (Long) -> Unit
+    title: String, list: List<MovieUi>, modifier: Modifier = Modifier, onSelectMovie: (Long) -> Unit
 ) {
     if (list.isNotEmpty()) MovieRow(
         list = list,
@@ -300,17 +286,11 @@ fun ShowMovies(
 
 @Composable
 fun MovieRow(
-    list: List<MovieUi>,
-    text: String,
-    modifier: Modifier = Modifier,
-    onSelectMovie: (Long) -> Unit
+    list: List<MovieUi>, text: String, modifier: Modifier = Modifier, onSelectMovie: (Long) -> Unit
 ) {
     Column(modifier = modifier) {
         HorizontalList(
-            label = text,
-            list = list.map { it.toMoviePreviewUi() },
-            onSelectMovie = onSelectMovie,
-            modifier = modifier
+            label = text, list = list.map { it.toMoviePreviewUi() }, onSelectMovie = onSelectMovie, modifier = modifier
         )
     }
 }
@@ -320,8 +300,7 @@ fun MovieRow(
 fun LoadingScreen(modifier: Modifier = Modifier) {
 
     Column(
-        modifier = Modifier
-            .padding(top = 30.dp)
+        modifier = Modifier.padding(top = 30.dp)
     ) {
 
         Row {

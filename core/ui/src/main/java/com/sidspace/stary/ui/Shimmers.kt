@@ -27,11 +27,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import com.sidspace.stary.ui.uikit.Dimens
 
 const val HORIZONTAL_SHIMMER_ITEMS_COUNT = 5
 const val GRID_SHIMMER_ITEMS_COUNT = 10
-const val GRID_CARD_SHIMMER_PADDING = 22
-const val GRID_CARD_SHIMMER_HEIGHT_SCALE = 1.5
 const val GRID_CARD_SHIMMER_TEXT_HEIGHT = 30
 
 @Composable
@@ -56,8 +55,8 @@ fun MovieCardGridShimmer(
 ) {
 
     val configuration = LocalConfiguration.current
-    val width = configuration.screenWidthDp / 2 - GRID_CARD_SHIMMER_PADDING
-    val height = (configuration.screenWidthDp / 2 - GRID_CARD_SHIMMER_PADDING) * GRID_CARD_SHIMMER_HEIGHT_SCALE
+    val width = configuration.screenWidthDp / 2 - Dimens.HorizontalCardPadding
+    val height = (configuration.screenWidthDp / 2 - Dimens.HorizontalCardPadding) * Dimens.ImageHeightScaleByWidth
     val boxHeight = height + GRID_CARD_SHIMMER_TEXT_HEIGHT
 
     Column(

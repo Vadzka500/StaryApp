@@ -177,7 +177,8 @@ fun ShimmerScreen(modifier: Modifier = Modifier) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(400.dp), contentAlignment = Alignment.Center
+                .height(400.dp),
+            contentAlignment = Alignment.Center
         ) {
             Box(
                 modifier = Modifier
@@ -306,7 +307,8 @@ fun InitMovie(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(400.dp), contentAlignment = Alignment.Center
+                .height(400.dp),
+            contentAlignment = Alignment.Center
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current).data(movie.backdrop).crossfade(true).build(),
@@ -319,11 +321,13 @@ fun InitMovie(
                     .graphicsLayer { alpha = 0.99f }
                     .drawWithContent {
                         val colors = listOf(
-                            Color.Black, Color.Transparent
+                            Color.Black,
+                            Color.Transparent
                         )
                         drawContent()
                         drawRect(
-                            brush = Brush.verticalGradient(colors), blendMode = BlendMode.DstIn
+                            brush = Brush.verticalGradient(colors),
+                            blendMode = BlendMode.DstIn
                         )
                     },
                 contentScale = ContentScale.Crop,

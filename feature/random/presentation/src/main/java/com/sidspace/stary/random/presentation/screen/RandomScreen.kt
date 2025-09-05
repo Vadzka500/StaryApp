@@ -84,6 +84,7 @@ import com.sidspace.stary.random.presentation.FiltersPopup
 import com.sidspace.stary.random.presentation.R
 import com.sidspace.stary.ui.model.MoviePreviewUi
 import com.sidspace.stary.ui.model.ResultData
+import com.sidspace.stary.ui.uikit.Dimens
 import com.sidspace.stary.ui.uikit.Purple40
 import com.sidspace.stary.ui.uikit.poppinsFort
 
@@ -396,7 +397,7 @@ private fun RandomCardPager(
     onSelectMovie: (Long) -> Unit,
 ) {
     val configuration = LocalConfiguration.current
-    val height = (configuration.screenWidthDp - RandomState.PAGER_HORIZONTAL_PADDING) * RandomState.PAGER_HEIGHT_SCALE
+    val height = (configuration.screenWidthDp - RandomState.PAGER_HORIZONTAL_PADDING) * Dimens.ImageHeightScaleByWidth
 
     HorizontalPager(
         modifier = modifier

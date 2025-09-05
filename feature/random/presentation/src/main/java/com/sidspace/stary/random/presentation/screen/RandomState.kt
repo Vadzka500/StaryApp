@@ -26,6 +26,5 @@ data class RandomState(
         const val OLDEST_YEAR_OF_MOVIE = 1874F
         const val DELAY_REPEAT_ANIMATION_SCROLL = 1500L
         const val PAGER_HORIZONTAL_PADDING = 140
-        const val PAGER_HEIGHT_SCALE = 1.5
     }
 }

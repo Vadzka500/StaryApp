@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -30,6 +31,8 @@ import com.sidspace.stary.ui.FilterSection
 import com.sidspace.stary.ui.FilterStateCallback
 import com.sidspace.stary.ui.InitList
 import com.sidspace.stary.ui.MovieCardGridShimmer
+import com.sidspace.stary.ui.enums.ViewMode
+import com.sidspace.stary.ui.model.MovieUi
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.uikit.poppinsFort
 import com.sidspace.stary.ui.utils.getSystemBarHeight
@@ -126,32 +129,11 @@ fun AllMoviesScreen(
 
     Box(modifier = modifier.padding(top = 5.dp)) {
 
-        when (val data = state.value.list) {
-
-            is ResultData.Error -> {
-                listMoviesViewModel.onIntent(ListMoviesIntent.ToErrorScreen)
-            }
-
-            ResultData.Loading -> {
-                LoadList(modifier = Modifier.padding(top = 54.dp))
-            }
-
-            is ResultData.Success -> {
-                InitList(
-                    modifier = Modifier.padding(top = 54.dp),
-                    list = data.data,
-                    onClick = { id ->
-                        listMoviesViewModel.onIntent(ListMoviesIntent.OnSelectMovie(id))
-
-                    },
-                    viewType = state.value.viewMode
-                )
-            }
-
-            ResultData.None -> {
-
-            }
-        }
+        ListContent(result = state.value.list, viewMode = state.value.viewMode, onError = {
+            listMoviesViewModel.onIntent(ListMoviesIntent.ToErrorScreen)
+        }, onSelectMovie = {
+            listMoviesViewModel.onIntent(ListMoviesIntent.OnSelectMovie(it))
+        })
 
         ListMoviesToolbar(
             modifier = Modifier
@@ -167,6 +149,13 @@ fun AllMoviesScreen(
         )
     }
 
+    MovieFilterSection(state = state.value, listMoviesViewModel = listMoviesViewModel, topHeight = topHeight)
+
+
+}
+
+@Composable
+fun MovieFilterSection(state: ListMoviesState, listMoviesViewModel: ListMoviesViewModel, topHeight: Dp) {
     val filterStateCallback = FilterStateCallback(
         onHideFilter = {
             listMoviesViewModel.onIntent(ListMoviesIntent.IsShowFilter(false))
@@ -190,13 +179,48 @@ fun AllMoviesScreen(
 
     FilterSection(
         modifier = Modifier.padding(top = getSystemBarHeight() + topHeight),
-        isVisibleFilter = state.value.isShowFilter,
-        viewType = state.value.viewMode,
+        isVisibleFilter = state.isShowFilter,
+        viewType = state.viewMode,
         isShowSort = true,
         filterStateCallback = filterStateCallback,
-        sortType = state.value.sortType,
-        sortDirection = state.value.sortDirection
+        sortType = state.sortType,
+        sortDirection = state.sortDirection
     )
+}
+
+@Composable
+fun ListContent(
+    result: ResultData<List<MovieUi>>,
+    viewMode: ViewMode,
+    onError: () -> Unit,
+    onSelectMovie: (Long) -> Unit
+) {
+    when (val data = result) {
+
+        is ResultData.Error -> {
+            onError()
+        }
+
+        ResultData.Loading -> {
+            LoadList(modifier = Modifier.padding(top = 54.dp))
+        }
+
+        is ResultData.Success -> {
+            InitList(
+                modifier = Modifier.padding(top = 54.dp),
+                list = data.data,
+                onClick = { id ->
+                    onSelectMovie(id)
+
+                },
+                viewType = viewMode
+            )
+        }
+
+        ResultData.None -> {
+
+        }
+    }
 }
 
 @Composable

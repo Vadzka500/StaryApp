@@ -1,7 +1,7 @@
 package com.sidspace.stary.ui.sort
 
-import com.sidspace.stary.ui.enum.SortDirection
-import com.sidspace.stary.ui.enum.SortType
+import com.sidspace.stary.ui.enums.SortDirection
+import com.sidspace.stary.ui.enums.SortType
 import com.sidspace.stary.ui.model.MovieUi
 
 
@@ -38,7 +38,7 @@ fun sortListMovies(
         }
 
         SortType.RATING -> {
-            if (sortDirection == com.sidspace.stary.ui.enum.SortDirection.DESCENDING) {
+            if (sortDirection == com.sidspace.stary.ui.enums.SortDirection.DESCENDING) {
 
                 list.sortedBy { it.scoreKp }
                     .reversed()

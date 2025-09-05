@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 class AccountRepositoryImpl @Inject constructor(
     private val movieApiService: MovieApi,
-    private val movieDatabase: MovieDao
+    private val movieDatabase: MovieDao,
 ) : AccountRepository {
     override suspend fun getBookmarkMovies(): Flow<Result<List<Movie>>> = flow {
         emit(Result.Loading)

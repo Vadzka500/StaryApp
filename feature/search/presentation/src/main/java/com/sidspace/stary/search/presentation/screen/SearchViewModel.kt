@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sidspace.stary.search.domain.usecase.GetSearchedMoviesUseCase
 import com.sidspace.stary.domain.model.Result
-import com.sidspace.stary.ui.enum.ViewMode
+import com.sidspace.stary.ui.enums.ViewMode
 import com.sidspace.stary.ui.mapper.toMovieData
 import com.sidspace.stary.ui.model.ResultData
 import dagger.hilt.android.lifecycle.HiltViewModel

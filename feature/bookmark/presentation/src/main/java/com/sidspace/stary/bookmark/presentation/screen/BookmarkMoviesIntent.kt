@@ -1,6 +1,6 @@
 package com.sidspace.stary.bookmark.presentation.screen
 
-import com.sidspace.stary.ui.enum.SortType
+import com.sidspace.stary.ui.enums.SortType
 
 
 sealed interface BookmarkMoviesIntent {

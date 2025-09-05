@@ -1,7 +1,7 @@
 package com.sidspace.stary.search.presentation.screen
 
 
-import com.sidspace.stary.ui.enum.ViewMode
+import com.sidspace.stary.ui.enums.ViewMode
 import com.sidspace.stary.ui.model.MovieUi
 import com.sidspace.stary.ui.model.ResultData
 

@@ -3,23 +3,28 @@ package com.sidspace.stary.data.utils
 import retrofit2.Response
 
 suspend fun <T> safeCall(fund: suspend () -> Response<T>): ResultRemote<T> {
-    return try {
-        val response = fund()
 
-        if (response.isSuccessful) {
-            val data = response.body()
-            if (data != null) {
-                ResultRemote.Success(data)
+    return runCatching {
+        fund()
+    }.fold(
+        onSuccess = { response ->
+            if (response.isSuccessful) {
+                val data = response.body()
+                if (data != null) {
+                    ResultRemote.Success(data)
+                } else {
+                    ResultRemote.Error("")
+                }
             } else {
-                ResultRemote.Error("")
+                ResultRemote.Error(response.code())
             }
-        } else {
-            ResultRemote.Error(response.code())
+        },
+        onFailure = { error ->
+            error.printStackTrace()
+            ResultRemote.Error(error.message)
+
         }
-    } catch (e: Exception) {
-        e.printStackTrace()
-        ResultRemote.Error(e.message)
-    }
+    )
 }
 
 inline fun <T, R> ResultRemote<T>.mapSuccess(transform: (T) -> R): ResultRemote<R> {

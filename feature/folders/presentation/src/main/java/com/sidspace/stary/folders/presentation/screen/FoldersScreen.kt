@@ -116,41 +116,9 @@ fun UserCollectionsScreen(
 
 
         Column(modifier = Modifier.fillMaxSize()) {
-            Row(
-                modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Icon(
-                    imageVector = Icons.Default.ArrowBackIosNew,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(
-                            CircleShape
-                        )
-                        .clickable {
-                            foldersViewModel.onIntent(FoldersIntent.OnBack)
-                        }
-                        .padding(8.dp))
-
-
-                Text(
-                    stringResource(R.string.my_collection),
-                    modifier = Modifier.padding(start = 16.dp),
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = poppinsFort,
-                    fontSize = 24.sp,
-                )
-
-                Text(
-                    count.toString(),
-                    modifier = Modifier.padding(start = 8.dp),
-                    fontWeight = FontWeight.SemiBold,
-                    fontFamily = poppinsFort,
-                    fontSize = 24.sp,
-                )
-            }
+            FolderToolbar(count = count, onBack = {
+                foldersViewModel.onIntent(FoldersIntent.OnBack)
+            })
 
             ShowCollectionList(list = state.value.filters, onSelectFolder = { id ->
                 foldersViewModel.onIntent(FoldersIntent.ToFolderScreen(id))
@@ -172,6 +140,45 @@ fun UserCollectionsScreen(
         ShowCreateFolderBottomSheet(state = state)
     }
 
+}
+
+@Composable
+fun FolderToolbar(count: Int, onBack: () -> Unit) {
+    Row(
+        modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        Icon(
+            imageVector = Icons.Default.ArrowBackIosNew,
+            contentDescription = null,
+            modifier = Modifier
+                .size(40.dp)
+                .clip(
+                    CircleShape
+                )
+                .clickable {
+                    onBack()
+                }
+                .padding(8.dp))
+
+
+        Text(
+            stringResource(R.string.my_collection),
+            modifier = Modifier.padding(start = 16.dp),
+            fontWeight = FontWeight.Bold,
+            fontFamily = poppinsFort,
+            fontSize = 24.sp,
+        )
+
+        Text(
+            count.toString(),
+            modifier = Modifier.padding(start = 8.dp),
+            fontWeight = FontWeight.SemiBold,
+            fontFamily = poppinsFort,
+            fontSize = 24.sp,
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

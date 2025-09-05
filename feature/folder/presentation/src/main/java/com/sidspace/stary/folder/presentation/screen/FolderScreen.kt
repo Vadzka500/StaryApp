@@ -41,6 +41,8 @@ import com.sidspace.stary.ui.FilterSection
 import com.sidspace.stary.ui.FilterStateCallback
 import com.sidspace.stary.ui.InitList
 import com.sidspace.stary.ui.ShimmerGridList
+import com.sidspace.stary.ui.enums.ViewMode
+import com.sidspace.stary.ui.model.MovieUi
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.uikit.poppinsFort
 import kotlinx.coroutines.flow.collectLatest
@@ -90,35 +92,17 @@ fun UserCollectionScreen(
             FolderImage(state.value.folder!!.imageResName!!)
 
 
-            when (val data = state.value.list) {
-
-                is ResultData.Error -> {
+            FolderContent(
+                result = state.value.list,
+                viewMode = state.value.viewMode,
+                countMovies = state.value.countMovies,
+                onError = {
                     folderViewModel.onIntent(FolderIntent.OnError)
+                },
+                onSelectMovie = {
+                    folderViewModel.onIntent(FolderIntent.OnSelectMovie(it))
                 }
-
-                ResultData.Loading -> {
-                    ShimmerGridList(
-                        modifier = Modifier.padding(top = 60.dp),
-                        state.value.countMovies
-                    )
-                }
-
-                is ResultData.Success -> {
-                    InitList(
-                        modifier = Modifier.padding(top = 60.dp),
-                        list = data.data,
-                        onClick = { id ->
-                            folderViewModel.onIntent(FolderIntent.OnSelectMovie(id))
-
-                        },
-                        viewType = state.value.viewMode
-                    )
-                }
-
-                ResultData.None -> {
-
-                }
-            }
+            )
         }
 
 
@@ -139,34 +123,7 @@ fun UserCollectionScreen(
         )
 
 
-        val filterStateCallback = FilterStateCallback(
-            onHideFilter = {
-                folderViewModel.onIntent(FolderIntent.IsShowFilters(false))
-            },
-            setGridView = {
-                folderViewModel.onIntent(FolderIntent.SetGridView)
-            },
-            setListView = {
-                folderViewModel.onIntent(FolderIntent.SetListView)
-            },
-            setSortType = {
-                folderViewModel.onIntent(FolderIntent.SetSortType(it))
-            },
-            sortList = {
-                folderViewModel.onIntent(FolderIntent.SortMovies)
-            },
-            toggleSortDirection = {
-                folderViewModel.onIntent(FolderIntent.ToggleSortDirection)
-            }
-        )
-
-        FilterSection(
-            modifier = Modifier.padding(top = topHeight + 5.dp),
-            isVisibleFilter = state.value.isShowFilter,
-            viewType = state.value.viewMode,
-            isShowSort = true,
-            filterStateCallback = filterStateCallback
-        )
+        FolderFilterSection(state = state.value, folderViewModel = folderViewModel, topHeight = topHeight)
     }
 
     RemoveFolderDialog(state.value.isShowDialog, hideDialog = {
@@ -175,7 +132,77 @@ fun UserCollectionScreen(
         folderViewModel.onIntent(FolderIntent.RemoveFolder)
     })
 
+}
 
+@Composable
+fun FolderContent(
+    result: ResultData<List<MovieUi>>,
+    viewMode: ViewMode,
+    countMovies: Int,
+    onError: () -> Unit,
+    onSelectMovie: (Long) -> Unit
+) {
+    when (val data = result) {
+
+        is ResultData.Error -> {
+            onError()
+        }
+
+        ResultData.Loading -> {
+            ShimmerGridList(
+                modifier = Modifier.padding(top = 60.dp),
+                countMovies
+            )
+        }
+
+        is ResultData.Success -> {
+            InitList(
+                modifier = Modifier.padding(top = 60.dp),
+                list = data.data,
+                onClick = { id ->
+                    onSelectMovie(id)
+
+                },
+                viewType = viewMode
+            )
+        }
+
+        ResultData.None -> {
+
+        }
+    }
+}
+
+@Composable
+fun FolderFilterSection(state: FolderState, folderViewModel: FolderViewModel, topHeight: Dp) {
+    val filterStateCallback = FilterStateCallback(
+        onHideFilter = {
+            folderViewModel.onIntent(FolderIntent.IsShowFilters(false))
+        },
+        setGridView = {
+            folderViewModel.onIntent(FolderIntent.SetGridView)
+        },
+        setListView = {
+            folderViewModel.onIntent(FolderIntent.SetListView)
+        },
+        setSortType = {
+            folderViewModel.onIntent(FolderIntent.SetSortType(it))
+        },
+        sortList = {
+            folderViewModel.onIntent(FolderIntent.SortMovies)
+        },
+        toggleSortDirection = {
+            folderViewModel.onIntent(FolderIntent.ToggleSortDirection)
+        }
+    )
+
+    FilterSection(
+        modifier = Modifier.padding(top = topHeight + 5.dp),
+        isVisibleFilter = state.isShowFilter,
+        viewType = state.viewMode,
+        isShowSort = true,
+        filterStateCallback = filterStateCallback
+    )
 }
 
 @Composable
@@ -236,38 +263,46 @@ fun FolderToolbar(
                 fontSize = 24.sp,
             )
         }
+        ToolbarButtons(showFilter = showFilter, showDialog = showDialog)
 
-        Icon(
-            imageVector = Icons.AutoMirrored.Default.Notes,
-            contentDescription = null,
-            modifier = Modifier
-                .padding(end = 8.dp)
-                .size(40.dp)
-                .clip(
-                    CircleShape
-                )
-                .clickable {
-                    showFilter()
-                }
-                .padding(8.dp)
-        )
-
-        Icon(
-            imageVector = Icons.Default.DeleteForever,
-            contentDescription = stringResource(com.sidspace.stary.folder.presentation.R.string.remove_collection),
-            tint = Color.Red,
-            modifier = Modifier
-                .size(40.dp)
-                .clip(
-                    CircleShape
-                )
-                .clickable {
-                    showDialog()
-                }
-                .padding(8.dp)
-        )
 
     }
+}
+
+@Composable
+fun ToolbarButtons(
+    showFilter: () -> Unit,
+    showDialog: () -> Unit
+) {
+    Icon(
+        imageVector = Icons.AutoMirrored.Default.Notes,
+        contentDescription = null,
+        modifier = Modifier
+            .padding(end = 8.dp)
+            .size(40.dp)
+            .clip(
+                CircleShape
+            )
+            .clickable {
+                showFilter()
+            }
+            .padding(8.dp)
+    )
+
+    Icon(
+        imageVector = Icons.Default.DeleteForever,
+        contentDescription = stringResource(com.sidspace.stary.folder.presentation.R.string.remove_collection),
+        tint = Color.Red,
+        modifier = Modifier
+            .size(40.dp)
+            .clip(
+                CircleShape
+            )
+            .clickable {
+                showDialog()
+            }
+            .padding(8.dp)
+    )
 }
 
 @Composable

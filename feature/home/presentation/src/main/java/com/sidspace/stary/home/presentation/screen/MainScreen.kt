@@ -54,6 +54,7 @@ import com.sidspace.stary.ui.model.CollectionUi
 import com.sidspace.stary.ui.model.MoviePreviewUi
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.shimmerEffect
+import com.sidspace.stary.ui.uikit.Dimens
 import com.sidspace.stary.ui.uikit.Purple40
 import com.sidspace.stary.ui.uikit.poppinsFort
 import kotlinx.coroutines.flow.collectLatest
@@ -170,7 +171,7 @@ fun TopBannedList(
 
     val configuration = LocalConfiguration.current
     val height =
-        (configuration.screenWidthDp - MainState.TOP_BANNED_HORIZONTAL_PADDING) * MainState.TOP_BANNED_HEIGHT_SCALE
+        (configuration.screenWidthDp - MainState.TOP_BANNED_HORIZONTAL_PADDING) * Dimens.ImageHeightScaleByWidth
     val heightBox = height + MainState.TOP_BANNED_TEXT_HEIGHT
 
     Box(
@@ -326,7 +327,7 @@ fun MainListMovies(
 fun ShimmerTop(modifier: Modifier = Modifier) {
     val configuration = LocalConfiguration.current
     val height =
-        (configuration.screenWidthDp - MainState.TOP_BANNED_HORIZONTAL_PADDING) * MainState.TOP_BANNED_HEIGHT_SCALE
+        (configuration.screenWidthDp - MainState.TOP_BANNED_HORIZONTAL_PADDING) * Dimens.ImageHeightScaleByWidth
 
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { 2 })
 

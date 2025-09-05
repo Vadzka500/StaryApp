@@ -64,10 +64,11 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.sidspace.stary.domain.model.Folder
-import com.sidspace.stary.ui.enum.ViewMode
+import com.sidspace.stary.ui.enums.ViewMode
 import com.sidspace.stary.ui.model.MoviePreviewUi
 import com.sidspace.stary.ui.model.MovieUi
 import com.sidspace.stary.ui.model.ResultData
+import com.sidspace.stary.ui.uikit.Dimens
 import com.sidspace.stary.ui.uikit.Purple40
 import com.sidspace.stary.ui.uikit.poppinsFort
 import com.sidspace.stary.ui.utils.InitRatingView
@@ -75,6 +76,10 @@ import com.sidspace.stary.ui.utils.ScoreManager
 
 
 const val FOLDER_APPLY_PICTURE_ALPHA = 0.8F
+
+const val MOVIE_COUNT_HORIZONTAL_LIST = 10
+
+const val GENRES_COUNT_MAX = 3
 
 @Composable
 fun InitList(
@@ -148,8 +153,8 @@ fun MovieCardGrid(
 ) {
 
     val configuration = LocalConfiguration.current
-    val width = configuration.screenWidthDp / 2 - 22
-    val height = (configuration.screenWidthDp / 2 - 22) * 1.5
+    val width = configuration.screenWidthDp / 2 - Dimens.HorizontalCardPadding
+    val height = (configuration.screenWidthDp / 2 - Dimens.HorizontalCardPadding) * 1.5
     val boxHeight = height + 30
 
 
@@ -311,7 +316,7 @@ fun CardList(
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
 
-                    movie.genres?.take(3)?.forEachIndexed { index, item ->
+                    movie.genres?.take(GENRES_COUNT_MAX)?.forEachIndexed { index, item ->
 
                         if (index == 1 || index == 2) {
                             Text(
@@ -454,7 +459,7 @@ fun HorizontalHomeList(
     ) {
 
         itemsIndexed(
-            list.take(10),
+            list.take(MOVIE_COUNT_HORIZONTAL_LIST),
             key = { _, item -> item.id }) { index, item ->
 
             MovieCardHorizontal(
@@ -626,70 +631,74 @@ fun InitFolderItem(
             onSelectFolder(folder.id)
         }
     ) {
+        FolderCardContent(folder = folder, onShowAddImage = onShowAddImage)
+    }
+}
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(folder.color).copy(alpha = 0.8f)),
-            contentAlignment = Alignment.BottomEnd
-        ) {
+@Composable
+fun FolderCardContent(modifier: Modifier = Modifier, folder: Folder, onShowAddImage: Boolean) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(folder.color).copy(alpha = 0.8f)),
+        contentAlignment = Alignment.BottomEnd
+    ) {
 
 
-            Row {
-                if (folder.imageResName != null) {
-                    Image(
-                        painter = painterResource(
-                            LocalResources.current.getIdentifier(
-                                folder.imageResName,
-                                "drawable",
-                                LocalContext.current.packageName
-                            )
-                        ),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(150.dp)
-                            .offset(y = 30.dp, x = (-10).dp)
-                            .rotate(40f)
-                    )
-                }
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                        .padding(start = 0.dp)
-                        .padding(top = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        folder.name,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = poppinsFort,
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        fontSize = 22.sp,
-                        textAlign = TextAlign.Center
-                    )
-                    Text(
-                        folder.listOfMovies?.size.toString(),
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = poppinsFort,
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        fontSize = 18.sp,
-                    )
-                }
-            }
-
-            if (onShowAddImage) {
+        Row {
+            if (folder.imageResName != null) {
                 Image(
-                    painter = painterResource(R.drawable.img_ok), contentDescription = "",
+                    painter = painterResource(
+                        LocalResources.current.getIdentifier(
+                            folder.imageResName,
+                            "drawable",
+                            LocalContext.current.packageName
+                        )
+                    ),
+                    contentDescription = "",
                     modifier = Modifier
-                        .size(64.dp)
-                        .offset(y = (5).dp, x = (5).dp)
-                        .alpha(FOLDER_APPLY_PICTURE_ALPHA)
+                        .fillMaxHeight()
+                        .width(150.dp)
+                        .offset(y = 30.dp, x = (-10).dp)
+                        .rotate(40f)
                 )
             }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .padding(start = 0.dp)
+                    .padding(top = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    folder.name,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = poppinsFort,
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    fontSize = 22.sp,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    folder.listOfMovies?.size.toString(),
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = poppinsFort,
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    fontSize = 18.sp,
+                )
+            }
+        }
+
+        if (onShowAddImage) {
+            Image(
+                painter = painterResource(R.drawable.img_ok), contentDescription = "",
+                modifier = Modifier
+                    .size(64.dp)
+                    .offset(y = (5).dp, x = (5).dp)
+                    .alpha(FOLDER_APPLY_PICTURE_ALPHA)
+            )
         }
     }
 }

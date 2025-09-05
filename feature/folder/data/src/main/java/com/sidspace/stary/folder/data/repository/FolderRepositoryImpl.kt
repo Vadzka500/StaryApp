@@ -19,43 +19,53 @@ class FolderRepositoryImpl @Inject constructor(
     private val movieApi: MovieApi
 ) : FolderRepository {
     override fun getFolderFromDb(id: Long): Flow<Result<Folder>> = flow {
-        try {
-            emit(
-                Result.Success(
-                    folderDatabase.getFolder(id).let { it.toFolderFromFolderDBO(it.movies) }
-                )
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-            emit(Result.Error)
-        }
+
+        runCatching {
+            folderDatabase.getFolder(id).let { it.toFolderFromFolderDBO(it.movies) }
+        }.fold(
+            onSuccess = { folder ->
+                Result.Success(folder)
+            },
+            onFailure = { error ->
+                error.printStackTrace()
+                emit(Result.Error)
+            }
+        )
     }
 
     override suspend fun getFolderFromApi(folder: Folder): Flow<Result<Folder>> = flow {
 
-        try {
-
-            val movies = safeCall { movieApi.getMoviesByIds(folder.listOfMovies!!.map { it.id }) }
-
-            if (movies is ResultRemote.Success) {
-                folder.listOfMovies = movies.data.docs.map { it.toMovie() }
-                emit(Result.Success(folder))
-            } else {
+        runCatching {
+            safeCall { movieApi.getMoviesByIds(folder.listOfMovies!!.map { it.id }) }
+        }.fold(
+            onSuccess = { result ->
+                if (result is ResultRemote.Success) {
+                    folder.listOfMovies = result.data.docs.map { it.toMovie() }
+                    emit(Result.Success(folder))
+                } else {
+                    emit(Result.Error)
+                }
+            },
+            onFailure = { error ->
+                error.printStackTrace()
                 emit(Result.Error)
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            emit(Result.Error)
-        }
+        )
+
     }
 
     override suspend fun removeFolder(id: Long): Result<Unit> {
-        try {
+
+        return runCatching {
             folderDatabase.removeFolder(id)
-            return Result.Success(Unit)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return Result.Error
-        }
+        }.fold(
+            onSuccess = {
+                Result.Success(Unit)
+            },
+            onFailure = {
+                it.printStackTrace()
+                Result.Error
+            }
+        )
     }
 }

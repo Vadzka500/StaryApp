@@ -35,6 +35,8 @@ import com.sidspace.stary.ui.FilterStateCallback
 import com.sidspace.stary.ui.InitList
 import com.sidspace.stary.ui.R
 import com.sidspace.stary.ui.ShimmerGridList
+import com.sidspace.stary.ui.enums.ViewMode
+import com.sidspace.stary.ui.model.MovieUi
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.uikit.poppinsFort
 
@@ -80,65 +82,97 @@ fun BookmarkMoviesScreen(
         })
 
 
-        when (val data = state.value.list) {
-
-            is ResultData.Error -> {
+        InitListBookmark(
+            result = state.value.list,
+            countMovies = state.value.countMovies,
+            viewMode = state.value.viewMode,
+            onError = {
                 bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.ToErrorScreen)
+            },
+            onSelectMovie = {
+                bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.OnSelectMovie(it))
             }
+        )
 
-            ResultData.Loading -> {
-                ShimmerGridList(modifier = Modifier.padding(top = 60.dp), state.value.countMovies)
-            }
+        BookmarkFilterSection(
+            state = state.value,
+            bookmarkMoviesViewModel = bookmarkMoviesViewModel,
+            topHeight = topHeight
+        )
 
-            is ResultData.Success -> {
-                if (data.data.isNotEmpty()) {
-                    InitList(
-                        modifier = Modifier.padding(top = 60.dp),
-                        list = data.data,
-                        onClick = { id ->
-                            bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.OnSelectMovie(id))
+    }
+}
 
-                        },
-                        viewType = state.value.viewMode
-                    )
-                } else {
-                    EmptyHint()
-                }
-            }
+@Composable
+fun BookmarkFilterSection(state: BookmarkMoviesState, bookmarkMoviesViewModel: BookmarkMoviesViewModel, topHeight: Dp) {
+    val filterStateCallback = FilterStateCallback(
+        onHideFilter = {
+            bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.IsShowFilters(false))
+        },
+        setGridView = {
+            bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.SetGridView)
+        },
+        setListView = {
+            bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.SetListView)
+        },
+        setSortType = {
+            bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.SetSortType(it))
+        },
+        sortList = {
+            bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.SortMovies)
+        },
+        toggleSortDirection = {
+            bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.ToggleSortDirection)
+        }
+    )
 
-            ResultData.None -> {
+    FilterSection(
+        modifier = Modifier.padding(top = topHeight + 5.dp),
+        isVisibleFilter = state.isShowFilter,
+        viewType = state.viewMode,
+        isShowSort = true,
+        filterStateCallback = filterStateCallback
+    )
+}
 
+@Composable
+private fun InitListBookmark(
+    result: ResultData<List<MovieUi>>,
+    countMovies: Int,
+    viewMode: ViewMode,
+    onError: () -> Unit,
+    onSelectMovie: (Long) -> Unit
+) {
+    when (val data = result) {
+
+        is ResultData.Error -> {
+            onError()
+        }
+
+        ResultData.Loading -> {
+            ShimmerGridList(modifier = Modifier.padding(top = 60.dp), countMovies)
+        }
+
+        is ResultData.Success -> {
+            if (data.data.isNotEmpty()) {
+                InitList(
+                    modifier = Modifier.padding(top = 60.dp),
+                    list = data.data,
+                    onClick = { id ->
+
+                        onSelectMovie(id)
+
+                    },
+                    viewType = viewMode
+                )
+            } else {
+                EmptyHint()
             }
         }
 
-        val filterStateCallback = FilterStateCallback(
-            onHideFilter = {
-                bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.IsShowFilters(false))
-            },
-            setGridView = {
-                bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.SetGridView)
-            },
-            setListView = {
-                bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.SetListView)
-            },
-            setSortType = {
-                bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.SetSortType(it))
-            },
-            sortList = {
-                bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.SortMovies)
-            },
-            toggleSortDirection = {
-                bookmarkMoviesViewModel.onIntent(BookmarkMoviesIntent.ToggleSortDirection)
-            }
-        )
+        ResultData.None -> {
 
-        FilterSection(
-            modifier = Modifier.padding(top = topHeight + 5.dp),
-            isVisibleFilter = state.value.isShowFilter,
-            viewType = state.value.viewMode,
-            isShowSort = true,
-            filterStateCallback = filterStateCallback
-        )
+        }
     }
 }
 

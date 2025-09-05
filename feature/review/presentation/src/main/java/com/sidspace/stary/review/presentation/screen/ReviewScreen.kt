@@ -358,9 +358,7 @@ fun InitReview(
     modifier: Modifier = Modifier,
     onToggleExpanded: () -> Unit
 ) {
-    val color = getColor(item.type)
 
-    val textDate = getDate(item.date)
 
     ElevatedCard(
         modifier = modifier
@@ -376,57 +374,67 @@ fun InitReview(
                 .animateContentSize()
         ) {
 
-            Row(
-                modifier = Modifier
-                    .height(50.dp)
-                    .fillMaxWidth()
-            ) {
-                Image(
-                    painter = painterResource(com.sidspace.stary.review.presentation.R.drawable.astronaut_img),
-                    contentDescription = "Аватар",
-                    colorFilter = ColorFilter.tint(color = Color.Black.copy(alpha = 0.6f)),
-                    modifier = Modifier
-                        .size(50.dp)
-                        .clip(
-                            CircleShape
-                        )
-                        .background(color = color)
-                        .padding(3.dp)
-                        .offset(y = 5.dp)
-                )
-
-                Column(
-                    modifier = Modifier
-                        .align(alignment = Alignment.CenterVertically)
-                        .padding(start = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-
-                    Text(
-                        item.author,
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = poppinsFort,
-                        fontSize = 12.sp,
-                        lineHeight = 12.sp
-                    )
-
-
-                    Text(
-                        textDate,
-                        fontWeight = FontWeight.Light,
-                        fontFamily = poppinsFort,
-                        fontSize = 12.sp,
-                        lineHeight = 12.sp
-                    )
-                }
-                Spacer(modifier = Modifier.weight(1f))
-
-                ReviewLikedDislikes(item)
-
-            }
+            ReviewToolbar(item)
 
             ReviewBody(item, isExpanded, onToggleExpanded)
         }
+    }
+}
+
+@Composable
+fun ReviewToolbar(item: ReviewUi) {
+
+    val color = getColor(item.type)
+
+    val textDate = getDate(item.date)
+
+    Row(
+        modifier = Modifier
+            .height(50.dp)
+            .fillMaxWidth()
+    ) {
+        Image(
+            painter = painterResource(com.sidspace.stary.review.presentation.R.drawable.astronaut_img),
+            contentDescription = "Аватар",
+            colorFilter = ColorFilter.tint(color = Color.Black.copy(alpha = 0.6f)),
+            modifier = Modifier
+                .size(50.dp)
+                .clip(
+                    CircleShape
+                )
+                .background(color = color)
+                .padding(3.dp)
+                .offset(y = 5.dp)
+        )
+
+        Column(
+            modifier = Modifier
+                .align(alignment = Alignment.CenterVertically)
+                .padding(start = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+
+            Text(
+                item.author,
+                fontWeight = FontWeight.Medium,
+                fontFamily = poppinsFort,
+                fontSize = 12.sp,
+                lineHeight = 12.sp
+            )
+
+
+            Text(
+                textDate,
+                fontWeight = FontWeight.Light,
+                fontFamily = poppinsFort,
+                fontSize = 12.sp,
+                lineHeight = 12.sp
+            )
+        }
+        Spacer(modifier = Modifier.weight(1f))
+
+        ReviewLikedDislikes(item)
+
     }
 }
 

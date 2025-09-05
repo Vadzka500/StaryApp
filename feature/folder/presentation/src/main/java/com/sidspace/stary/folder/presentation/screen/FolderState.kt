@@ -2,9 +2,9 @@ package com.sidspace.stary.folder.presentation.screen
 
 import com.sidspace.stary.domain.model.Folder
 
-import com.sidspace.stary.ui.enum.SortDirection
-import com.sidspace.stary.ui.enum.SortType
-import com.sidspace.stary.ui.enum.ViewMode
+import com.sidspace.stary.ui.enums.SortDirection
+import com.sidspace.stary.ui.enums.SortType
+import com.sidspace.stary.ui.enums.ViewMode
 import com.sidspace.stary.ui.model.MovieUi
 import com.sidspace.stary.ui.model.ResultData
 
