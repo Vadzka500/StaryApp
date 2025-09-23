@@ -32,9 +32,9 @@
 
 ## Скриншоты
 <p align="center">
-  <img src="screenshots/screenshot_folders.png" width="220" />
   <img src="screenshots/screenshot_home.png" width="220" />
   <img src="screenshots/screenshot_random.png" width="220" />
+  <img src="screenshots/screenshot_folders.png" width="220" />
   <img src="screenshots/screenshot_movie.png" width="220" />
 </p>
 
