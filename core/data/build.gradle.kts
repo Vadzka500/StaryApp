@@ -56,7 +56,7 @@ room {
 
 dependencies {
 
-    implementation(project(":core:domain"))
+    implementation(projects.core.domain)
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)

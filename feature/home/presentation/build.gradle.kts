@@ -42,11 +42,10 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     //implementation(libs.javax.inject)
-    implementation(project(":feature:home:domain"))
-    implementation(project(":feature:home:data"))
-    implementation(project(":core:domain"))
-    implementation(project(":core:ui"))
-    //implementation(project(":core:navigation"))
+    implementation(projects.feature.home.domain)
+    implementation(projects.feature.home.data)
+    implementation(projects.core.domain)
+    implementation(projects.core.ui)
 
     implementation(libs.icons)
 

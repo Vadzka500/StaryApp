@@ -129,6 +129,8 @@ fun ViewedFilterSection(state: ViewedMovieState, viewedMoviesViewModel: ViewedMo
         isVisibleFilter = state.isShowFilter,
         viewType = state.viewMode,
         isShowSort = true,
+        sortType = state.sortType,
+        sortDirection = state.sortDirection,
         filterStateCallback = filterStateCallback
     )
 }

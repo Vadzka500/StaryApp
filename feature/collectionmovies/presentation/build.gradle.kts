@@ -41,10 +41,10 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 
-    implementation(project(":feature:collectionmovies:domain"))
-    implementation(project(":feature:collectionmovies:data"))
-    implementation(project(":core:domain"))
-    implementation(project(":core:ui"))
+    implementation(projects.feature.collectionmovies.domain)
+    implementation(projects.feature.collectionmovies.data)
+    implementation(projects.core.domain)
+    implementation(projects.core.ui)
 
     implementation(libs.icons)
 

@@ -16,5 +16,5 @@ dependencies {
 
     implementation(libs.javax.inject)
     implementation(libs.kotlinx.coroutines.core)
-    implementation(project(":core:domain"))
+    implementation(projects.core.domain)
 }

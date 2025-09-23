@@ -39,6 +39,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -75,7 +76,7 @@ fun AccountScreen(
     toErrorScreen: () -> Unit
 ) {
 
-    val state = accountViewModel.state.collectAsState()
+    val state by accountViewModel.state.collectAsState()
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -110,24 +111,46 @@ fun AccountScreen(
         }
     }
 
+    AccountContent(state = state, googleSignInClick = {
+        accountViewModel.onIntent(AccountIntent.OnGoogleSignInClick)
+    }, setGoogleSignInSheet = {
+        accountViewModel.onIntent(AccountIntent.SetGoogleAccountSheetShown(it))
+    }, toErrorScreen = {
+        accountViewModel.onIntent(AccountIntent.ToErrorScreen)
+    }, signOut = {
+        accountViewModel.onIntent(AccountIntent.SignOut)
+    }, modifier = modifier)
+
+
+}
+
+@Composable
+fun AccountContent(
+    state: AccountState,
+    googleSignInClick: () -> Unit,
+    signOut: () -> Unit,
+    setGoogleSignInSheet: (Boolean) -> Unit,
+    toErrorScreen: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     LazyColumn(
         modifier = modifier
             .background(color = MaterialTheme.colorScheme.background)
             .animateContentSize()
     ) {
         item {
-            if (state.value.account == null) {
+            if (state.account == null) {
                 GoogleButton(
                     signIn = {
-                        accountViewModel.onIntent(AccountIntent.OnGoogleSignInClick)
+                        googleSignInClick()
                     }
                 )
             } else {
                 InitGoogleAccount(
                     setVisibleSheet = {
-                        accountViewModel.onIntent(AccountIntent.SetGoogleAccountSheetShown(true))
+                        setGoogleSignInSheet(true)
                     },
-                    account = state.value.account!!,
+                    account = state.account,
                 )
             }
 
@@ -140,83 +163,88 @@ fun AccountScreen(
             )
 
             ListOfCollectionBlock(
-                countBookmark = state.value.countBookmark,
-                countViewed = state.value.countViewed,
-                countFolder = state.value.countFolders,
+                countBookmark = state.countBookmark,
+                countViewed = state.countViewed,
+                countFolder = state.countFolders,
             )
 
-            if (state.value.isShowEmptyHint) {
+            if (state.isShowEmptyHint) {
                 SadHint()
             }
 
-            AnimatedContent(targetState = state.value.resultAccountBookmark) { states ->
+            BookmarkContent(state = state, toErrorScreen = toErrorScreen)
 
-                when (val data = states) {
-
-                    is ResultData.Error -> {
-                        accountViewModel.onIntent(AccountIntent.ToErrorScreen)
-                    }
-
-                    ResultData.Loading -> {
-                        ShimmerMovies()
-                    }
-
-                    ResultData.None -> {
-
-                    }
-
-                    is ResultData.Success -> {
-                        if (!data.data.isEmpty())
-                            LatestBookmarkBlock(
-                                list = data.data,
-                                scrollIndex = state.value.scrollBookmark.scrollIndex,
-                                scrollOffSet = state.value.scrollBookmark.scrollOffSet
-                            )
-                    }
-                }
-
-            }
-
-            AnimatedContent(targetState = state.value.resultAccountViewed) { states ->
-
-                when (val data = states) {
-
-
-                    is ResultData.Error -> {
-                        accountViewModel.onIntent(AccountIntent.ToErrorScreen)
-                    }
-
-                    ResultData.Loading -> {
-                        ShimmerMovies()
-                    }
-
-                    ResultData.None -> {
-
-                    }
-
-                    is ResultData.Success -> {
-                        if (!(data.data as List<*>).isEmpty())
-                            LatestViewedBlock(
-                                list = data.data,
-                                scrollIndex = state.value.scrollViewed.scrollIndex,
-                                scrollOffSet = state.value.scrollViewed.scrollOffSet
-                            )
-                    }
-                }
-
-            }
-
+            ViewedContent(state = state, toErrorScreen = toErrorScreen)
 
         }
 
     }
 
-    if (state.value.isGoogleSheetShown) {
+    if (state.isGoogleSheetShown) {
         InitGoogleAccountSheet(hideSheet = {
-            accountViewModel.onIntent(AccountIntent.SetGoogleAccountSheetShown(false))
+            setGoogleSignInSheet(false)
         }, signOut = {
-            accountViewModel.onIntent(AccountIntent.SignOut)
+            signOut()
         })
+    }
+}
+
+@Composable
+fun ViewedContent(state: AccountState, toErrorScreen:() -> Unit) {
+    AnimatedContent(targetState = state.resultAccountViewed) { states ->
+
+        when (val data = states) {
+
+
+            is ResultData.Error -> {
+                toErrorScreen()
+            }
+
+            ResultData.Loading -> {
+                ShimmerMovies()
+            }
+
+            ResultData.None -> Unit
+
+            is ResultData.Success -> {
+                if (!(data.data as List<*>).isEmpty())
+                    LatestViewedBlock(
+                        list = data.data,
+                        scrollIndex = state.scrollViewed.scrollIndex,
+                        scrollOffSet = state.scrollViewed.scrollOffSet
+                    )
+            }
+        }
+
+    }
+}
+
+@Composable
+fun BookmarkContent(state: AccountState, toErrorScreen:() -> Unit) {
+    AnimatedContent(targetState = state.resultAccountBookmark) { states ->
+
+        when (val data = states) {
+
+            is ResultData.Error -> {
+                toErrorScreen()
+            }
+
+            ResultData.Loading -> {
+                ShimmerMovies()
+            }
+
+            ResultData.None -> Unit
+
+            is ResultData.Success -> {
+                if (!data.data.isEmpty())
+                    LatestBookmarkBlock(
+                        list = data.data,
+                        scrollIndex = state.scrollBookmark.scrollIndex,
+                        scrollOffSet = state.scrollBookmark.scrollOffSet
+                    )
+            }
+        }
+
     }
 }
 

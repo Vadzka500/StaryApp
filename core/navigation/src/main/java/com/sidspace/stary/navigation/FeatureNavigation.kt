@@ -4,7 +4,9 @@ package com.sidspace.stary.navigation
 import android.annotation.SuppressLint
 import android.content.Context
 import android.provider.Settings
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.PaddingValues
@@ -151,14 +153,14 @@ fun AppNavHost(
             scaleIn(
                 initialScale = 0.95f,
                 animationSpec = tween(NavigationConstants.DURATION_SCALE_IN)
-            )
+            ) + fadeIn(animationSpec = tween(NavigationConstants.DURATION_FADE_IN))
         },
         exitTransition = { fadeOut(animationSpec = tween(NavigationConstants.DURATION_FADE_OUT)) },
         popEnterTransition = {
             scaleIn(
                 initialScale = 1.05f,
                 animationSpec = tween(NavigationConstants.DURATION_SCALE_IN)
-            )
+            ) + fadeIn(animationSpec = tween(NavigationConstants.DURATION_FADE_IN))
         },
         popExitTransition = { fadeOut(animationSpec = tween(NavigationConstants.DURATION_FADE_OUT)) }
     ) {

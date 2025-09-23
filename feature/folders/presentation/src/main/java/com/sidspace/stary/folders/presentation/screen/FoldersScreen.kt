@@ -208,7 +208,6 @@ fun CreateSheetData(
     foldersViewModel: FoldersViewModel = hiltViewModel(),
 ) {
 
-    val context = LocalContext.current
     val scrollState = rememberScrollState()
 
     Column(
@@ -217,22 +216,13 @@ fun CreateSheetData(
             .verticalScroll(scrollState)
             .padding(horizontal = 16.dp)
     ) {
-        TextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = state.value.textFieldFolderValue,
+        InitTextFiledFolder(
+            text = state.value.textFieldFolderValue,
             isError = state.value.isErrorEmptyName,
-            colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = Color.Transparent,
-                focusedContainerColor = Color.Transparent
-            ),
-            onValueChange = { foldersViewModel.onIntent(FoldersIntent.UpdateNameFolder(it)) },
-            label = {
-                Text(
-                    stringResource(R.string.name_collection), fontWeight = FontWeight.Normal,
-                    fontFamily = poppinsFort,
-                    fontSize = 16.sp
-                )
-            })
+            onChangeValue = { text ->
+                foldersViewModel.onIntent(FoldersIntent.UpdateNameFolder(text))
+            }
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -245,28 +235,10 @@ fun CreateSheetData(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        LazyRow(
-            modifier = Modifier,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            itemsIndexed(items = state.value.listOfColors) { index, item ->
-                Card(
-                    modifier = Modifier.size(48.dp),
-                    border = BorderStroke(
-                        if (state.value.selectColor == index) 3.dp else 0.dp,
-                        MaterialTheme.colorScheme.outlineVariant
-                    ), onClick = {
-                        foldersViewModel.onIntent(FoldersIntent.UpdateColor(index))
-                    }
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(item)
-                    )
-                }
-            }
-        }
+        InitListColors(state.value.listOfColors, state.value.selectColor, { index ->
+            foldersViewModel.onIntent(FoldersIntent.UpdateColor(index))
+        })
+
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             stringResource(R.string.choose_picture),
@@ -276,41 +248,13 @@ fun CreateSheetData(
         )
         Spacer(modifier = Modifier.height(8.dp))
 
-        LazyRow(
-            modifier = Modifier,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
 
-            itemsIndexed(state.value.listOfImages) { index, item ->
-                Card(
-                    modifier = Modifier.size(96.dp),
-                    onClick = {
-
-                        val name =
-                            if (item != null) context.resources.getResourceEntryName(item) else null
-                        foldersViewModel.onIntent(FoldersIntent.UpdateImage(index, name))
-                    },
-                    border = BorderStroke(
-                        if (state.value.selectImage == index) 3.dp else 0.dp,
-                        MaterialTheme.colorScheme.outlineVariant
-                    )
-                ) {
-                    if (item != null) {
-                        Image(
-                            painter = painterResource(item),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .rotate(FoldersState.FOLDER_PICTURE_ROTATE)
-                                .padding(4.dp)
-                        )
-                    }
-                }
-
-            }
-
-
-        }
+        InitListImages(
+            listImages = state.value.listOfImages,
+            selectImageIndex = state.value.selectImage,
+            { index, name ->
+                foldersViewModel.onIntent(FoldersIntent.UpdateImage(index, name))
+            })
 
         Spacer(modifier = Modifier.height(16.dp))
         Text(
@@ -321,70 +265,11 @@ fun CreateSheetData(
         )
         Spacer(modifier = Modifier.height(8.dp))
 
-        Box(modifier = Modifier.fillMaxWidth()) {
-
-            ElevatedCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp)
-                    .height(140.dp),
-                elevation = CardDefaults.cardElevation(18.dp),
-                shape = RoundedCornerShape(32.dp)
-            ) {
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(FiltersUtil.listOfColors[state.value.selectColor].copy(alpha = 0.8f)),
-                    contentAlignment = Alignment.BottomEnd
-                ) {
-
-
-                    Row(
-
-                    ) {
-                        if (FiltersUtil.listOfImage[state.value.selectImage] != null) {
-                            Image(
-                                painter = painterResource(
-                                    FiltersUtil.listOfImage[state.value.selectImage]!!
-                                ),
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .width(150.dp)
-                                    .offset(y = 30.dp, x = (-10).dp)
-                                    .rotate(FoldersState.FOLDER_PICTURE_ROTATE)
-                            )
-                        }
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp)
-                                .padding(top = 16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                state.value.textFieldFolderValue,
-                                fontWeight = FontWeight.SemiBold,
-                                fontFamily = poppinsFort,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
-                                color = MaterialTheme.colorScheme.onSecondary,
-                                fontSize = 22.sp,
-                                textAlign = TextAlign.Center
-                            )
-                            Text(
-                                "",
-                                fontWeight = FontWeight.SemiBold,
-                                fontFamily = poppinsFort,
-                                color = MaterialTheme.colorScheme.onSecondary,
-                                fontSize = 18.sp,
-                            )
-                        }
-                    }
-                }
-            }
-        }
+        InitPreviewFolder(
+            selectColor = state.value.selectColor,
+            selectImage = state.value.selectImage,
+            folderNameText = state.value.textFieldFolderValue
+        )
 
         Button(
             modifier = Modifier.fillMaxWidth(),
@@ -393,5 +278,161 @@ fun CreateSheetData(
         }
 
     }
+}
+
+@Composable
+fun InitPreviewFolder(selectColor: Int, selectImage: Int, folderNameText: String) {
+    Box(modifier = Modifier.fillMaxWidth()) {
+
+        ElevatedCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+                .height(140.dp),
+            elevation = CardDefaults.cardElevation(18.dp),
+            shape = RoundedCornerShape(32.dp)
+        ) {
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(FiltersUtil.listOfColors[selectColor].copy(alpha = 0.8f)),
+                contentAlignment = Alignment.BottomEnd
+            ) {
+
+
+                Row(
+
+                ) {
+                    if (FiltersUtil.listOfImage[selectImage] != null) {
+                        Image(
+                            painter = painterResource(
+                                FiltersUtil.listOfImage[selectImage]!!
+                            ),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(150.dp)
+                                .offset(y = 30.dp, x = (-10).dp)
+                                .rotate(FoldersState.FOLDER_PICTURE_ROTATE)
+                        )
+                    }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                            .padding(top = 16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            folderNameText,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = poppinsFort,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            fontSize = 22.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            "",
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = poppinsFort,
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            fontSize = 18.sp,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun InitListImages(listImages: List<Int?>, selectImageIndex: Int, onSelectImage: (Int, String?) -> Unit) {
+
+    val context = LocalContext.current
+
+    LazyRow(
+        modifier = Modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+
+        itemsIndexed(listImages) { index, item ->
+            Card(
+                modifier = Modifier.size(96.dp),
+                onClick = {
+
+                    val name =
+                        if (item != null) context.resources.getResourceEntryName(item) else null
+                    onSelectImage(index, name)
+                },
+                border = BorderStroke(
+                    if (selectImageIndex == index) 3.dp else 0.dp,
+                    MaterialTheme.colorScheme.outlineVariant
+                )
+            ) {
+                if (item != null) {
+                    Image(
+                        painter = painterResource(item),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .rotate(FoldersState.FOLDER_PICTURE_ROTATE)
+                            .padding(4.dp)
+                    )
+                }
+            }
+
+        }
+
+
+    }
+}
+
+@Composable
+fun InitListColors(listColors: List<Color>, selectColorIndex: Int, selectColor: (Int) -> Unit) {
+    LazyRow(
+        modifier = Modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        itemsIndexed(items = listColors) { index, item ->
+            Card(
+                modifier = Modifier.size(48.dp),
+                border = BorderStroke(
+                    if (selectColorIndex == index) 3.dp else 0.dp,
+                    MaterialTheme.colorScheme.outlineVariant
+                ), onClick = {
+                    selectColor(index)
+                }
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(item)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun InitTextFiledFolder(text: String, isError: Boolean, onChangeValue: (String) -> Unit) {
+    TextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = text,
+        isError = isError,
+        colors = TextFieldDefaults.colors(
+            unfocusedContainerColor = Color.Transparent,
+            focusedContainerColor = Color.Transparent
+        ),
+        onValueChange = { onChangeValue(it) },
+        label = {
+            Text(
+                stringResource(R.string.name_collection), fontWeight = FontWeight.Normal,
+                fontFamily = poppinsFort,
+                fontSize = 16.sp
+            )
+        })
 }
 

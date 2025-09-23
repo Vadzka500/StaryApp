@@ -42,9 +42,9 @@ dependencies {
 
     implementation(libs.coil.compose)
 
-    implementation(project(":feature:account:domain"))
-    implementation(project(":core:domain"))
-    //implementation(project(":core:presentation"))
+    implementation(projects.feature.account.domain)
+    implementation(projects.core.domain)
+
 
     implementation(libs.icons)
 

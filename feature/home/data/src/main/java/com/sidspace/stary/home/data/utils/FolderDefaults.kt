@@ -11,15 +11,15 @@ import com.sidspace.stary.home.data.uikit.Yellow20
 
 object FolderDefaults {
     val defaultFolders = listOf(
-        FolderDBO(folderName = "Любимые", color = Purple20.toArgb(), imageResName = "hearts"),
-        FolderDBO(folderName = "Избранные", color = Yellow20.toArgb(), imageResName = "stars"),
+        FolderDBO(folderName = "Любимые", color = Purple20.toArgb(), imageResName = "img_hearts"),
+        FolderDBO(folderName = "Избранные", color = Yellow20.toArgb(), imageResName = "img_stars"),
         FolderDBO(
             folderName = "Смотреть снова",
             color = Purple30.toArgb(),
-            imageResName = "publish"
+            imageResName = "img_publish"
         ),
-        FolderDBO(folderName = "Летние", color = Red30.toArgb(), imageResName = "sun_3"),
-        FolderDBO(folderName = "Зимние", color = Blue30.toArgb(), imageResName = "snowflake"),
-        FolderDBO(folderName = "Не понравились", color = Gray30.toArgb(), imageResName = "add"),
+        FolderDBO(folderName = "Летние", color = Red30.toArgb(), imageResName = "img_sun"),
+        FolderDBO(folderName = "Зимние", color = Blue30.toArgb(), imageResName = "img_snowflake"),
+        FolderDBO(folderName = "Не понравились", color = Gray30.toArgb(), imageResName = "img_add"),
     )
 }

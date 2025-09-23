@@ -20,11 +20,12 @@ class FolderRepositoryImpl @Inject constructor(
 ) : FolderRepository {
     override fun getFolderFromDb(id: Long): Flow<Result<Folder>> = flow {
 
+
         runCatching {
             folderDatabase.getFolder(id).let { it.toFolderFromFolderDBO(it.movies) }
         }.fold(
             onSuccess = { folder ->
-                Result.Success(folder)
+                emit(Result.Success(folder))
             },
             onFailure = { error ->
                 error.printStackTrace()

@@ -8,27 +8,45 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.crashlytics)
     alias(libs.plugins.play.services)
+    alias(libs.plugins.baselineprofile)
 }
 
 android {
     namespace = "com.sidspace.stary"
     compileSdk = 36
 
+
     defaultConfig {
         applicationId = "com.sidspace.stary"
         minSdk = 31
-        versionCode = 3
-        versionName = "1.0.1"
+        targetSdk = 36
+        versionCode = 5
+        versionName = "1.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "MOVIES_API_KEY", "\"FF3PF1A-YQ6MXEK-NFQM9QD-76A6GH0\"")
         buildConfigField("String", "MOVIES_API_BASE_URL", "\"https://api.kinopoisk.dev/v1.4/\"")
+
+
+        resourceConfigurations += setOf("ru", "en")
+
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = File(rootDir, "sidspacekeystore.jks")
+            keyPassword = "8870606v"
+            keyAlias = "stary"
+            storePassword = "8870606v"
+        }
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            signingConfig = signingConfigs["release"]
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -40,6 +58,9 @@ android {
 
         }
     }
+
+
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -53,12 +74,9 @@ android {
         buildConfig = true
 
     }
+
+
 }
-
-
-/*kotlin{
-    task("testClasses")
-}*/
 
 dependencies {
 
@@ -70,55 +88,27 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    //implementation(libs.androidx.room.common.jvm)
-    //implementation(libs.androidx.room.runtime.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    "baselineProfile"(projects.baselineprofile)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-
-    implementation(libs.kotlin.serialization)
-
-    implementation(libs.core.splash.screen)
-
-
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 
-    implementation(libs.coil.compose)
-
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.kotlinx.coroutines.core)
-
     implementation(libs.compose.navigation)
-    implementation(libs.viewmodel.compose.navigatiom)
-    implementation(libs.androidx.material.icons.extended)
-    implementation(libs.icons)
-    implementation(libs.androidx.constraintlayout.compose)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.com.android.google.auth)
 
-    implementation(libs.androidx.webkit)
-
-
-
-
-    implementation(libs.androidx.browser)
-
-    //implementation("androidx.compose.ui:ui-text-google-fonts:1.7.6")
-    implementation(libs.androidx.profileinstaller) // последнюю
-    implementation(libs.cloudy)
     implementation(libs.play.services.auth.v2130)
     implementation(libs.firebase.auth.ktx)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics.ndk)
     implementation(libs.firebase.analytics)
 
-    implementation(project(":core:navigation"))
-    implementation(project(":core:logger"))
+
+    implementation(projects.core.navigation)
+    implementation(projects.core.logger)
 }

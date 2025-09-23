@@ -201,6 +201,8 @@ fun FolderFilterSection(state: FolderState, folderViewModel: FolderViewModel, to
         isVisibleFilter = state.isShowFilter,
         viewType = state.viewMode,
         isShowSort = true,
+        sortType = state.sortType,
+        sortDirection = state.sortDirection,
         filterStateCallback = filterStateCallback
     )
 }
@@ -308,7 +310,7 @@ fun ToolbarButtons(
 @Composable
 fun FolderImage(url: String) {
 
-    Box {
+    Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(
                 LocalResources.current.getIdentifier(

@@ -154,7 +154,7 @@ fun MovieCardGrid(
 
     val configuration = LocalConfiguration.current
     val width = configuration.screenWidthDp / 2 - Dimens.HorizontalCardPadding
-    val height = (configuration.screenWidthDp / 2 - Dimens.HorizontalCardPadding) * 1.5
+    val height = (configuration.screenWidthDp / 2 - Dimens.HorizontalCardPadding) * Dimens.ImageHeightScaleByWidth
     val boxHeight = height + 30
 
 
@@ -638,7 +638,7 @@ fun InitFolderItem(
 @Composable
 fun FolderCardContent(modifier: Modifier = Modifier, folder: Folder, onShowAddImage: Boolean) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(Color(folder.color).copy(alpha = 0.8f)),
         contentAlignment = Alignment.BottomEnd

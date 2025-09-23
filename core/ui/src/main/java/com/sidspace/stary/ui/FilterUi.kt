@@ -42,7 +42,6 @@ import com.sidspace.stary.ui.uikit.Purple40
 import com.sidspace.stary.ui.uikit.poppinsFort
 
 
-
 @Composable
 fun FilterSection(
     isVisibleFilter: Boolean,
@@ -195,7 +194,50 @@ fun FilterSort(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        FilterChip(
+
+        FilterContent(
+            label = stringResource(R.string.sort_name_sortbyname_str),
+            sortType = sortType,
+            targetSortType = SortType.NAME,
+            sortDirection = sortDirection,
+            toggleSortDirection = {
+                toggleSortDirection()
+            },
+            setSortType = {
+                setSortType(it)
+            },
+            sortList = sortList
+        )
+
+        FilterContent(
+            label = stringResource(R.string.sort_name_sortbyscore_str),
+            sortType = sortType,
+            targetSortType = SortType.RATING,
+            sortDirection = sortDirection,
+            toggleSortDirection = {
+                toggleSortDirection()
+            },
+            setSortType = {
+                setSortType(it)
+            },
+            sortList = sortList
+        )
+
+        FilterContent(
+            label = stringResource(R.string.sort_name_sortbydate_str),
+            sortType = sortType,
+            targetSortType = SortType.DATE,
+            sortDirection = sortDirection,
+            toggleSortDirection = {
+                toggleSortDirection()
+            },
+            setSortType = {
+                setSortType(it)
+            },
+            sortList = sortList
+        )
+
+        /*FilterChip(
             modifier = Modifier,
             shape = RoundedCornerShape(15.dp),
             onClick = {
@@ -239,7 +281,7 @@ fun FilterSort(
                 Text(stringResource(R.string.sort_name_sortbyscore_str))
             },
             leadingIcon = {
-                if (sortType == SortType.RATING){
+                if (sortType == SortType.RATING) {
                     Icon(
                         imageVector = if (sortDirection == SortDirection.ASCENDING) {
                             Icons.Default.ArrowDownward
@@ -281,8 +323,48 @@ fun FilterSort(
             },
             selected = sortType == SortType.DATE,
 
-            )
+            )*/
     }
+}
+
+@Composable
+fun FilterContent(
+    label: String,
+    sortType: SortType,
+    targetSortType: SortType,
+    sortDirection: SortDirection,
+    modifier: Modifier = Modifier,
+    toggleSortDirection: () -> Unit,
+    setSortType: (SortType) -> Unit,
+    sortList: () -> Unit
+) {
+    FilterChip(
+        modifier = modifier,
+        shape = RoundedCornerShape(15.dp),
+        onClick = {
+            if (sortType == targetSortType) toggleSortDirection()
+            setSortType(targetSortType)
+            sortList()
+        },
+        label = {
+            Text(label)
+        },
+        leadingIcon = {
+            if (sortType == targetSortType) {
+                Icon(
+                    imageVector = if (sortDirection == SortDirection.ASCENDING) {
+                        Icons.Default.ArrowDownward
+                    } else {
+                        Icons.Default.ArrowUpward
+                    },
+                    contentDescription = "",
+                    tint = Purple40
+                )
+            }
+        },
+        selected = sortType == targetSortType,
+
+        )
 }
 
 data class FilterStateCallback(

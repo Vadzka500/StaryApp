@@ -36,9 +36,9 @@ android {
 
 dependencies {
 
-    implementation(project(":feature:home:domain"))
-    implementation(project(":core:domain"))
-    implementation(project(":core:data"))
+    implementation(projects.feature.home.domain)
+    implementation(projects.core.domain)
+    implementation(projects.core.data)
     //implementation(project(":core:logger"))
 
 

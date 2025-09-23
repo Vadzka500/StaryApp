@@ -1,5 +1,6 @@
 package com.sidspace.stary.random.presentation.screen
 
+
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.EaseInOutCirc
 import androidx.compose.animation.core.EaseOutCubic
@@ -16,7 +17,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,7 +40,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -56,7 +55,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -67,7 +65,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
@@ -79,18 +76,14 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import com.sidspace.stary.random.presentation.FiltersPopup
-
-
 import com.sidspace.stary.random.presentation.R
 import com.sidspace.stary.ui.model.MoviePreviewUi
 import com.sidspace.stary.ui.model.ResultData
 import com.sidspace.stary.ui.uikit.Dimens
 import com.sidspace.stary.ui.uikit.Purple40
 import com.sidspace.stary.ui.uikit.poppinsFort
-
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
@@ -154,9 +147,11 @@ fun SliderScreen(
         },
         random = {
             randomViewModel.onIntent(RandomIntent.Random)
-        }, updateCurrentPage = { page, offset ->
+        },
+        updateCurrentPage = { page, offset ->
             randomViewModel.onIntent(RandomIntent.UpdateCurrentPage(page, offset))
-        }, onSelectMovie = onSelectMovie, initialPage = state.initialPage, modifier = modifier
+        },
+        onSelectMovie = onSelectMovie, initialPage = state.initialPage, modifier = modifier,
     )
 
 

@@ -131,6 +131,8 @@ fun BookmarkFilterSection(state: BookmarkMoviesState, bookmarkMoviesViewModel: B
         isVisibleFilter = state.isShowFilter,
         viewType = state.viewMode,
         isShowSort = true,
+        sortType = state.sortType,
+        sortDirection = state.sortDirection,
         filterStateCallback = filterStateCallback
     )
 }

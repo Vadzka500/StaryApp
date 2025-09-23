@@ -43,7 +43,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -75,6 +74,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.sidspace.stary.movie.presentation.R
+import com.sidspace.stary.movie.presentation.model.LocalMovieUi
 import com.sidspace.stary.movie.presentation.util.TimeManager
 import com.sidspace.stary.ui.HorizontalList
 import com.sidspace.stary.ui.ShowCollectionList
@@ -106,7 +106,7 @@ fun MovieScreen(
     toErrorScreen: () -> Unit,
 ) {
 
-    val state = movieProfileViewModel.state.collectAsState()
+    val state by movieProfileViewModel.state.collectAsState()
     val context = LocalContext.current
     LaunchedEffect(id) {
 
@@ -143,26 +143,23 @@ fun MovieScreen(
 
 
     AnimatedContent(
-        targetState = state.value.movie, transitionSpec = { fadeIn() togetherWith fadeOut() }) { result ->
+        targetState = state.movie,
+        transitionSpec = { fadeIn() togetherWith fadeOut() }
+    ) { result ->
 
         when (result) {
 
 
-            ResultData.Error -> {
-                movieProfileViewModel.onIntent(MovieIntent.OnError)
-            }
+            ResultData.Error -> movieProfileViewModel.onIntent(MovieIntent.OnError)
 
-            ResultData.Loading -> {
-                ShimmerScreen(modifier = modifier)
-            }
+            ResultData.Loading -> ShimmerScreen(modifier = modifier)
 
-            ResultData.None -> {
-
-            }
+            ResultData.None -> Unit
 
             is ResultData.Success -> {
                 InitMovie(
-                    state = state, modifier = modifier
+                    state = state,
+                    modifier = modifier
                 )
             }
         }
@@ -177,8 +174,7 @@ fun ShimmerScreen(modifier: Modifier = Modifier) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(400.dp),
-            contentAlignment = Alignment.Center
+                .height(400.dp), contentAlignment = Alignment.Center
         ) {
             Box(
                 modifier = Modifier
@@ -290,13 +286,13 @@ fun ShimmerScreen(modifier: Modifier = Modifier) {
 
 @Composable
 fun InitMovie(
-    state: State<MovieState>,
+    state: MovieState,
     modifier: Modifier = Modifier,
     movieProfileViewModel: MovieProfileViewModel = hiltViewModel()
 ) {
 
     var scale by remember { mutableStateOf(ContentScale.Crop) }
-    val movie = (state.value.movie as ResultData.Success).data
+    val movie = (state.movie as ResultData.Success).data
 
     Column(
         modifier = modifier
@@ -307,8 +303,7 @@ fun InitMovie(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(400.dp),
-            contentAlignment = Alignment.Center
+                .height(400.dp), contentAlignment = Alignment.Center
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current).data(movie.backdrop).crossfade(true).build(),
@@ -321,13 +316,11 @@ fun InitMovie(
                     .graphicsLayer { alpha = 0.99f }
                     .drawWithContent {
                         val colors = listOf(
-                            Color.Black,
-                            Color.Transparent
+                            Color.Black, Color.Transparent
                         )
                         drawContent()
                         drawRect(
-                            brush = Brush.verticalGradient(colors),
-                            blendMode = BlendMode.DstIn
+                            brush = Brush.verticalGradient(colors), blendMode = BlendMode.DstIn
                         )
                     },
                 contentScale = ContentScale.Crop,
@@ -373,13 +366,15 @@ fun InitMovie(
         RowGenres(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = 5.dp), movie = movie
+                .padding(top = 5.dp),
+            movie = movie
         )
 
         RowScore(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = 5.dp), movie = movie
+                .padding(top = 5.dp),
+            movie = movie
         )
 
         Spacer(modifier = Modifier.height(15.dp))
@@ -439,8 +434,7 @@ fun InitMovie(
                 .padding(top = 16.dp)
                 .height(50.dp)
                 .clickable { movieProfileViewModel.onIntent(MovieIntent.ToReviewScreen(movie.id!!)) }
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically) {
+                .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = stringResource(R.string.review),
                 fontWeight = FontWeight.SemiBold,
@@ -530,9 +524,11 @@ fun TrailersBottomSheet(
     )
 
     ModalBottomSheet(
-        sheetState = sheetState, onDismissRequest = {
+        sheetState = sheetState,
+        onDismissRequest = {
             movieProfileViewModel.onIntent(MovieIntent.HideTrailerSheet)
-        }) {
+        }
+    ) {
         TrailersList(listOfTrailers = listOfTrailers)
 
     }
@@ -559,13 +555,14 @@ fun openCustomTab(context: Context, url: String) {
 @Composable
 fun TrailerItem(modifier: Modifier = Modifier, trailer: TrailerUi) {
     val context = LocalContext.current
-    Row(modifier = modifier
-        .fillMaxWidth()
-        .clickable {
-            openCustomTab(context, trailer.url!!)
-        }
-        .height(64.dp)
-        .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable {
+                openCustomTab(context, trailer.url!!)
+            }
+            .height(64.dp)
+            .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
         Image(
             painter = painterResource(R.drawable.img_youtube_2),
             contentDescription = "Youtube",
@@ -586,150 +583,48 @@ fun TrailerItem(modifier: Modifier = Modifier, trailer: TrailerUi) {
 }
 
 
-
 @Composable
 fun RowButtons(
     movie: MovieUi,
-    state: State<MovieState>,
+    state: MovieState,
     movieProfileViewModel: MovieProfileViewModel = hiltViewModel()
 ) {
 
 
-    var isAminVisible by remember { mutableStateOf(false) }
-
-    val t = remember { Animatable(0f) }
-    val totalCycles = VIEWED_CYCLES_COUNT
-    val amplitude = VIEWED_AMPLITUDE
-    val cycleDuration = VIEWED_CYCLE_DURATION
-
-    val rotation = remember(t.value) {
-        val maxT = totalCycles * 2 * PI
-        val damping = 1f - (t.value / maxT.toFloat()).coerceIn(0f, 1f)
-        amplitude * damping * sin(t.value)
-    }
-
-
-    LaunchedEffect(isAminVisible) {
-
-        if (isAminVisible) {
-            t.snapTo(0f)
-            t.animateTo(
-                targetValue = (totalCycles * 2 * PI).toFloat(),
-                animationSpec = tween(durationMillis = totalCycles * cycleDuration)
-            )
-        }
-
-    }
-
     Row(
-        horizontalArrangement = Arrangement.spacedBy(20.dp), modifier = Modifier.padding(horizontal = 6.dp)
+        horizontalArrangement = Arrangement.spacedBy(20.dp),
+        modifier = Modifier.padding(horizontal = 6.dp)
     ) {
-        if (!movie.trailers.isNullOrEmpty()) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(50.dp)
-                        .clip(RoundedCornerShape(15.dp))
-                        .background(MaterialTheme.colorScheme.secondaryContainer)
-                        .clickable {
 
-                            if (movie.trailers!!.size == 1) {
-                                movieProfileViewModel.onIntent(MovieIntent.PlayTrailer(movie.trailers!![0].url!!))
-
-                            } else movieProfileViewModel.onIntent(MovieIntent.ShowTrailerSheet)
-
-
-                        }
-                        .padding(0.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.cameravideo),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(25.dp)
-                            .align(Alignment.Center),
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
-                }
-                Text(
-                    text = stringResource(R.string.trailer),
-                    fontWeight = FontWeight.Normal,
-                    fontFamily = poppinsFort,
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
+        TrailerButton(trailers = movie.trailers, modifier = Modifier.weight(1f), playTrailer = {
+            movieProfileViewModel.onIntent(MovieIntent.PlayTrailer(it))
+        }, showListTrailers = {
+            movieProfileViewModel.onIntent(MovieIntent.ShowTrailerSheet)
+        })
 
         val colorMaterial = MaterialTheme.colorScheme.onSecondaryContainer
 
-        var color by remember {
-            mutableStateOf(colorMaterial)
-        }
 
         var colorBookmark by remember {
             mutableStateOf(colorMaterial)
         }
 
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
-            Box(
-                modifier = Modifier
-                    .size(50.dp)
-                    .clip(RoundedCornerShape(15.dp))
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
-                    .clickable {
-                        if (state.value.isExistMovieDb?.isViewed == true) {
-                            movieProfileViewModel.onIntent(
-                                MovieIntent.ViewedToMovie(
-                                    id = movie.id, collections = movie.collections, isViewed = false
-                                )
-                            )
 
-                            isAminVisible = false
-                            color = colorMaterial
-                        } else {
-                            movieProfileViewModel.onIntent(
-                                MovieIntent.ViewedToMovie(
-                                    id = movie.id, collections = movie.collections, isViewed = true
-                                )
-                            )
-                            isAminVisible = true
-                            color = Purple40
-                        }
-                    }
-                    .padding(0.dp)
-            ) {
-                Icon(
-                    painter = if (state.value.isExistMovieDb?.isViewed == true) {
-                        color = Purple40
-                        painterResource(R.drawable.ic_visibility_fill)
-                    } else {
-                        color = colorMaterial
-                        painterResource(
-                            R.drawable.ic_visibility_outlined
 
-                        )
-                    },
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(25.dp)
-                        .align(Alignment.Center)
-                        .graphicsLayer {
-                            rotationZ = rotation
-                        },
-                    tint = color
+        ViewedButton(
+            movie = movie,
+            localMovie = state.isExistMovieDb,
+            modifier = Modifier.weight(1f),
+            setViewedMovie = { id, collection, isViewed ->
+                movieProfileViewModel.onIntent(
+                    MovieIntent.ViewedToMovie(
+                        id = id,
+                        collections = collection,
+                        isViewed = isViewed
+                    )
                 )
             }
-            Text(
-                text = stringResource(R.string.viewed),
-                fontWeight = FontWeight.Normal,
-                fontFamily = poppinsFort,
-                fontSize = 12.sp,
-                textAlign = TextAlign.Center
-            )
-        }
+        )
 
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
             Box(
@@ -739,18 +634,22 @@ fun RowButtons(
                     .background(MaterialTheme.colorScheme.secondaryContainer)
                     .clickable {
 
-                        if (state.value.isExistMovieDb?.isBookmark == true) {
+                        if (state.isExistMovieDb?.isBookmark == true) {
 
                             movieProfileViewModel.onIntent(
                                 MovieIntent.BookmarkToMovie(
-                                    id = movie.id!!, collections = movie.collections, isBookmark = false
+                                    id = movie.id,
+                                    collections = movie.collections,
+                                    isBookmark = false
                                 )
                             )
                             colorBookmark = colorMaterial
                         } else {
                             movieProfileViewModel.onIntent(
                                 MovieIntent.BookmarkToMovie(
-                                    id = movie.id!!, collections = movie.collections, isBookmark = true
+                                    id = movie.id,
+                                    collections = movie.collections,
+                                    isBookmark = true
                                 )
                             )
                             colorBookmark = Purple40
@@ -759,7 +658,7 @@ fun RowButtons(
                     .padding(0.dp)
             ) {
                 Icon(
-                    painter = if (state.value.isExistMovieDb?.isBookmark == true) {
+                    painter = if (state.isExistMovieDb?.isBookmark == true) {
                         colorBookmark = Purple40
                         painterResource(
                             R.drawable.ic_bookmark_added_fill
@@ -816,16 +715,150 @@ fun RowButtons(
 
     }
 
-    if (state.value.isShowTrailerSheet) {
+    if (state.isShowTrailerSheet) {
         TrailersBottomSheet(
             listOfTrailers = movie.trailers!!
         )
     }
 
-    if (state.value.isShowSheetFolders) {
+    if (state.isShowSheetFolders) {
         CollectionBottomSheet(
             movie = movie
         )
+    }
+}
+
+@Composable
+fun ViewedButton(
+    localMovie: LocalMovieUi?,
+    movie: MovieUi,
+    modifier: Modifier = Modifier,
+    setViewedMovie: (Long, List<String>?, Boolean) -> Unit
+) {
+
+
+    var isAminVisible by remember { mutableStateOf(false) }
+
+    val t = remember { Animatable(0f) }
+    val totalCycles = VIEWED_CYCLES_COUNT
+    val amplitude = VIEWED_AMPLITUDE
+    val cycleDuration = VIEWED_CYCLE_DURATION
+
+    val rotation = remember(t.value) {
+        val maxT = totalCycles * 2 * PI
+        val damping = 1f - (t.value / maxT.toFloat()).coerceIn(0f, 1f)
+        amplitude * damping * sin(t.value)
+    }
+
+    LaunchedEffect(isAminVisible) {
+
+        if (isAminVisible) {
+            t.snapTo(0f)
+            t.animateTo(
+                targetValue = (totalCycles * 2 * PI).toFloat(),
+                animationSpec = tween(durationMillis = totalCycles * cycleDuration)
+            )
+        }
+
+    }
+
+    val colorMaterial = MaterialTheme.colorScheme.onSecondaryContainer
+
+    var colorViewed by remember {
+        mutableStateOf(colorMaterial)
+    }
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
+        Box(
+            modifier = Modifier
+                .size(50.dp)
+                .clip(RoundedCornerShape(15.dp))
+                .background(MaterialTheme.colorScheme.secondaryContainer)
+                .clickable {
+                    if (localMovie?.isViewed == true) {
+                        setViewedMovie(movie.id, movie.collections, false)
+
+                        isAminVisible = false
+                        colorViewed = colorMaterial
+                    } else {
+                        setViewedMovie(movie.id, movie.collections, true)
+
+                        isAminVisible = true
+                        colorViewed = Purple40
+                    }
+                }
+                .padding(0.dp)) {
+            Icon(
+                painter = if (localMovie?.isViewed == true) {
+                    colorViewed = Purple40
+                    painterResource(R.drawable.ic_visibility_fill)
+                } else {
+                    colorViewed = colorMaterial
+                    painterResource(
+                        R.drawable.ic_visibility_outlined
+
+                    )
+                }, contentDescription = null, modifier = Modifier
+                    .size(25.dp)
+                    .align(Alignment.Center)
+                    .graphicsLayer {
+                        rotationZ = rotation
+                    }, tint = colorViewed
+            )
+        }
+        Text(
+            text = stringResource(R.string.viewed),
+            fontWeight = FontWeight.Normal,
+            fontFamily = poppinsFort,
+            fontSize = 12.sp,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+fun TrailerButton(
+    trailers: List<TrailerUi>?,
+    modifier: Modifier = Modifier,
+    playTrailer: (String) -> Unit,
+    showListTrailers: () -> Unit
+) {
+    if (trailers.isNullOrEmpty()) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(RoundedCornerShape(15.dp))
+                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                    .clickable {
+
+                        if (trailers!!.size == 1) {
+                            playTrailer(trailers[0].url!!)
+
+                        } else showListTrailers()
+
+
+                    }
+                    .padding(0.dp)) {
+                Icon(
+                    painter = painterResource(R.drawable.cameravideo),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(25.dp)
+                        .align(Alignment.Center),
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            }
+            Text(
+                text = stringResource(R.string.trailer),
+                fontWeight = FontWeight.Normal,
+                fontFamily = poppinsFort,
+                fontSize = 12.sp,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
@@ -876,13 +909,11 @@ fun RowActors(
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(15.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp)
+        horizontalArrangement = Arrangement.spacedBy(15.dp), contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
         items(persons) {
             CardActor(
-                person = it,
-                modifier = modifier.width(70.dp)
+                person = it, modifier = modifier.width(70.dp)
             )
         }
     }
@@ -939,8 +970,7 @@ fun RowCreators(
     ) {
         items(persons) {
             CardCreator(
-                person = it,
-                modifier = modifier.width(70.dp)
+                person = it, modifier = modifier.width(70.dp)
             )
         }
     }
@@ -1065,16 +1095,12 @@ fun RowGenres(movie: MovieUi, modifier: Modifier = Modifier) {
 @Composable
 fun RowPrimaryData(movie: MovieUi, modifier: Modifier = Modifier) {
     Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
+        modifier = modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
 
         if (!movie.isSeries) {
             Text(
-                text = movie.year.toString(),
-                fontWeight = FontWeight.Medium,
-                fontFamily = poppinsFort,
-                fontSize = 14.sp
+                text = movie.year.toString(), fontWeight = FontWeight.Medium, fontFamily = poppinsFort, fontSize = 14.sp
             )
 
             if (movie.movieLength != null) {

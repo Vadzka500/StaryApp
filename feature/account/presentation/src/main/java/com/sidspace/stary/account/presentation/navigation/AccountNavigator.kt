@@ -18,7 +18,7 @@ fun NavGraphBuilder.accountNavGraph(
     toBookmarkScreen: () -> Unit
 ) {
 
-    composable<Account>() {
+    composable<Account> {
 
 
         AccountScreen(

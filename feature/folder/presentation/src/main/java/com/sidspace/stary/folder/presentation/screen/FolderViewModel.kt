@@ -115,8 +115,9 @@ class FolderViewModel @Inject constructor(
         viewModelScope.launch {
 
             getFolderFromDbUseCase(id).collect {
-
+                println(it)
                 when (val data = it) {
+
                     Result.Error -> {
                         data
                     }

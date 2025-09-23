@@ -17,3 +17,4 @@ data class MainState(
         const val MAX_MOVIES = 10
     }
 }
+

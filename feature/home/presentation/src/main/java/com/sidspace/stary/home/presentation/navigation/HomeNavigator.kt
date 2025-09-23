@@ -1,15 +1,14 @@
 package com.sidspace.stary.home.presentation.navigation
 
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.scaleIn
+
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-
-
 import com.sidspace.stary.home.presentation.screen.ListScreen
 
 
@@ -25,7 +24,8 @@ fun NavGraphBuilder.homeNavGraph(
         ListScreen(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues = paddingValues),
+                .padding(paddingValues = paddingValues)
+                .background(MaterialTheme.colorScheme.background),
             toErrorScreen = toErrorScreen,
             onSelectMovie = onMovieSelect,
             onSelectListMovies = onSelectListMovies,

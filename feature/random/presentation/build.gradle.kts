@@ -40,10 +40,10 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 
-    implementation(project(":feature:random:domain"))
-    implementation(project(":feature:random:data"))
-    implementation(project(":core:domain"))
-    implementation(project(":core:ui"))
+    implementation(projects.feature.random.domain)
+    implementation(projects.feature.random.data)
+    implementation(projects.core.domain)
+    implementation(projects.core.ui)
 
     implementation(libs.compose.navigation)
     implementation(libs.icons)

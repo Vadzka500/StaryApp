@@ -36,9 +36,9 @@ android {
 
 dependencies {
 
-    implementation(project(":feature:random:domain"))
-    implementation(project(":core:domain"))
-    implementation(project(":core:data"))
+    implementation(projects.feature.random.domain)
+    implementation(projects.core.domain)
+    implementation(projects.core.data)
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)

@@ -41,11 +41,11 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 
-    implementation(project(":feature:account:domain"))
-    implementation(project(":feature:account:data"))
-    implementation(project(":core:domain"))
-    implementation(project(":core:ui"))
-    //implementation(project(":core:navigation"))
+    implementation(projects.feature.account.domain)
+    implementation(projects.feature.account.data)
+    implementation(projects.core.domain)
+    implementation(projects.core.ui)
+
 
     implementation(libs.icons)
 

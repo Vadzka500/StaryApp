@@ -16,7 +16,7 @@ import com.sidspace.stary.home.presentation.navigation.Home
 import com.sidspace.stary.random.presentation.navigation.Random
 import com.sidspace.stary.search.presentation.navigation.Search
 
-data class TopLevelRoute<T : Any>(
+data class Routes<T : Any>(
     val name: String,
     val route: T,
     val iconSelected: ImageVector,
@@ -24,8 +24,8 @@ data class TopLevelRoute<T : Any>(
 )
 
 val listOfScreens = listOf(
-    TopLevelRoute("Home", Home, Icons.Default.Home, Icons.Outlined.Home),
-    TopLevelRoute("Search", Search, Icons.Default.Search, Icons.Outlined.Search),
-    TopLevelRoute("Random", Random, Icons.Default.Movie, Icons.Outlined.Movie),
-    TopLevelRoute("Account", Account, Icons.Default.Person, Icons.Outlined.Person)
+    Routes("Home", Home, Icons.Default.Home, Icons.Outlined.Home),
+    Routes("Search", Search, Icons.Default.Search, Icons.Outlined.Search),
+    Routes("Random", Random, Icons.Default.Movie, Icons.Outlined.Movie),
+    Routes("Account", Account, Icons.Default.Person, Icons.Outlined.Person)
 )

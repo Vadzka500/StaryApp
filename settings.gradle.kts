@@ -1,3 +1,6 @@
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
     repositories {
         google {
@@ -88,3 +91,4 @@ include(":core:navigation")
 include(":core:logger")
 include(":feature:error")
 include(":feature:error:presentation")
+include(":baselineprofile")
