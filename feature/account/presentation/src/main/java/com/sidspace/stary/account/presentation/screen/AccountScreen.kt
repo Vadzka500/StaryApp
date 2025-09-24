@@ -1,5 +1,6 @@
-package com.sidspace.stary.account.presentation.screen
+@file:Suppress("TooManyFunctions")
 
+package com.sidspace.stary.account.presentation.screen
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts

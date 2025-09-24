@@ -1,3 +1,4 @@
+@file:Suppress("MagicNumber", "LongMethod", "TooManyFunctions")
 package com.sidspace.stary.movie.presentation.screen
 
 
@@ -168,13 +169,15 @@ fun MovieScreen(
 }
 
 @Composable
+
 fun ShimmerScreen(modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxSize()) {
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(400.dp), contentAlignment = Alignment.Center
+                .height(400.dp),
+            contentAlignment = Alignment.Center
         ) {
             Box(
                 modifier = Modifier
@@ -1093,9 +1096,11 @@ fun RowGenres(movie: MovieUi, modifier: Modifier = Modifier) {
 }
 
 @Composable
+@Suppress("CyclomaticComplexMethod")
 fun RowPrimaryData(movie: MovieUi, modifier: Modifier = Modifier) {
     Row(
-        modifier = modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
 
         if (!movie.isSeries) {

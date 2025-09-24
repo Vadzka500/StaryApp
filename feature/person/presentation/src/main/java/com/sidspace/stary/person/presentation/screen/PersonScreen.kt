@@ -246,6 +246,7 @@ fun InitPersonData(modifier: Modifier = Modifier, person: PersonUi) {
 }
 
 @Composable
+@Suppress("MagicNumber")
 fun InitPersonGrowthAndAge(person: PersonUi) {
     Row {
         if (person.age != null) {
@@ -296,6 +297,7 @@ fun MovieRow(
 }
 
 
+@Suppress("MagicNumber")
 @Composable
 fun LoadingScreen(modifier: Modifier = Modifier) {
 

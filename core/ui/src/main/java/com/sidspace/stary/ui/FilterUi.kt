@@ -42,6 +42,7 @@ import com.sidspace.stary.ui.uikit.Purple40
 import com.sidspace.stary.ui.uikit.poppinsFort
 
 
+@Suppress("LongMethod")
 @Composable
 fun FilterSection(
     isVisibleFilter: Boolean,
@@ -327,6 +328,7 @@ fun FilterSort(
     }
 }
 
+@Suppress("LongParameterList")
 @Composable
 fun FilterContent(
     label: String,

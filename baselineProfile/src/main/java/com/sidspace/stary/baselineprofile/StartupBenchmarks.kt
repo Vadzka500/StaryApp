@@ -30,7 +30,8 @@ import org.junit.runner.RunWith
  * emulator doesn't represent real world performance and shares system resources with its host.
  *
  * For more information, see the [Macrobenchmark documentation](https://d.android.com/macrobenchmark#create-macrobenchmark)
- * and the [instrumentation arguments documentation](https://d.android.com/topic/performance/benchmarking/macrobenchmark-instrumentation-args).
+ * and the [instrumentation arguments documentation]
+ * (https://d.android.com/topic/performance/benchmarking/macrobenchmark-instrumentation-args).
  **/
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -47,6 +48,7 @@ class StartupBenchmarks {
     fun startupCompilationBaselineProfiles() =
         benchmark(CompilationMode.Partial(BaselineProfileMode.Require))
 
+    @Suppress("TooGenericExceptionThrown")
     private fun benchmark(compilationMode: CompilationMode) {
         // The application id for the running build variant is read from the instrumentation arguments.
         rule.measureRepeated(

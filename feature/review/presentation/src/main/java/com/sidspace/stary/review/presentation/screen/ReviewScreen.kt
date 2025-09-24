@@ -1,5 +1,6 @@
-package com.sidspace.stary.review.presentation.screen
+@file:Suppress("TooManyFunctions")
 
+package com.sidspace.stary.review.presentation.screen
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize

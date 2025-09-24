@@ -1,3 +1,5 @@
+@file:Suppress("LongMethod", "MagicNumber", "TooManyFunctions")
+
 package com.sidspace.stary.ui
 
 import android.annotation.SuppressLint
@@ -214,6 +216,7 @@ fun MovieCardGrid(
     }
 }
 
+@Suppress("CyclomaticComplexMethod")
 @Composable
 fun CardList(
     modifier: Modifier = Modifier,

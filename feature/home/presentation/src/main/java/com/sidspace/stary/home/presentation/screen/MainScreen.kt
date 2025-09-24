@@ -258,7 +258,7 @@ fun MainListMovies(
         targetState = state.value.listHomePage,
         transitionSpec = { scaleIn(
             initialScale = 0.99f,
-            animationSpec = tween(100)
+            //animationSpec = tween(100)
         ) + fadeIn() togetherWith fadeOut() }
     ) { state ->
 

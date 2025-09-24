@@ -168,6 +168,7 @@ fun SliderScreen(
 }
 
 @Composable
+@Suppress("LongParameterList", "LongMethod")
 fun InitView(
     status: State<ResultData<MoviePreviewUi>>,
     initialPage: Int,
