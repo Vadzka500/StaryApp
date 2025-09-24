@@ -18,6 +18,10 @@ jobs:
                 with:
                     cache-disabled: true
 
+            -   name: Grant execute permission for gradlew
+                run: chmod +x gradlew
+
+
             -   name: Detekt
                 shell: bash
                 run: ./gradlew detekt
