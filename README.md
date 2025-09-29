@@ -44,7 +44,4 @@
   <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="200"/>
 </a>
 
-<a href="https://www.rustore.ru/catalog/app/com.sidspace.stary">
-  <img src="https://static.rustore.ru/cms/public/logo/RuStore_badge.png" width="200"/>
-</a>
-
+<iframe src="https://www.rustore.ru/external/simple-selection/buttons?storeUrls%5Brustore%5D=https%3A%2F%2Fapps.rustore.ru%2Fapp%com.sidspace.stary" frameborder="0" width="100%" height="80px"></iframe>
