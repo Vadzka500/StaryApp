@@ -41,9 +41,8 @@
 
 ## Скачать
 <a href="https://play.google.com/store/apps/details?id=com.sidspace.stary">
-  <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="200"/>
+  <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="200" height="100"/>
 </a>
-
 <a href="https://www.rustore.ru/catalog/app/com.sidspace.stary">
-  <img src="https://i.postimg.cc/KYjhz4w2/logo-color-dark.png" width="200"/>
+  <img src="https://i.postimg.cc/KYjhz4w2/logo-color-dark.png" width="200" height="100"/>
 </a>
