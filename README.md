@@ -44,4 +44,6 @@
   <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="200"/>
 </a>
 
-<iframe src="https://www.rustore.ru/external/simple-selection/buttons?storeUrls%5Brustore%5D=https%3A%2F%2Fapps.rustore.ru%2Fapp%com.sidspace.stary" frameborder="0" width="100%" height="80px"></iframe>
+<a href="https://www.rustore.ru/catalog/app/com.sidspace.stary">
+  <img src="https://www.rustore.ru/external/simple-selection/buttons?theme=coloredLight&orientation=horizontal&stores=rustore%3Ahttps%3A%2F%2Fwww.rustore.ru%2Fcatalog%2Fapp%2Fcom.sidspace.stary%3Futm_source%3Davailable_in_rustore%26utm_medium%3Dcom.sidspace.stary%26rsm%3D1%26mt_link_id%3Diios36%26mt_sub1%3Dcom.sidspace.stary" width="200"/>
+</a>
