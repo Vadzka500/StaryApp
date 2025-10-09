@@ -44,13 +44,6 @@ jobs:
                   distribution: 'temurin'
                   java-version: 17
 
-            - name: Check keystore
-              run: ls -l $GITHUB_WORKSPACE/sidspacekeystore.jks
-
-            - name: Verify Keystore
-              run: |
-                  keytool -list -v -keystore sidspacekeystore.jks -storepass ${{ secrets.RELEASE_STORE_PASSWORD }}
-
             - name: Decode Keystore
               run: |
                   echo "$RELEASE_STORE_FILE_B64" | base64 --decode > sidspacekeystore.jks
