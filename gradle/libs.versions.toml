@@ -57,6 +57,10 @@ uiautomator = "2.3.0"
 benchmarkMacroJunit4 = "1.4.0"
 baselineprofile = "1.2.4"
 
+androidSdk-target = "36"
+androidSdk-min = "31"
+androidSdk-compile = "36"
+
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
 

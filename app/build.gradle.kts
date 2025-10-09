@@ -13,29 +13,26 @@ plugins {
 
 android {
     namespace = "com.sidspace.stary"
-    compileSdk = 36
-
+    compileSdk = libs.versions.androidSdk.compile.get().toInt()
 
     defaultConfig {
         applicationId = "com.sidspace.stary"
-        minSdk = 31
-        targetSdk = 36
-        versionCode = 5
-        versionName = "1.0.3"
+        minSdk = libs.versions.androidSdk.min.get().toInt()
+        targetSdk = libs.versions.androidSdk.target.get().toInt()
+        versionCode = 6
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "MOVIES_API_KEY", "\"FF3PF1A-YQ6MXEK-NFQM9QD-76A6GH0\"")
         buildConfigField("String", "MOVIES_API_BASE_URL", "\"https://api.kinopoisk.dev/v1.4/\"")
 
-
         resourceConfigurations += setOf("ru", "en")
-
     }
 
     signingConfigs {
         create("release") {
-            storeFile = file(System.getenv("RELEASE_STORE_FILE") ?: "sidspacekeystore.jks")
+            storeFile = file(System.getenv("RELEASE_STORE_FILE") ?: "$rootDir/sidspacekeystore.jks")
             storePassword = System.getenv("RELEASE_STORE_PASSWORD")
             keyAlias = System.getenv("RELEASE_KEY_ALIAS")
             keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
@@ -51,15 +48,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-
         }
 
         debug {
-
         }
     }
-
-
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -72,10 +65,7 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
-
     }
-
-
 }
 
 dependencies {
@@ -107,7 +97,6 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics.ndk)
     implementation(libs.firebase.analytics)
-
 
     implementation(projects.core.navigation)
     implementation(projects.core.logger)
