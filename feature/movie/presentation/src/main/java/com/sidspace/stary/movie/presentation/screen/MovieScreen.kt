@@ -1,4 +1,5 @@
 @file:Suppress("MagicNumber", "LongMethod", "TooManyFunctions")
+
 package com.sidspace.stary.movie.presentation.screen
 
 
@@ -731,6 +732,7 @@ fun RowButtons(
     }
 }
 
+
 @Composable
 fun ViewedButton(
     localMovie: LocalMovieUi?,
@@ -837,10 +839,12 @@ fun TrailerButton(
                     .background(MaterialTheme.colorScheme.secondaryContainer)
                     .clickable {
 
-                        if (trailers!!.size == 1) {
-                            playTrailer(trailers[0].url!!)
+                        trailers?.let {
+                            if (it.size == 1) {
+                                playTrailer(it[0].url!!)
 
-                        } else showListTrailers()
+                            } else showListTrailers()
+                        }
 
 
                     }

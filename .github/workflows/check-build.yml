@@ -1,5 +1,4 @@
-name: Code quality check
-run-name: Check code quality with linter
+name: Android CI
 on: [push]
 jobs:
     Detekt:
@@ -35,3 +34,37 @@ jobs:
                     reports:
                         '**/build/**/detekt.xml'
 
+
+Release_Build:
+    runs-on: ubuntu-latest
+    needs: Detekt
+    steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+
+        - name: Set up JDK
+          uses: actions/setup-java@v4
+          with:
+              distribution: 'temurin'
+              java-version: 17
+
+        - name: Decode Keystore
+          run: |
+              echo "$RELEASE_STORE_FILE_B64" | base64 --decode > sidspacekeystore.jks
+
+        - name: Grant execute permission for gradlew
+          run: chmod +x gradlew
+
+        - name: Build release APK
+          env:
+              RELEASE_STORE_FILE: sidspacekeystore.jks
+              RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+              RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+              RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+          run: ./gradlew assembleRelease
+
+        - name: Upload release APK
+          uses: actions/upload-artifact@v4
+          with:
+              name: app-release
+              path: app/build/outputs/apk/release/*.apk

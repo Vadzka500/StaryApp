@@ -35,10 +35,10 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = File(rootDir, "sidspacekeystore.jks")
-            keyPassword = "8870606v"
-            keyAlias = "stary"
-            storePassword = "8870606v"
+            storeFile = file(System.getenv("RELEASE_STORE_FILE") ?: "sidspacekeystore.jks")
+            storePassword = System.getenv("RELEASE_STORE_PASSWORD")
+            keyAlias = System.getenv("RELEASE_KEY_ALIAS")
+            keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
         }
     }
 
