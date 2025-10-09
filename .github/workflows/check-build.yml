@@ -1,70 +1,70 @@
 name: Android CI
-on: [push]
+
+on:
+    push:
+        branches:
+            - main
+
 jobs:
     Detekt:
         runs-on: ubuntu-latest
         steps:
-            -   name: Checkout
-                uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+            - name: Checkout
+              uses: actions/checkout@v4
 
-            -   name: set up JDK
-                uses: actions/setup-java@v4
-                with:
-                    distribution: 'temurin'
-                    java-version: 17
+            - name: set up JDK
+              uses: actions/setup-java@v4
+              with:
+                  distribution: 'temurin'
+                  java-version: 17
 
-            -   uses: gradle/gradle-build-action@v3
-                with:
-                    cache-disabled: true
+            - uses: gradle/gradle-build-action@v3
+              with:
+                  cache-disabled: true
 
-            -   name: Grant execute permission for gradlew
-                run: chmod +x gradlew
+            - name: Grant execute permission for gradlew
+              run: chmod +x gradlew
 
+            - name: Detekt
+              shell: bash
+              run: ./gradlew detekt
 
-            -   name: Detekt
-                shell: bash
-                run: ./gradlew detekt
+            - name: Publish Checkstyle Report
+              uses: Juuxel/publish-checkstyle-report@v1.0.0
+              with:
+                  reports:
+                        '**/build/**/detekt.xml
 
-            -   name: Publish Checkstyle Report
-                  # You may pin to the exact commit or the version.
-                # uses: Juuxel/publish-checkstyle-report@eec483cc03443d79f49d62ccb30da6c210e322f0
-                uses: Juuxel/publish-checkstyle-report@v1.0.0
-                with:
-                    # The glob paths to all report XML files
-                    reports:
-                        '**/build/**/detekt.xml'
-
-
-Release_Build:
+  Release_Build:
     runs-on: ubuntu-latest
     needs: Detekt
     steps:
-        - name: Checkout
-          uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-        - name: Set up JDK
-          uses: actions/setup-java@v4
-          with:
-              distribution: 'temurin'
-              java-version: 17
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+                  java-version: 17
 
-        - name: Decode Keystore
-          run: |
-              echo "$RELEASE_STORE_FILE_B64" | base64 --decode > sidspacekeystore.jks
+            - name: Decode Keystore
+              run: |
+                  echo "$RELEASE_STORE_FILE_B64" | base64 --decode > sidspacekeystore.jks
 
-        - name: Grant execute permission for gradlew
-          run: chmod +x gradlew
+            - name: Grant execute permission for gradlew
+              run: chmod +x gradlew
 
-        - name: Build release APK
-          env:
-              RELEASE_STORE_FILE: sidspacekeystore.jks
-              RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
-              RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
-              RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-          run: ./gradlew assembleRelease
+            - name: Build release APK
+              env:
+                  RELEASE_STORE_FILE: sidspacekeystore.jks
+                  RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+                  RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+                  RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+              run: ./gradlew assembleRelease
 
-        - name: Upload release APK
-          uses: actions/upload-artifact@v4
-          with:
-              name: app-release
-              path: app/build/outputs/apk/release/*.apk
+            - name: Upload release APK
+              uses: actions/upload-artifact@v4
+              with:
+                  name: app-release
+                  path: app/build/outputs/apk/release/*.apk
