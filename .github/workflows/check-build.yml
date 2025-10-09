@@ -53,7 +53,7 @@ jobs:
 
             - name: Build release APK
               env:
-                  RELEASE_STORE_FILE: sidspacekeystore.jks
+                  RELEASE_STORE_FILE: "${{ github.workspace }}/sidspacekeystore.jks"
                   RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
                   RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
                   RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
