@@ -12,5 +12,7 @@ interface HomeRepository {
 
     fun getMoviesByCollection(slug: String, limit: Int): Flow<Result<List<Movie>>>
 
+    fun getCollectionWithMovies(slug: String, limit: Int): Flow<Result<List<Movie>>>
+
     suspend fun initDefaultFolders()
 }

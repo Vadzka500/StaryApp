@@ -28,6 +28,7 @@ allprojects.onEach { project ->
                 project.extensions.configure<DetektExtension> {
 
                     config.setFrom(rootProject.files("default-detekt-config.yml"))
+
                 }
             }
         }

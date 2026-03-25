@@ -1,6 +1,7 @@
 package com.sidspace.stary.data.api
 
 import androidx.annotation.IntRange
+import com.sidspace.stary.data.model.api.CollectionResponse
 
 import com.sidspace.stary.data.model.api.collection.CollectionMovie
 import com.sidspace.stary.data.model.api.movie.MovieDTO
@@ -15,7 +16,7 @@ import retrofit2.http.Query
 
 interface MovieApi {
 
-    @GET("movie/search")
+    @GET("v1.4/movie/search")
     suspend fun getAllMovies(
         @Query("limit") limit: Int = 50,
         @Query("page") page: Int = 1,
@@ -23,7 +24,7 @@ interface MovieApi {
     ): Response<com.sidspace.stary.data.model.api.Response<MovieDTO>>
 
 
-    @GET("movie/random")
+    @GET("v1.4/movie/random")
     suspend fun getRandom(
         @Query("notNullFields") field: List<String> = listOf("poster.url", "name", "year"),
         @Query("lists") lists: List<String>? = null,
@@ -33,7 +34,7 @@ interface MovieApi {
         @Query("rating.kp") score: String? = null
     ): Response<MovieDTO>
 
-    @GET("list")
+    @GET("v1.4/list")
     suspend fun getCollections(
         @Query("limit") @IntRange(
             from = 10,
@@ -44,12 +45,12 @@ interface MovieApi {
         @Query("category") categories: List<String> = listOf("Фильмы", "Сериалы")
     ): Response<com.sidspace.stary.data.model.api.Response<CollectionMovie>>
 
-    @GET("movie/{id}")
+    @GET("v1.4/movie/{id}")
     suspend fun getMovieById(
         @Path("id") id: Long
     ): Response<MovieDTO>
 
-    @GET("movie")
+    @GET("v1.4/movie")
     suspend fun getMoviesByIds(
         @Query("id") id: List<Long>,
         @Query("page") page: Int = 1,
@@ -57,7 +58,7 @@ interface MovieApi {
     ): Response<com.sidspace.stary.data.model.api.Response<MovieDTO>>
 
 
-    @GET("review")
+    @GET("v1.4/review")
     suspend fun getReviewsById(
         @Query("movieId") id: Long,
         @Query("page") page: Int = 1,
@@ -66,12 +67,12 @@ interface MovieApi {
         @Query("limit") limit: Int = 250,
     ): Response<com.sidspace.stary.data.model.api.Response<UserReview>>
 
-    @GET("person/{id}")
+    @GET("v1.4/person/{id}")
     suspend fun getPersonById(
         @Path("id") id: Long
     ): Response<PersonDTO>
 
-    @GET("movie")
+    @GET("v1.4/movie")
     suspend fun getMovieByPerson(
         @Query("persons.id") id: Long,
         @Query("limit") @IntRange(
@@ -81,7 +82,7 @@ interface MovieApi {
     ): Response<com.sidspace.stary.data.model.api.Response<MovieDTO>>
 
 
-    @GET("movie")
+    @GET("v1.4/movie")
     suspend fun getMovieByCollection(
         @Query("limit") @IntRange(
             from = 10,
@@ -90,4 +91,15 @@ interface MovieApi {
         @Query("notNullFields") field: List<String> = listOf("poster.url", "name"),
         @Query("lists") list: String
     ): Response<com.sidspace.stary.data.model.api.Response<MovieDTO>>
+
+    @GET("v1.5/list/{slug}")
+    suspend fun getMovieByCollectionNew(
+        @Path("slug") slug: String,
+        @Query("limit") @IntRange(
+            from = 10,
+            to = 250
+        ) limit: Int = 30,
+        @Query("notNullFields") field: List<String> = listOf("poster.url", "name"),
+
+    ): Response<CollectionResponse>
 }

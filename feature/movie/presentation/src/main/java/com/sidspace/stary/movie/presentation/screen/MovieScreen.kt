@@ -828,7 +828,7 @@ fun TrailerButton(
     playTrailer: (String) -> Unit,
     showListTrailers: () -> Unit
 ) {
-    if (trailers.isNullOrEmpty()) {
+    if (!trailers.isNullOrEmpty()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier
         ) {
@@ -839,12 +839,11 @@ fun TrailerButton(
                     .background(MaterialTheme.colorScheme.secondaryContainer)
                     .clickable {
 
-                        trailers?.let {
-                            if (it.size == 1) {
-                                playTrailer(it[0].url!!)
 
-                            } else showListTrailers()
-                        }
+                        if (trailers.size == 1) {
+                            playTrailer(trailers[0].url!!)
+
+                        } else showListTrailers()
 
 
                     }

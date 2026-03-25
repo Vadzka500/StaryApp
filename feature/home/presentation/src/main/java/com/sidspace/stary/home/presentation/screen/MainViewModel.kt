@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.sidspace.stary.domain.model.Result
 import com.sidspace.stary.home.domain.usecase.GetCollectionUseCase
 import com.sidspace.stary.home.domain.usecase.GetListMoviesByCollectionUseCase
+import com.sidspace.stary.home.domain.usecase.GetListMoviesByCollectionUseCaseNew
 import com.sidspace.stary.home.domain.usecase.InitDefaultFoldersUseCase
 import com.sidspace.stary.home.presentation.utils.MoviesCollections
 import com.sidspace.stary.ui.mapper.toCollectionUi
@@ -27,6 +28,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     val getListMoviesByCollectionUseCase: GetListMoviesByCollectionUseCase,
+    val getListMoviesByCollectionUseCaseNew: GetListMoviesByCollectionUseCaseNew,
     val getCollectionUseCase: GetCollectionUseCase,
     val initDefaultFoldersUseCase: InitDefaultFoldersUseCase
 ) : ViewModel() {
@@ -113,7 +115,7 @@ class MainViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            getListMoviesByCollectionUseCase(slug = slug, limit = 250).collect {
+            getListMoviesByCollectionUseCaseNew(slug = slug, limit = 250).collect {
                 when (val data = it) {
                     is Result.Error -> {
                         _state.update { it.copy(listTopBanned = ResultData.Error) }

@@ -45,6 +45,20 @@ class HomeRepositoryImpl @Inject constructor(
         )
     }
 
+    override fun getCollectionWithMovies(
+        slug: String,
+        limit: Int
+    ): Flow<Result<List<Movie>>> = flow {
+        emit(
+            safeCall {
+                movieApi.getMovieByCollectionNew(
+                    slug = slug,
+                    limit = limit
+                )
+            }.mapSuccess { it.movies.docs }.toDomain { it.map { item -> item.movie.toMovie() } }
+        )
+    }
+
     override suspend fun initDefaultFolders() {
         movieDao.getCountFolders().collect { result ->
             if (result == 0L) {

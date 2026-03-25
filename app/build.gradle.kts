@@ -19,13 +19,13 @@ android {
         applicationId = "com.sidspace.stary"
         minSdk = libs.versions.androidSdk.min.get().toInt()
         targetSdk = libs.versions.androidSdk.target.get().toInt()
-        versionCode = 6
-        versionName = "1.0.4"
+        versionCode = 8
+        versionName = "1.0.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "MOVIES_API_KEY", "\"FF3PF1A-YQ6MXEK-NFQM9QD-76A6GH0\"")
-        buildConfigField("String", "MOVIES_API_BASE_URL", "\"https://api.kinopoisk.dev/v1.4/\"")
+        buildConfigField("String", "MOVIES_API_BASE_URL", "\"https://api.kinopoisk.dev/\"")
 
         resourceConfigurations += setOf("ru", "en")
     }

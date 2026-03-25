@@ -19,27 +19,13 @@ object MoviesCollections {
         Pair("Фильмы про космос", "theme_space"),
         Pair("Самые дорогие фильмы", "most-expensive"),
 
-
-        Pair("501 фильм, который стоит посмотреть", "best_501"),
-        //Pair("1001 фильм, который вы должны посмотреть", "best_1001"),
-        Pair("Лучшие фильмы по версии RottenTomatoes", "rotten-tomatoes"),
         Pair("Лауреаты премии «Сатурн»", "saturn-best-sci-fi-fantasy-horror"),
-        //Pair("Лауреаты «Оскара» за лучшую музыку", "oscar-music-original-score"),
         Pair("Лауреаты «Оскара» за лучшую режиссуру", "oscar-directing"),
         Pair("Фильмы про зомби", "theme_zombie"),
-
-        //
-        Pair(
-            "100 величайших научно-фантастических фильмов",
-            "top_100_scifi_by_total_scifi_online"
-        ),
-        Pair("100 лучших американских комедий", "top_100_comedy_by_afi"),
-        Pair("60 лучших сиквелов", "top_60_sequel"),
 
         Pair("Комедийные боевики", "theme_action_comdey"),
         Pair("Лучшие визуальные эффекты", "oscar-visual-effects"),
         Pair("Лучшие сериалы мини-формата", "best_mini_serial"),
-        Pair("Лучшие вестерны", "best_spaghetti_western"),
 
         Pair("Лучшие экранизации", "hd-adaptation"),
         Pair("Номинанты «Оскара» за лучший фильм", "oscar-best-film-nominees"),
@@ -48,7 +34,9 @@ object MoviesCollections {
 
         Pair("Фильмы по реальным событиям", "hd-real-story"),
 
-
+        Pair("Фильмы про вампиров", "theme_vampire"),
+        Pair("Фильмы про катастрофы", "theme_catastrophe"),
+        Pair("Фильмы про акул", "theme_shark"),
+        Pair("Фильмы по комиксам", "theme_comics"),
         )
-
 }
