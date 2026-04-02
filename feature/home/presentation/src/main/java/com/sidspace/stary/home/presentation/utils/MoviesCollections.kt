@@ -10,7 +10,7 @@ object MoviesCollections {
         Pair("Блокбастеры", "hd-blockbusters"), //
         Pair("Фильмы и сериалы про программистов", "about_programmers"),
         Pair("100 великих фильмов 21 века", "100_greatest_movies_XXI"), //
-        Pair("250 лучших фильмов", "top250"), //
+        //Pair("250 лучших фильмов", "top250"), //
         Pair("Шедевры HBO", "hbo_best"),
         Pair("250 лучших сериалов", "series-top250"), //
         Pair("Фильмы, которые стоит посмотреть", "hd-must-see"),
@@ -23,7 +23,7 @@ object MoviesCollections {
         Pair("Лауреаты «Оскара» за лучшую режиссуру", "oscar-directing"),
         Pair("Фильмы про зомби", "theme_zombie"),
 
-        Pair("Комедийные боевики", "theme_action_comdey"),
+        //Pair("Комедийные боевики", "theme_action_comdey"),
         Pair("Лучшие визуальные эффекты", "oscar-visual-effects"),
         Pair("Лучшие сериалы мини-формата", "best_mini_serial"),
 

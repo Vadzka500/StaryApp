@@ -19,8 +19,8 @@ android {
         applicationId = "com.sidspace.stary"
         minSdk = libs.versions.androidSdk.min.get().toInt()
         targetSdk = libs.versions.androidSdk.target.get().toInt()
-        versionCode = 8
-        versionName = "1.0.6"
+        versionCode = 9
+        versionName = "1.0.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
